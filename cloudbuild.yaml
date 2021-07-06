@@ -1,5 +1,5 @@
 steps:
-  - name: python:3.6-buster
+  - name: python:3.9-buster
     id: Python Env Setup And App Tests
     entrypoint: bash
     dir: /workspace
