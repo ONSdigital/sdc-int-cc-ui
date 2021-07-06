@@ -1,0 +1,49 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
+
+{%- if results.total == 1: -%}
+    {%- set question_description = '<p class="u-fs-r--b">' + results.total_matches | string + ' address found for postcode ' + results.postcode + '</p>' -%}
+{%- else: -%}
+    {%- set question_description = '<p class="u-fs-r--b">' + results.total_matches | string + ' addresses found for postcode ' + results.postcode + '</p>' -%}
+{%- endif -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- call onsQuestion({
+        'title': 'Select the callers address',
+        'description': question_description
+    }) -%}
+
+
+        {{
+            onsRadios({
+                'name': 'form-pick-address',
+                'or': 'Or',
+                'radios': results.addresses,
+                'legend': 'Select the callers address',
+                'legendClasses': 'u-vh',
+                'error': error_select_address
+            })
+        }}
+
+    {%- endcall -%}
+
+    {{
+        onsButton({
+            'text': 'Continue',
+            'classes': 'u-mt-l',
+            'submitType': 'loader'
+        })
+    }}
+
+{%- endblock -%}

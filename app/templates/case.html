@@ -1,0 +1,217 @@
+{%- extends 'base.html' -%}
+
+{%- from "components/table/_macro.njk" import onsTable -%}
+
+{%- block main -%}
+
+  {%- for single in case -%}
+
+    <h1>Case: {{ single.caseRef or 'Not available' }}</h1>
+
+    {{
+        onsTable({
+            'caption': 'Data for case ' + single.caseRef or 'Not available',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'Field'
+                },
+                {
+                    'value': 'Value'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 1',
+                            'name': 'address-line-1'
+                        },
+                        {
+                            'value': single.addressLine1
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 2',
+                            'name': 'address-line-2'
+                        },
+                        {
+                            'value': single.addressLine2
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 3',
+                            'name': 'address-line-3'
+                        },
+                        {
+                            'value': single.addressLine3
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Town name',
+                            'name': 'town-name'
+                        },
+                        {
+                            'value': single.townName
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Postcode',
+                            'name': 'postcode'
+                        },
+                        {
+                            'value': single.postcode
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Region',
+                            'name': 'region'
+                        },
+                        {
+                            'value': single.region
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'UPRN',
+                            'name': 'uprn'
+                        },
+                        {
+                            'value': single.uprn
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Establishment UPRN',
+                            'name': 'establishment-uprn'
+                        },
+                        {
+                            'value': single.estabUprn
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Secure establishment',
+                            'name': 'secure-establishment'
+                        },
+                        {
+                            'value': single.secureEstablishment | string
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Case Type',
+                            'name': 'case-type'
+                        },
+                        {
+                            'value': single.caseType
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Type',
+                            'name': 'address-type'
+                        },
+                        {
+                            'value': single.addressType
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Establishment Type',
+                            'name': 'establishment-type'
+                        },
+                        {
+                            'value': single.estabType
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Establishment description',
+                            'name': 'establishment-desc'
+                        },
+                        {
+                            'value': single.estabDescription
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'CE Org Name',
+                            'name': 'ce-org-name'
+                        },
+                        {
+                            'value': single.ceOrgName
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Creation date',
+                            'name': 'creation-date'
+                        },
+                        {
+                            'value': single.createdDateTime | datetimefilter
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Last updated',
+                            'name': 'last-updated'
+                        },
+                        {
+                            'value': single.lastUpdated | datetimefilter
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Allowed delivery channels',
+                            'name': 'allowed-delivery-channels'
+                        },
+                        {
+                            'value': single.allowedDeliveryChannels
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+  {%- endfor -%}
+
+{%- endblock -%}
