@@ -4,13 +4,23 @@
 
 {%- block main -%}
 
-  {%- for single in case -%}
+    <h1>Case: {{ case.id or 'Not available' }}</h1>
 
-    <h1>Case: {{ single.caseRef or 'Not available' }}</h1>
+    {%- if case.createdDateTime -%}
+        {%- set creation_datetime = case.createdDateTime | datetimefilter -%}
+    {%- else -%}
+        {%- set creation_datetime = 'Not available' -%}
+    {%- endif -%}
+
+    {%- if case.lastUpdated -%}
+        {%- set last_updated = case.lastUpdated | datetimefilter -%}
+    {%- else -%}
+        {%- set last_updated = 'Not available' -%}
+    {%- endif -%}
 
     {{
         onsTable({
-            'caption': 'Data for case ' + single.caseRef or 'Not available',
+            'caption': 'Data for case ' + case.id,
             'id': 'basic-table',
             'ths': [
                 {
@@ -28,7 +38,7 @@
                             'name': 'address-line-1'
                         },
                         {
-                            'value': single.addressLine1
+                            'value': case.addressLine1
                         }
                     ]
                 },
@@ -39,7 +49,7 @@
                             'name': 'address-line-2'
                         },
                         {
-                            'value': single.addressLine2
+                            'value': case.addressLine2
                         }
                     ]
                 },
@@ -50,7 +60,7 @@
                             'name': 'address-line-3'
                         },
                         {
-                            'value': single.addressLine3
+                            'value': case.addressLine3
                         }
                     ]
                 },
@@ -61,7 +71,7 @@
                             'name': 'town-name'
                         },
                         {
-                            'value': single.townName
+                            'value': case.townName
                         }
                     ]
                 },
@@ -72,7 +82,7 @@
                             'name': 'postcode'
                         },
                         {
-                            'value': single.postcode
+                            'value': case.postcode
                         }
                     ]
                 },
@@ -83,7 +93,7 @@
                             'name': 'region'
                         },
                         {
-                            'value': single.region
+                            'value': case.region
                         }
                     ]
                 },
@@ -94,7 +104,7 @@
                             'name': 'uprn'
                         },
                         {
-                            'value': single.uprn
+                            'value': case.uprn
                         }
                     ]
                 },
@@ -105,7 +115,7 @@
                             'name': 'establishment-uprn'
                         },
                         {
-                            'value': single.estabUprn
+                            'value': case.estabUprn
                         }
                     ]
                 },
@@ -116,7 +126,7 @@
                             'name': 'secure-establishment'
                         },
                         {
-                            'value': single.secureEstablishment | string
+                            'value': case.secureEstablishment | string
                         }
                     ]
                 },
@@ -127,7 +137,7 @@
                             'name': 'case-type'
                         },
                         {
-                            'value': single.caseType
+                            'value': case.caseType
                         }
                     ]
                 },
@@ -138,7 +148,7 @@
                             'name': 'address-type'
                         },
                         {
-                            'value': single.addressType
+                            'value': case.addressType
                         }
                     ]
                 },
@@ -149,7 +159,7 @@
                             'name': 'establishment-type'
                         },
                         {
-                            'value': single.estabType
+                            'value': case.estabType
                         }
                     ]
                 },
@@ -160,7 +170,7 @@
                             'name': 'establishment-desc'
                         },
                         {
-                            'value': single.estabDescription
+                            'value': case.estabDescription
                         }
                     ]
                 },
@@ -171,7 +181,7 @@
                             'name': 'ce-org-name'
                         },
                         {
-                            'value': single.ceOrgName
+                            'value': case.ceOrgName
                         }
                     ]
                 },
@@ -182,7 +192,7 @@
                             'name': 'creation-date'
                         },
                         {
-                            'value': single.createdDateTime | datetimefilter
+                            'value': creation_datetime
                         }
                     ]
                 },
@@ -193,7 +203,7 @@
                             'name': 'last-updated'
                         },
                         {
-                            'value': single.lastUpdated | datetimefilter
+                            'value': last_updated
                         }
                     ]
                 },
@@ -204,14 +214,12 @@
                             'name': 'allowed-delivery-channels'
                         },
                         {
-                            'value': single.allowedDeliveryChannels
+                            'value': case.allowedDeliveryChannels
                         }
                     ]
                 }
             ]
         })
     }}
-
-  {%- endfor -%}
 
 {%- endblock -%}

@@ -1,0 +1,18 @@
+{%- extends 'base.html' -%}
+
+{%- from "components/lists/_macro.njk" import onsList -%}
+
+{%- block main -%}
+
+    <h1>UPRN: {{ uprn }}</h1>
+
+    <p>{{ address_output }}</p>
+
+    {{
+        onsList({
+            "element": 'ol',
+            "itemsList": case_list
+        })
+    }}
+
+{%- endblock -%}

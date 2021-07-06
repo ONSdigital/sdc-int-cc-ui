@@ -8,12 +8,36 @@ async def home():
     return render_template('home.html')
 
 
-@app.route('/case/<uprn>', methods=['GET'])
-async def case(uprn):
-    if uprn:
-        cc_return = await CCSvc.get_case_by_uprn(uprn)
+@app.route('/case/<case_id>', methods=['GET'])
+async def case(case_id):
+    if case_id:
+        cc_return = await CCSvc.get_case_by_id(case_id)
 
         return render_template('case.html', case=cc_return)
+    else:
+        return render_template('error.html')
+
+
+@app.route('/uprn/<uprn>', methods=['GET'])
+async def uprn_list(uprn):
+    if uprn:
+        cc_return = await CCSvc.get_case_by_uprn(uprn)
+        case_list = []
+        for single_case in cc_return:
+            case_list.append({'text': single_case['id'], 'url': url_for('case', case_id=single_case['id'])})
+
+        address_output = ''
+        address_output = address_output + cc_return[0]['addressLine1']
+        if cc_return[0]['addressLine2']:
+            address_output = address_output + ', ' + cc_return[0]['addressLine2']
+        if cc_return[0]['addressLine3']:
+            address_output = address_output + ', ' + cc_return[0]['addressLine3']
+        if cc_return[0]['townName']:
+            address_output = address_output + ', ' + cc_return[0]['townName']
+        if cc_return[0]['postcode']:
+            address_output = address_output + ', ' + cc_return[0]['postcode']
+
+        return render_template('uprn-list.html', uprn=uprn, address_output=address_output, case_list=case_list)
     else:
         return render_template('error.html')
 
@@ -29,7 +53,7 @@ async def address_input():
 @app.route('/addresses/input/', methods=['GET', 'POST'])
 async def addresses_by_input():
     if request.method == 'POST':
-        return redirect(url_for('case', uprn=request.form['form-pick-address']))
+        return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
     else:
         if request.args.get('input'):
             app.logger.info('Starting')
@@ -77,7 +101,7 @@ async def postcode_input():
 @app.route('/addresses/postcode/<postcode>', methods=['GET', 'POST'])
 async def addresses_by_postcode(postcode):
     if request.method == 'POST':
-        return redirect(url_for('case', uprn=request.form['form-pick-address']))
+        return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
     else:
         if postcode:
             cc_return = await CCSvc.get_addresses_by_postcode(postcode)
