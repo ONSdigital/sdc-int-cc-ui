@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9-alpine
-WORKDIR /code
+WORKDIR /app
 ENV FLASK_APP=app
 ENV FLASK_ENV=development
 ENV SECRET_KEY=secretkeysetasenvva
