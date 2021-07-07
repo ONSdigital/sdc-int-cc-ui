@@ -34,5 +34,6 @@ def datetimefilter(value, in_format='%Y-%m-%dT%H:%M:%S.%f%z'):
 
 app.jinja_env.filters['datetimefilter'] = datetimefilter
 
+from . import info
 from . import routes
 # from . import errors

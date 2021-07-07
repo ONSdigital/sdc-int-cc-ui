@@ -35,14 +35,14 @@ spec:
         readinessProbe:
           httpGet:
             path: /info
-            port: 9092
+            port: 5000
           initialDelaySeconds: 10
           periodSeconds: 10
           failureThreshold: 3
           successThreshold: 1
         ports:
         - name: http-server
-          containerPort: 9092
+          containerPort: 5000
         env:
         - name: REDIS_SERVER
           valueFrom:
