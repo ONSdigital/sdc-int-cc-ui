@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contactcentreui
+  labels:
+    app: contactcentreui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contactcentreui
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: contactcentreui
+      labels:
+        app: contactcentreui
+    spec:
+      serviceAccountName: contactcentre-ui
+      containers:
+      - name: contactcentreui
+        image: europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:Initial-setup
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1000Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1000Mi"
+        readinessProbe:
+          httpGet:
+            path: /info
+            port: 9092
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        ports:
+        - name: http-server
+          containerPort: 9092
+        env:
+        - name: GTM_AUTH
+          valueFrom:
+            configMapKeyRef:
+              name: domains
+              key: google-analytics-prop
+        - name: GTM_CONTAINER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: domains
+              key: gtm-container-id
+        - name: DOMAIN_URL
+          valueFrom:
+            configMapKeyRef:
+              name: domains
+              key: website-host
+        - name: ADDRESS_INDEX_SVC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: cc-config
+              key: address-index-svc-url
+        - name: EQ_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: cc-config
+              key: eq-host
+        - name: JSON_SECRET_KEYS
+          valueFrom:
+            secretKeyRef:
+              name: cc-keys
+              key: cc-keys
+        - name: REDIS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: cc-redis-host
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: cc-redis-port
+        - name: CCSVC_URL
+          value: "http://contactcentresvc:80"
+        - name: URL_PATH_PREFIX
+          value: ""
+        - name: EQ_URL
+          value: "https://$(EQ_HOST)"
+        - name: EQ_SALT
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: response-id-salt
