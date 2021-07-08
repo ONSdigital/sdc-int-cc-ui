@@ -1,14 +1,14 @@
 from app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, current_app
 from .utils import CCSvc
 
 
-@app.route('/')
+@app.route('/ccui/')
 async def home():
     return render_template('home.html')
 
 
-@app.route('/case/<case_id>', methods=['GET'])
+@app.route('/ccui/case/<case_id>', methods=['GET'])
 async def case(case_id):
     if case_id:
         cc_return = await CCSvc.get_case_by_id(case_id)
@@ -18,7 +18,7 @@ async def case(case_id):
         return render_template('error.html')
 
 
-@app.route('/uprn/<uprn>', methods=['GET'])
+@app.route('/ccui/uprn/<uprn>', methods=['GET'])
 async def uprn_list(uprn):
     if uprn:
         cc_return = await CCSvc.get_case_by_uprn(uprn)
@@ -42,7 +42,7 @@ async def uprn_list(uprn):
         return render_template('error.html')
 
 
-@app.route('/addresses/', methods=['GET', 'POST'])
+@app.route('/ccui/addresses/', methods=['GET', 'POST'])
 async def address_input():
     if request.method == 'POST':
         return redirect(url_for('addresses_by_input', input=request.form['form_address_input']))
@@ -50,7 +50,7 @@ async def address_input():
         return render_template('address-input.html')
 
 
-@app.route('/addresses/input/', methods=['GET', 'POST'])
+@app.route('/ccui/addresses/input/', methods=['GET', 'POST'])
 async def addresses_by_input():
     if request.method == 'POST':
         return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
@@ -90,7 +90,7 @@ async def addresses_by_input():
             return render_template('error.html')
 
 
-@app.route('/addresses/postcode/', methods=['GET', 'POST'])
+@app.route('/ccui/addresses/postcode/', methods=['GET', 'POST'])
 async def postcode_input():
     if request.method == 'POST':
         return redirect(url_for('addresses_by_postcode', postcode=request.form['form_postcode_input']))
@@ -98,7 +98,7 @@ async def postcode_input():
         return render_template('postcode-input.html')
 
 
-@app.route('/addresses/postcode/<postcode>', methods=['GET', 'POST'])
+@app.route('/ccui/addresses/postcode/<postcode>', methods=['GET', 'POST'])
 async def addresses_by_postcode(postcode):
     if request.method == 'POST':
         return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
