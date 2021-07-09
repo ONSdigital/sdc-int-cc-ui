@@ -55,7 +55,7 @@ spec:
               name: redis-config
               key: redis-port
         - name: CCSVC_URL
-          value: "http://contactcentresvc:80"
+          value: "http://cc-service-service:80"
         - name: CCSVC_USERNAME
           valueFrom:
             secretKeyRef:
