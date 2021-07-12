@@ -46,6 +46,7 @@ class CCSvc:
                                                                current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            current_app.logger.info(err)
             raise SystemExit(err)
 
         return cc_return.json()

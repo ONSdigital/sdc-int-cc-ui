@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask
-from flask import request
 from .config import base as config_base
 from flask_session import Session
 from datetime import datetime
@@ -26,6 +25,13 @@ app.config.from_object(config_env)
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 server_session = Session(app)
 
+from app.case import case_bp as case_bp
+app.register_blueprint(case_bp, url_prefix='/ccui')
+from app.address_search import address_search_bp as address_search_bp
+app.register_blueprint(address_search_bp, url_prefix='/ccui')
+from app.errors import errors_bp as errors_bp
+app.register_blueprint(errors_bp)
+
 
 @app.template_filter()
 def datetimefilter(value, in_format='%Y-%m-%dT%H:%M:%S.%f%z'):
@@ -36,4 +42,3 @@ app.jinja_env.filters['datetimefilter'] = datetimefilter
 
 from . import info
 from . import routes
-# from . import errors
