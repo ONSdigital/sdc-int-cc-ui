@@ -1,7 +1,7 @@
 from . import address_search_bp
 from app import app
 from flask import render_template, request, redirect, url_for
-from app.utils import CCSvc
+from app.utils import CCSvc, ProcessPostcode
 
 
 @address_search_bp.route('/addresses/', methods=['GET', 'POST'])
@@ -55,7 +55,13 @@ async def addresses_by_input():
 @address_search_bp.route('/addresses/postcode/', methods=['GET', 'POST'])
 async def postcode_input():
     if request.method == 'POST':
-        return redirect(url_for('address_search.addresses_by_postcode', postcode=request.form['form_postcode_input']))
+        postcode_return = ProcessPostcode.validate_postcode(request.form['form_postcode_input'])
+        if postcode_return['valid'] == 'true':
+            return redirect(url_for('address_search.addresses_by_postcode', postcode=postcode_return['postcode']))
+        else:
+            return render_template('address-search/postcode-input.html',
+                                   postcode_value=postcode_return['postcode'],
+                                   error_message=postcode_return['error_message'])
     else:
         return render_template('address-search/postcode-input.html')
 

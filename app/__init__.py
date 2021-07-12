@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 from .config import base as config_base
-from flask_session import Session
+# from flask_session import Session
 from datetime import datetime
 
 app = Flask(__name__, instance_relative_config=False)
@@ -23,7 +23,7 @@ else:
 app.config.from_object(config_env)
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
-server_session = Session(app)
+# server_session = Session(app)
 
 from app.case import case_bp as case_bp
 app.register_blueprint(case_bp, url_prefix='/ccui')
