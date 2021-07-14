@@ -1,6 +1,7 @@
 {%- extends 'base.html' -%}
 
 {%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
 
 {%- block main -%}
 
@@ -17,6 +18,15 @@
     {%- else -%}
         {%- set last_updated = 'Not available' -%}
     {%- endif -%}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Record caller refusal',
+            'classes': 'u-mb-xl',
+            'url': url_for('case.case_request_refusal', case_id=case_id)
+        })
+    }}
 
     {{
         onsTable({

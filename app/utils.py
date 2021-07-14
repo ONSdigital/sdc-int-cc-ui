@@ -4,6 +4,8 @@ import re
 
 from flask import current_app, flash
 from unicodedata import normalize
+from datetime import datetime
+from pytz import utc
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
@@ -87,6 +89,30 @@ class CCSvc:
                                                 current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            raise SystemExit(err)
+
+        return cc_return.json()
+
+    @staticmethod
+    async def post_case_refusal(case_id, reason, is_householder=False):
+        cc_svc_url = current_app.config['CC_SVC_URL']
+        url = f'{cc_svc_url}/cases/{case_id}/refusal'
+        fulfilment_json = {
+            'caseId': case_id,
+            'dateTime': datetime.now(utc).isoformat(),
+            'agentId': '13',
+            'reason': reason.upper(),
+            'isHouseholder': is_householder
+        }
+        current_app.logger.info('is_householder: ' + str(is_householder))
+        try:
+            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
+                                                 current_app.config['CC_SVC_PWD']),
+                                      json=fulfilment_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error: ' + str(err))
+            current_app.logger.warn('Error: ' + str(err.response))
             raise SystemExit(err)
 
         return cc_return.json()
