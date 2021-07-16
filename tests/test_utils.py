@@ -64,6 +64,15 @@ class TestPostcodeValidation:
         assert 'Enter a valid UK postcode' in str(cm.value)
         # With the correct message
 
+    def test_validate_postcode_invalid_british_forces(self):
+        postcode = 'BFPO 105'
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert 'Enter a valid UK postcode' in str(cm.value)
+        # With the correct message
+
 
 class TestMobileValidation:
     def test_validate_uk_mobile_phone_number_valid(self):
@@ -71,6 +80,16 @@ class TestMobileValidation:
         # When validate_uk_mobile_phone_number is called
         ProcessMobileNumber.validate_uk_mobile_phone_number(mobile_number)
         # Nothing happens
+
+    def test_validate_uk_mobile_phone_number_empty(self):
+        mobile_number = ''
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessMobileNumber.validate_uk_mobile_phone_number(mobile_number)
+        # Then an InvalidDataError is raised
+        assert "Enter the caller's mobile number" in \
+               str(cm.value)
+        # With the correct message
 
     def test_validate_uk_mobile_phone_number_short(self):
         mobile_number = '070 1234'
