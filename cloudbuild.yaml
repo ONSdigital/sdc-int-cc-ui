@@ -19,7 +19,7 @@ steps:
       date
       echo "Run PyTest"
       export FLASK_ENV=testing
-      pipenv run pytest
+      pipenv coverage run -m pytest
 
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
