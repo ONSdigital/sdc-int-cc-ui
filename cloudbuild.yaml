@@ -16,6 +16,9 @@ steps:
       date
       echo "PipEnv Install"
       pipenv install --dev --deploy
+      date
+      echo "Run PyTest"
+      pipenv pytest
 
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
