@@ -19,8 +19,7 @@ steps:
       date
       echo "Run PyTest"
       export FLASK_ENV=testing
-      pipenv run pytest --cov=app --cov-report xml --ignore=node_modules
-      pipenv run coverage report
+      pipenv run pytest
 
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
