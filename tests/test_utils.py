@@ -13,15 +13,56 @@ class TestPostcodeValidation:
         ProcessPostcode.validate_postcode(postcode)
         # Nothing happens
 
-    # def test_validate_postcode_not_alphanumeric(self):
-    #     postcode = '?<>:{}'
-    #
-    #     # When validate_postcode is called
-    #     with pytest.raises(InvalidDataError) as cm:
-    #         ProcessPostcode.validate_postcode(postcode)
-    #     # Then an InvalidDataError is raised
-    #     assert 'Enter a valid UK postcode' in str(cm.value)
-    #     # With the correct message
+    def test_validate_postcode_valid_with_unicode(self):
+        postcode = 'BS２ ０FW'
+        # When validate_postcode is called
+        ProcessPostcode.validate_postcode(postcode)
+        # Nothing happens
+
+    def test_validate_postcode_empty(self):
+        postcode = ''
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert "Enter the caller's postcode" in str(cm.value)
+        # With the correct message
+
+    def test_validate_postcode_not_alphanumeric(self):
+        postcode = '?<>:{}'
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert 'Postcode can only contain letters and numbers' in str(cm.value)
+        # With the correct message
+
+    def test_validate_postcode_short(self):
+        postcode = 'PO15'
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert 'Postcode is too short' in str(cm.value)
+        # With the correct message
+
+    def test_validate_postcode_long(self):
+        postcode = 'PO15 5RRR'
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert 'Postcode is too long' in str(cm.value)
+        # With the correct message
+
+    def test_validate_postcode_invalid(self):
+        postcode = 'ZZ99 9ZZ'
+        # When validate_postcode is called
+        with pytest.raises(InvalidDataError) as cm:
+            ProcessPostcode.validate_postcode(postcode)
+        # Then an InvalidDataError is raised
+        assert 'Enter a valid UK postcode' in str(cm.value)
+        # With the correct message
 
 
 class TestMobileValidation:

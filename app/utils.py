@@ -75,35 +75,22 @@ class ProcessPostcode:
 
         postcode = postcode.upper()
         postcode = normalize('NFKD', postcode).encode('ascii', 'ignore').decode('utf8')
-        postcode_valid = 'true'
-        error_message = ''
 
         if len(postcode) == 0:
-            flash('Enter a postcode', 'error_postcode')
-            error_message = 'Enter a postcode'
-            postcode_valid = 'false'
+            raise InvalidDataError("Enter the caller's postcode", message_type='empty')
         elif not postcode.isalnum():
-            flash('Postcode can only contain letters and numbers', 'error_postcode')
-            error_message = 'Postcode can only contain letters and numbers'
-            postcode_valid = 'false'
+            raise InvalidDataError("Postcode can only contain letters and numbers", message_type='invalid')
         else:
             if len(postcode) < 5:
-                flash('Postcode is too short', 'error_postcode')
-                error_message = 'Postcode is too short'
-                postcode_valid = 'false'
+                raise InvalidDataError("Postcode is too short", message_type='invalid')
             elif len(postcode) > 7:
-                flash('Postcode is too long', 'error_postcode')
-                error_message = 'Postcode is too long'
-                postcode_valid = 'false'
+                raise InvalidDataError("Postcode is too long", message_type='invalid')
             elif not ProcessPostcode.postcode_validation_pattern.fullmatch(postcode):
-                flash('Enter a valid UK postcode', 'error_postcode')
-                error_message = 'Enter a valid UK postcode'
-                postcode_valid = 'false'
+                raise InvalidDataError("Enter a valid UK postcode", message_type='invalid')
 
-        if postcode_valid:
-            postcode = postcode[:-3] + ' ' + postcode[-3:]
+        postcode = postcode[:-3] + ' ' + postcode[-3:]
 
-        return {'valid': postcode_valid, 'postcode': postcode, 'error_message': error_message}
+        return postcode
 
 
 class CCSvc:

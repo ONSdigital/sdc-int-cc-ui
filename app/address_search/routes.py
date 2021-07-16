@@ -1,7 +1,8 @@
 from . import address_search_bp
 from app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash, current_app
 from app.utils import CCSvc, ProcessPostcode
+from app.errors.handlers import InvalidDataError
 
 
 @address_search_bp.route('/addresses/', methods=['GET', 'POST'])
@@ -55,13 +56,16 @@ async def addresses_by_input():
 @address_search_bp.route('/addresses/postcode/', methods=['GET', 'POST'])
 async def postcode_input():
     if request.method == 'POST':
-        postcode_return = ProcessPostcode.validate_postcode(request.form['form_postcode_input'])
-        if postcode_return['valid'] == 'true':
-            return redirect(url_for('address_search.addresses_by_postcode', postcode=postcode_return['postcode']))
-        else:
+        postcode_unvalidated = request.form['form_postcode_input']
+        try:
+            postcode = ProcessPostcode.validate_postcode(postcode_unvalidated)
+            return redirect(url_for('address_search.addresses_by_postcode', postcode=postcode))
+        except InvalidDataError as exc:
+            current_app.logger.info(exc)
+            flash(exc.message, 'error_mobile')
             return render_template('address-search/postcode-input.html',
-                                   postcode_value=postcode_return['postcode'],
-                                   error_message=postcode_return['error_message'])
+                                   postcode_value=postcode_unvalidated,
+                                   error_message=exc.message)
     else:
         return render_template('address-search/postcode-input.html')
 
