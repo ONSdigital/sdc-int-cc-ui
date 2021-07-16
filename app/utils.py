@@ -6,6 +6,7 @@ from flask import current_app, flash
 from unicodedata import normalize
 from datetime import datetime
 from pytz import utc
+from .errors.handlers import InvalidDataError
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
@@ -16,8 +17,49 @@ OBSCURE_WHITESPACE = (
     '\uFEFF'  # zero width non-breaking space
 )
 
+uk_prefix = '44'
+
 # class Utils:
     # Common classes
+
+
+class ProcessMobileNumber:
+
+    @staticmethod
+    def normalise_phone_number(number):
+
+        for character in string.whitespace + OBSCURE_WHITESPACE + '()-+':
+            number = number.replace(character, '')
+
+        try:
+            list(map(int, number))
+        except ValueError:
+            raise InvalidDataError('Enter a UK mobile number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        return number.lstrip('0')
+
+    @staticmethod
+    def validate_uk_mobile_phone_number(number):
+
+        number = ProcessMobileNumber.normalise_phone_number(number).lstrip(uk_prefix).lstrip('0')
+
+        if len(number) == 0:
+            raise InvalidDataError("Enter the caller's mobile number", message_type='empty')
+
+        if not number.startswith('7'):
+            raise InvalidDataError('Enter a UK mobile number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        if len(number) > 10:
+            raise InvalidDataError('Enter a UK mobile number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        if len(number) < 10:
+            raise InvalidDataError('Enter a UK mobile number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        return '{}{}'.format(uk_prefix, number)
 
 
 class ProcessPostcode:
@@ -97,7 +139,7 @@ class CCSvc:
     async def post_case_refusal(case_id, reason, is_householder=False):
         cc_svc_url = current_app.config['CC_SVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/refusal'
-        fulfilment_json = {
+        refusal_json = {
             'caseId': case_id,
             'dateTime': datetime.now(utc).isoformat(),
             'agentId': '13',
@@ -108,7 +150,7 @@ class CCSvc:
         try:
             cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
                                                  current_app.config['CC_SVC_PWD']),
-                                      json=fulfilment_json)
+                                      json=refusal_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error: ' + str(err))
@@ -144,6 +186,51 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.info('Call Error')
+            raise SystemExit(err)
+
+        return cc_return.json()
+
+    @staticmethod
+    async def get_fulfilments(product_group, delivery_channel, region):
+        cc_svc_url = current_app.config['CC_SVC_URL']
+        url = f'{cc_svc_url}/fulfilments'
+        params = {
+            'caseType': 'HH',
+            'productGroup': product_group,
+            'deliveryChannel': delivery_channel,
+            'region': region,
+            'individual': 'false'
+        }
+
+        try:
+            cc_return = requests.get(url, auth=(current_app.config['CC_SVC_USERNAME'],
+                                                current_app.config['CC_SVC_PWD']),
+                                     params=params)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error: ' + str(err))
+            raise SystemExit(err)
+
+        return cc_return.json()
+
+    @staticmethod
+    async def post_sms_fulfilment(case_id, fulfilment_code, tel_no):
+        cc_svc_url = current_app.config['CC_SVC_URL']
+        url = f'{cc_svc_url}/cases/{case_id}/fulfilment/sms'
+        fulfilment_json = {
+            'caseId': case_id,
+            'dateTime': datetime.now(utc).isoformat(),
+            'fulfilmentCode': fulfilment_code,
+            'telNo': tel_no
+        }
+        try:
+            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
+                                                 current_app.config['CC_SVC_PWD']),
+                                      json=fulfilment_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error: ' + str(err))
+            current_app.logger.warn('Error: ' + str(err.response))
             raise SystemExit(err)
 
         return cc_return.json()
