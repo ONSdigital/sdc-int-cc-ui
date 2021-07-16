@@ -18,6 +18,7 @@ steps:
       pipenv install --dev --deploy
       date
       echo "Run PyTest"
+      export FLASK_ENV=testing
       pipenv run pytest
 
   # Docker Build
