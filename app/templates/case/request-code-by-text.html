@@ -29,15 +29,20 @@
     <p>The following information is required from the caller to process this request</p>
 
     {%- if fulfilment_options -%}
-        {{
-            onsRadios({
-                'name': 'form-case-fulfilment',
-                'radios': fulfilment_options,
-                'legend': "Select required fulfilment",
-                'legendClasses': 'u-mt-xl',
-                'error': error_fulfilment
-            })
-        }}
+        {%- call onsQuestion({
+            'title': "What fulfilment does the caller require?",
+            'instruction': 'Ask the caller which option they require - there is usually only a choice between available languages'
+        }) -%}
+            {{
+                onsRadios({
+                    'name': 'form-case-fulfilment',
+                    'radios': fulfilment_options,
+                    'legend': "Select required fulfilment",
+                    'legendClasses': 'u-mt-xl',
+                    'error': error_fulfilment
+                })
+            }}
+        {%- endcall -%}
     {%- else -%}
         {{
             onsInput({
@@ -49,20 +54,24 @@
         }}
     {%- endif -%}
 
-    {{
-        onsInput({
-            'id': 'telephone',
-            'type': 'tel',
-            'autocomplete': 'tel',
-            'classes': 'input--w-15',
-            'label': {
-                'text': 'UK mobile number',
-                'description': 'This will not be stored and only used once to send the access code'
-            },
-            'name': 'form-case-mobile-number',
-            'error': error_mobile
-        })
-    }}
+    {%- call onsQuestion({
+        'title': "What is the caller's mobile number?",
+        'instruction': 'Inform the caller that the mobile number will not be stored and will only be used once to send the access code'
+    }) -%}
+        {{
+            onsInput({
+                'id': 'telephone',
+                'type': 'tel',
+                'autocomplete': 'tel',
+                'classes': 'input--w-15',
+                'label': {
+                    'text': "Enter the caller's UK mobile number"
+                },
+                'name': 'form-case-mobile-number',
+                'error': error_mobile
+            })
+        }}
+    {%- endcall -%}
 
     <div class="btn-group u-mt-l">
         {{

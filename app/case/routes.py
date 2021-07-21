@@ -29,7 +29,7 @@ async def case_request_refusal(case_id):
             flash('Select a reason', 'error_reason')
             return render_template('case/case-request-refusal.html', error_reason='Select an option')
     else:
-        return render_template('case/case-request-refusal.html')
+        return render_template('case/case-request-refusal.html', case_id=case_id)
 
 
 @case_bp.route('/case/<case_id>/refused/', methods=['GET'])
@@ -87,7 +87,7 @@ async def case_request_code_by_text(case_id):
             return render_template('case/request-code-by-text.html', fulfilment_options=fulfilment_options)
         elif len(fulfilments) == 1:
             return render_template('case/request-code-by-text.html',
-                                   fulfilment_code=fulfilments[0]['fulfilmentCode'])
+                                   fulfilment_code=fulfilments[0]['fulfilmentCode'], case_id=case_id)
         else:
             return render_template('errors/500.html')
 

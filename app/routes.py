@@ -14,7 +14,7 @@ async def uprn_list(uprn):
         cc_return = await CCSvc.get_case_by_uprn(uprn)
         case_list = []
         for single_case in cc_return:
-            case_list.append({'text': single_case['id'], 'url': url_for('case.case', case_id=single_case['id'])})
+            case_list.append({'text': 'Census 2021: Household', 'url': url_for('case.case', case_id=single_case['id'])})
 
         address_output = ''
         address_output = address_output + cc_return[0]['addressLine1']
