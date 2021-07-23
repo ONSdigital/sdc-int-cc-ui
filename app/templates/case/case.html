@@ -228,7 +228,17 @@
                 </main>
             </div>
             <div class="grid__col col-4@m push-1@m page__main">
-                <div class="">
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Add call notes',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
                     {{
                         onsButton({
                             'type': 'button',
@@ -245,6 +255,66 @@
                             'text': 'Request code by text',
                             'classes': 'u-mb-xl',
                             'url': url_for('case.case_request_code_by_text', case_id=case_id)
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Request code by post',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Update contact number',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Record invalid address',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Schedule phone interview',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Schedule field interview',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
+                        })
+                    }}
+                </div>
+                <div>
+                    {{
+                        onsButton({
+                            'type': 'button',
+                            'text': 'Log data removal request',
+                            'classes': 'u-mb-xl',
+                            'url': '#'
                         })
                     }}
                 </div>
