@@ -3,12 +3,12 @@ from flask import render_template, url_for
 from .utils import CCSvc
 
 
-@app.route('/ccui/')
+@app.route('/')
 async def home():
     return render_template('home.html')
 
 
-@app.route('/ccui/uprn/<uprn>', methods=['GET'])
+@app.route('/uprn/<uprn>', methods=['GET'])
 async def uprn_list(uprn):
     if uprn:
         cc_return = await CCSvc.get_case_by_uprn(uprn)

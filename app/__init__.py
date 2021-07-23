@@ -26,9 +26,9 @@ app.config.from_object(config_env)
 # server_session = Session(app)
 
 from app.case import case_bp as case_bp
-app.register_blueprint(case_bp, url_prefix='/ccui')
+app.register_blueprint(case_bp)
 from app.address_search import address_search_bp as address_search_bp
-app.register_blueprint(address_search_bp, url_prefix='/ccui')
+app.register_blueprint(address_search_bp)
 from app.errors import errors_bp as errors_bp
 app.register_blueprint(errors_bp)
 
