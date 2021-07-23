@@ -14,6 +14,27 @@ async def case(case_id):
         return render_template('500.html')
 
 
+@case_bp.route('/case/<case_id>/add-case-note/', methods=['GET', 'POST'])
+async def case_add_case_note(case_id):
+    if request.method == 'POST':
+        if 'form-case-add-note' in request.form:
+            # TODO  add case note endpoint call
+            return redirect(url_for('case.case_note_added', case_id=case_id))
+        else:
+            flash('Add a note', 'error_note')
+            return render_template('case/case-add-note.html', error_note='Add note')
+    else:
+        return render_template('case/case-add-note.html', case_id=case_id)
+
+
+@case_bp.route('/case/<case_id>/case-note-added/', methods=['GET'])
+async def case_note_added(case_id):
+    if case_id:
+        return render_template('case/case-note-added.html', case_id=case_id)
+    else:
+        return render_template('500.html')
+
+
 @case_bp.route('/case/<case_id>/request-refusal/', methods=['GET', 'POST'])
 async def case_request_refusal(case_id):
     if request.method == 'POST':
