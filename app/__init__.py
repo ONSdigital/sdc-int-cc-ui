@@ -2,8 +2,11 @@ import os
 
 from flask import Flask
 from .config import base as config_base
+from .logging import setup_logging
 # from flask_session import Session
 from datetime import datetime
+
+setup_logging(os.getenv('PLATFORM'))
 
 app = Flask(__name__, instance_relative_config=False)
 
