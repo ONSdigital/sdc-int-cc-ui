@@ -21,7 +21,11 @@
             onsButton({
                 'type': 'button',
                 'text': 'Record invalid address',
-                'url': '#'
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
             })
         }}
 {%- endset -%}
@@ -31,7 +35,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Update contact number',
-                'url': '#'
+                'url': url_for('case.case_update_contact_number', case_id=case_id)
             })
         }}
 {%- endset -%}
@@ -64,7 +68,11 @@
             onsButton({
                 'type': 'button',
                 'text': 'Log data removal request',
-                'url': '#'
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
             })
         }}
     </div>
@@ -73,7 +81,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Request code by post',
-                'url': url_for('case.case_request_refusal', case_id=case_id)
+                'url': url_for('case.case_request_code_by_post', case_id=case_id)
             })
         }}
 
@@ -90,14 +98,22 @@
             onsButton({
                 'type': 'button',
                 'text': 'Schedule phone interview',
-                'url': '#'
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
             })
         }}
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Schedule field interview',
-                'url': '#'
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
             })
         }}
     </div>

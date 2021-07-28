@@ -19,9 +19,6 @@ OBSCURE_WHITESPACE = (
 
 uk_prefix = '44'
 
-# class Utils:
-    # Common classes
-
 
 class ProcessMobileNumber:
 
@@ -57,6 +54,41 @@ class ProcessMobileNumber:
 
         if len(number) < 10:
             raise InvalidDataError('Enter a UK mobile number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        return '{}{}'.format(uk_prefix, number)
+
+
+class ProcessContactNumber:
+
+    @staticmethod
+    def normalise_phone_number(number):
+
+        for character in string.whitespace + OBSCURE_WHITESPACE + '()-+':
+            number = number.replace(character, '')
+
+        try:
+            list(map(int, number))
+        except ValueError:
+            raise InvalidDataError('Enter a UK telephone number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        return number.lstrip('0')
+
+    @staticmethod
+    def validate_uk_phone_number(number):
+
+        number = ProcessContactNumber.normalise_phone_number(number).lstrip(uk_prefix).lstrip('0')
+
+        if len(number) == 0:
+            raise InvalidDataError("Enter the caller's telephone number", message_type='empty')
+
+        if len(number) > 10:
+            raise InvalidDataError('Enter a UK telephone number in a valid format, for example, '
+                                   '07700 900345 or +44 7700 900345', message_type='invalid')
+
+        if len(number) < 9:
+            raise InvalidDataError('Enter a UK telephone number in a valid format, for example, '
                                    '07700 900345 or +44 7700 900345', message_type='invalid')
 
         return '{}{}'.format(uk_prefix, number)
@@ -104,6 +136,7 @@ class CCSvc:
                                                 current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error returned by CCSvc for get_case_by_id call: ' + str(err))
             raise SystemExit(err)
 
         return cc_return.json()
@@ -118,6 +151,7 @@ class CCSvc:
                                                 current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error returned by CCSvc for get_case_by_uprn call: ' + str(err))
             raise SystemExit(err)
 
         return cc_return.json()
@@ -209,6 +243,29 @@ class CCSvc:
             'dateTime': datetime.now(utc).isoformat(),
             'fulfilmentCode': fulfilment_code,
             'telNo': tel_no
+        }
+        try:
+            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
+                                                 current_app.config['CC_SVC_PWD']),
+                                      json=fulfilment_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error: ' + str(err))
+            current_app.logger.warn('Error: ' + str(err.response))
+            raise SystemExit(err)
+
+        return cc_return.json()
+
+    @staticmethod
+    async def post_postal_fulfilment(case_id, fulfilment_code, first_name, last_name):
+        cc_svc_url = current_app.config['CC_SVC_URL']
+        url = f'{cc_svc_url}/cases/{case_id}/fulfilment/post'
+        fulfilment_json = {
+            'caseId': case_id,
+            'dateTime': datetime.now(utc).isoformat(),
+            'fulfilmentCode': fulfilment_code,
+            'forename': first_name,
+            'surname': last_name
         }
         try:
             cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
