@@ -1,0 +1,25 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1></h1>
+
+    {%- call onsQuestion({
+        "title": "A text has been sent to the caller's provided mobile number",
+        "instruction": "<p>Inform the caller that the text will be sent from <strong>ONS</strong>, and can take a few minutes to arrive</p>"
+    }) -%}
+    {%- endcall -%}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to homepage',
+            'classes': 'u-mb-m',
+            'url': url_for('home')
+        })
+    }}
+
+{%- endblock -%}

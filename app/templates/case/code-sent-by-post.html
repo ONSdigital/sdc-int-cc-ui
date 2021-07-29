@@ -1,0 +1,23 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    {%- call onsQuestion({
+        "title": "A letter will be sent to the caller",
+        "instruction": "<p>Inform the caller that a letter with a new access code for them to start the study should arrive within 5 working days</p>"
+    }) -%}
+    {%- endcall -%}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to homepage',
+            'classes': 'u-mb-m',
+            'url': url_for('home')
+        })
+    }}
+
+{%- endblock -%}

@@ -1,0 +1,20 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>Case refused</h1>
+
+    <p>Case {{ case_id }} has been set as refused</p>
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to homepage',
+            'classes': 'u-mb-m',
+            'url': url_for('home')
+        })
+    }}
+
+{%- endblock -%}

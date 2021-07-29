@@ -1,0 +1,58 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
+
+{%- if results.total_matches == 1: -%}
+    {%- set question_description = '<p class="u-fs-r--b">' + results.total_matches | string + ' address found for postcode ' + results.postcode + '</p>' -%}
+{%- else: -%}
+    {%- set question_description = '<p class="u-fs-r--b">' + results.total_matches | string + ' addresses found for postcode ' + results.postcode + '</p>' -%}
+{%- endif -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- if results.total_matches == 0: -%}
+
+        <h1>Sorry, there was a problem processing that postcode</h1>
+
+        <p>The postcode {{ results.postcode }} was not matched by the system</p>
+
+    {%- else: -%}
+
+        {%- call onsQuestion({
+            'title': 'Select the callers address',
+            'description': question_description
+        }) -%}
+
+            {{
+                onsRadios({
+                    'name': 'form-pick-address',
+                    'or': 'Or',
+                    'radios': results.addresses,
+                    'legend': 'Select the callers address',
+                    'legendClasses': 'u-vh',
+                    'error': error_select_address
+                })
+            }}
+
+            {{
+                onsButton({
+                    'text': 'Continue',
+                    'classes': 'u-mt-l',
+                    'submitType': 'loader'
+                })
+            }}
+
+        {%- endcall -%}
+
+    {%- endif -%}
+
+{%- endblock -%}

@@ -1,0 +1,24 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1></h1>
+
+    {%- call onsQuestion({
+        "title": "The contact number has been updated"
+    }) -%}
+    {%- endcall -%}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to case',
+            'classes': 'u-mb-m',
+            'url': url_for('case.case', case_id=case_id)
+        })
+    }}
+
+{%- endblock -%}

@@ -1,0 +1,100 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    <h1 class="u-mt-l">Request a new access code by post</h1>
+
+    <p>The following information is required from the caller to process this request</p>
+
+    {{
+        onsInput({
+            "type": "hidden",
+            "id": "form-case-fulfilment",
+            "name": "form-case-fulfilment",
+            "value": fulfilment_code
+        })
+    }}
+
+    {%- call onsQuestion({
+        'title': "What is the caller's name?",
+        'instruction': 'Inform the caller that this is who the letter will be addressed to'
+    }) -%}
+        {{
+            onsInput({
+                'id': 'form-case-first-name',
+                'type': 'text',
+                'label': {
+                    'text': 'First name'
+                },
+                'value': first_name,
+                'name': 'form-case-first-name',
+                'error': error_first_name,
+                'charCheckLimit': {
+                    'limit': 35,
+                    'charCountOverLimitSingular': '{x} character too many',
+                    'charCountOverLimitPlural': '{x} characters too many',
+                    'charCountSingular': 'You have {x} character remaining',
+                    'charCountPlural': 'You have {x} characters remaining'
+                }
+            })
+        }}
+
+        {{
+            onsInput({
+                'id': 'form-case-last-name',
+                'type': 'text',
+                'label': {
+                    'text': 'Last name'
+                },
+                'value': last_name,
+                'name': 'form-case-last-name',
+                'error': error_last_name,
+                'charCheckLimit': {
+                    'limit': 35,
+                    'charCountOverLimitSingular': '{x} character too many',
+                    'charCountOverLimitPlural': '{x} characters too many',
+                    'charCountSingular': 'You have {x} character remaining',
+                    'charCountPlural': 'You have {x} characters remaining'
+                }
+            })
+        }}
+
+    {%- endcall -%}
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'text': 'Request new code by post',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'classes': 'btn--secondary btn-group__btn',
+                'url': url_for('case.case', case_id=case_id),
+                'icon': 'false'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

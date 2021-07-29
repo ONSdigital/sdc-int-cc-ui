@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contactcentreui
+  labels:
+    app: contactcentreui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contactcentreui
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: contactcentreui
+      labels:
+        app: contactcentreui
+    spec:
+      serviceAccountName: contactcentre-ui
+      containers:
+      - name: contactcentreui
+        image: europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:main
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1000Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1000Mi"
+        readinessProbe:
+          httpGet:
+            path: /info
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        ports:
+        - name: http-server
+          containerPort: 5000
+        env:
+        - name: REDIS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: redis-host
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: redis-port
+        - name: CCSVC_URL
+          value: "http://cc-service-service:80/ccsvc"
+        - name: CCSVC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: serco-identity
+              key: username
+        - name: CCSVC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: serco-identity
+              key: password

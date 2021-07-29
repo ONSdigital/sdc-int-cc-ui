@@ -1,0 +1,449 @@
+{%- extends 'base-wide.html' -%}
+
+{%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from "components/collapsible/_macro.njk" import onsCollapsible -%}
+
+{%- if case.createdDateTime -%}
+    {%- set creation_datetime = case.createdDateTime | datetimefilter -%}
+{%- else -%}
+    {%- set creation_datetime = 'Not available' -%}
+{%- endif -%}
+
+{%- if case.lastUpdated -%}
+    {%- set last_updated = case.lastUpdated | datetimefilter -%}
+{%- else -%}
+    {%- set last_updated = 'Not available' -%}
+{%- endif -%}
+
+{%- set address_button -%}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Record invalid address',
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
+            })
+        }}
+{%- endset -%}
+
+{%- set telephone_button -%}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Update contact number',
+                'url': url_for('case.case_update_contact_number', case_id=case_id)
+            })
+        }}
+{%- endset -%}
+
+{%- block main -%}
+
+    <h1>Case: {{ case.id or 'Not available' }}</h1>
+
+    <h2>Call actions</h2>
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Add call notes',
+                'url': url_for('case.case_add_case_note', case_id=case_id)
+            })
+        }}
+    </div>
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Record caller refusal',
+                'url': url_for('case.case_request_refusal', case_id=case_id)
+            })
+        }}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Log data removal request',
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
+            })
+        }}
+    </div>
+    <div class="btn-group u-mt-l u-mb-l">
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Request code by post',
+                'url': url_for('case.case_request_code_by_post', case_id=case_id)
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Request code by text',
+                'url': url_for('case.case_request_code_by_text', case_id=case_id)
+            })
+        }}
+    </div>
+    <div class="btn-group u-mt-l u-mb-l">
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Schedule phone interview',
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
+            })
+        }}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Schedule field interview',
+                'url': '#',
+                "classes": 'btn--disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
+            })
+        }}
+    </div>
+
+
+    <h2>Address and contact information</h2>
+
+    {{
+        onsTable({
+            'caption': 'Address and contact information',
+            'hideCaption': 'true',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'Field'
+                },
+                {
+                    'value': 'Value'
+                },
+                {
+                    'value': 'Actions'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 1',
+                            'name': 'address-line-1'
+                        },
+                        {
+                            'value': case.addressLine1
+                        },
+                        {
+                            'value': address_button
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 2',
+                            'name': 'address-line-2'
+                        },
+                        {
+                            'value': case.addressLine2
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Address Line 3',
+                            'name': 'address-line-3'
+                        },
+                        {
+                            'value': case.addressLine3
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Town name',
+                            'name': 'town-name'
+                        },
+                        {
+                            'value': case.townName
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Postcode',
+                            'name': 'postcode'
+                        },
+                        {
+                            'value': case.postcode
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Telephone',
+                            'name': 'telephone'
+                        },
+                        {
+                            'value': '070 0000 0001'
+                        },
+                        {
+                            'value': telephone_button
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+
+    {% set additional_case_data_content %}
+        {{
+            onsTable({
+                'caption': 'Additional case data',
+                'hideCaption': 'true',
+                'id': 'basic-table',
+                'ths': [
+                    {
+                        'value': 'Field'
+                    },
+                    {
+                        'value': 'Value'
+                    }
+                ],
+                'trs': [
+                    {
+                        'tds': [
+                            {
+                                'value': 'Region',
+                                'name': 'region'
+                            },
+                            {
+                                'value': case.region
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'UPRN',
+                                'name': 'uprn'
+                            },
+                            {
+                                'value': case.uprn
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Establishment UPRN',
+                                'name': 'establishment-uprn'
+                            },
+                            {
+                                'value': case.estabUprn
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Secure establishment',
+                                'name': 'secure-establishment'
+                            },
+                            {
+                                'value': case.secureEstablishment | string
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Case Type',
+                                'name': 'case-type'
+                            },
+                            {
+                                'value': case.caseType
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Address Type',
+                                'name': 'address-type'
+                            },
+                            {
+                                'value': case.addressType
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Establishment Type',
+                                'name': 'establishment-type'
+                            },
+                            {
+                                'value': case.estabType
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Establishment description',
+                                'name': 'establishment-desc'
+                            },
+                            {
+                                'value': case.estabDescription
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'CE Org Name',
+                                'name': 'ce-org-name'
+                            },
+                            {
+                                'value': case.ceOrgName
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Creation date',
+                                'name': 'creation-date'
+                            },
+                            {
+                                'value': creation_datetime
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Last updated',
+                                'name': 'last-updated'
+                            },
+                            {
+                                'value': last_updated
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': 'Allowed delivery channels',
+                                'name': 'allowed-delivery-channels'
+                            },
+                            {
+                                'value': case.allowedDeliveryChannels
+                            }
+                        ]
+                    }
+                ]
+            })
+        }}
+
+    {% endset %}
+
+    {% call onsCollapsible({
+            'id': 'collapsible',
+            'title': 'View additional case data',
+            'titleTag': 'h2',
+            'button': {
+                'close': 'Hide this',
+                'contextSuffix': 'additional_case_data_content'
+            }
+        })
+    %}
+        {{ additional_case_data_content | safe }}
+    {% endcall %}
+
+    <h2 class="u-mt-xl">Case history</h2>
+
+        {{
+            onsTable({
+                'caption': 'Case history',
+                'hideCaption': 'true',
+                'id': 'basic-table',
+                'ths': [
+                    {
+                        'value': 'Data/time'
+                    },
+                    {
+                        'value': 'Action'
+                    }
+                ],
+                'trs': [
+                    {
+                        'tds': [
+                            {
+                                'value': '14 July 2021, 13:51:32',
+                                'name': 'case_action_id4'
+                            },
+                            {
+                                'value': 'Updated telephone number to 070 0000 0001'
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': '12 July 2021, 11:25:59',
+                                'name': 'case_action_id3'
+                            },
+                            {
+                                'value': 'Call attempted by operator #207 - no response'
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': '11 July 2021, 15:43:21',
+                                'name': 'case_action_id2'
+                            },
+                            {
+                                'value': 'Call attempted by operator #47 - no response'
+                            }
+                        ]
+                    },
+                    {
+                        'tds': [
+                            {
+                                'value': '11 July 2021, 04:01:56',
+                                'name': 'case_action_id1'
+                            },
+                            {
+                                'value': 'Case added to call register'
+                            }
+                        ]
+                    }
+                ]
+            })
+        }}
+
+
+{%- endblock -%}
