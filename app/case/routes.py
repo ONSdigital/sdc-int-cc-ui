@@ -212,7 +212,7 @@ async def case_update_contact_number(case_id):
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
                 flash(exc.message, 'error_contact_number')
-                error_contact_number = exc.message
+                error_contact_number = {'id': 'error_contact_number', 'text': exc.message}
                 return render_template('case/case-update-contact-number.html',
                                        case_id=case_id,
                                        error_contact_number=error_contact_number)
