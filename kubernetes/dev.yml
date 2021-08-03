@@ -23,7 +23,7 @@ spec:
       serviceAccountName: contactcentre-ui
       containers:
       - name: contactcentreui
-        image: europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:main
+        image: europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:Add-Case-404
         imagePullPolicy: Always
         resources:
           requests:
