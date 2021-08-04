@@ -2,11 +2,11 @@ import requests
 import string
 import re
 
-from flask import current_app, flash
+from flask import current_app, flash, abort
 from unicodedata import normalize
 from datetime import datetime
 from pytz import utc
-from .errors.handlers import InvalidDataError
+from .errors.handlers import InvalidDataError, Case404, UPRN404
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
@@ -136,8 +136,12 @@ class CCSvc:
                                                 current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error returned by CCSvc for get_case_by_id call: ' + str(err))
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for get_case_by_id call: ' + str(err.response))
+            if err.response.status_code == 404:
+                current_app.logger.warn('404: No matching case')
+                raise Case404
+            else:
+                raise abort(500)
 
         return cc_return.json()
 
@@ -152,9 +156,12 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for get_case_by_uprn call: ' + str(err))
-            raise SystemExit(err)
+            raise abort(500)
 
-        return cc_return.json()
+        if not cc_return.json():
+            raise UPRN404
+        else:
+            return cc_return.json()
 
     @staticmethod
     async def post_case_refusal(case_id, reason, is_householder=False):
@@ -174,9 +181,8 @@ class CCSvc:
                                       json=refusal_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error: ' + str(err))
-            current_app.logger.warn('Error: ' + str(err.response))
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for case refusal call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
 
@@ -190,8 +196,8 @@ class CCSvc:
                                                                current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.info(err)
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for addresses by postcode call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
 
@@ -206,8 +212,8 @@ class CCSvc:
                                                                current_app.config['CC_SVC_PWD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.info('Call Error')
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for addresses by input call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
 
@@ -229,8 +235,8 @@ class CCSvc:
                                      params=params)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error: ' + str(err))
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for get fulfilments call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
 
@@ -250,9 +256,8 @@ class CCSvc:
                                       json=fulfilment_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error: ' + str(err))
-            current_app.logger.warn('Error: ' + str(err.response))
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for sms fulfilment call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
 
@@ -273,8 +278,7 @@ class CCSvc:
                                       json=fulfilment_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error: ' + str(err))
-            current_app.logger.warn('Error: ' + str(err.response))
-            raise SystemExit(err)
+            current_app.logger.warn('Error returned by CCSvc for postal fulfilment call: ' + str(err))
+            raise abort(500)
 
         return cc_return.json()
