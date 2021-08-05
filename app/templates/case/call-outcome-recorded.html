@@ -1,0 +1,29 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>Call outcome recorded</h1>
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Return to case',
+                'classes': 'u-mb-m',
+                'url': url_for('case.case', case_id=case_id)
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Return to homepage',
+                'classes': 'u-mb-m',
+                'url': url_for('home')
+            })
+        }}
+    </div>
+
+{%- endblock -%}

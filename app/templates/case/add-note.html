@@ -1,13 +1,8 @@
 {%- extends 'base.html' -%}
 
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from "components/textarea/_macro.njk" import onsTextarea -%}
-
-{%- if error_note -%}
-    {%- set error_note = {'id': 'error_note', 'text': error_note} -%}
-{%- else -%}
-    {%- set error_note = {} -%}
-{%- endif -%}
 
 {%- set form =  {
     'method': 'POST',
@@ -22,18 +17,23 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1 class="u-mt-l">Add a case note</h1>
+    {%- call onsQuestion({
+        'title': "Add a case note",
+        'instruction': "Remember that other system users will be able to see what you add"
+    }) -%}
 
-    {{
-        onsTextarea({
-            "id": "textarea",
-            "name": "form-case-add-note",
-            "label": {
-                "text": "Case note",
-            },
-            "error": error_note
-        })
-    }}
+        {{
+            onsTextarea({
+                "id": "textarea",
+                "name": "form-case-add-note",
+                "label": {
+                    "text": "Case note",
+                },
+                "error": error_note
+            })
+        }}
+
+    {%- endcall -%}
 
     <div class="btn-group u-mt-l">
         {{

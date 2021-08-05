@@ -1,0 +1,8 @@
+[
+  {"value": "NO_CONTACT", "text": "No contact"},
+  {"value": "RESPONDENT_QUERY", "text": "Respondent query"},
+  {"value": "RESPONDENT_COMPLAINT", "text": "Respondent complaint"},
+  {"value": "INTERVIEW_CONDUCTED", "text": "Interview conducted"},
+  {"value": "INTERVIEW_REQUESTED", "text": "Interview requested"},
+  {"value": "NUDGE", "text": "Nudge"}
+]

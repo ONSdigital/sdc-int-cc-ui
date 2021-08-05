@@ -35,7 +35,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Update contact number',
-                'url': url_for('case.case_update_contact_number', case_id=case_id)
+                'url': url_for('case.update_contact_number', case_id=case_id)
             })
         }}
 {%- endset -%}
@@ -51,7 +51,14 @@
             onsButton({
                 'type': 'button',
                 'text': 'Add call notes',
-                'url': url_for('case.case_add_case_note', case_id=case_id)
+                'url': url_for('case.add_case_note', case_id=case_id)
+            })
+        }}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Record call outcome',
+                'url': url_for('case.call_outcome', case_id=case_id)
             })
         }}
     </div>
@@ -61,7 +68,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Record caller refusal',
-                'url': url_for('case.case_request_refusal', case_id=case_id)
+                'url': url_for('case.request_refusal', case_id=case_id)
             })
         }}
         {{
@@ -81,7 +88,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Request code by post',
-                'url': url_for('case.case_request_code_by_post', case_id=case_id)
+                'url': url_for('case.request_code_by_post', case_id=case_id)
             })
         }}
 
@@ -89,7 +96,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Request code by text',
-                'url': url_for('case.case_request_code_by_text', case_id=case_id)
+                'url': url_for('case.request_code_by_text', case_id=case_id)
             })
         }}
     </div>

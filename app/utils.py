@@ -1,8 +1,9 @@
 import requests
 import string
 import re
+import os
 
-from flask import current_app, flash, abort
+from flask import current_app, abort, json
 from unicodedata import normalize
 from datetime import datetime
 from pytz import utc
@@ -18,6 +19,32 @@ OBSCURE_WHITESPACE = (
 )
 
 uk_prefix = '44'
+
+
+class Common:
+    page_title_error_prefix = 'Error: '
+    message_select_call_type = 'Select a call type'
+    message_select_call_outcome = 'Select a call outcome'
+    message_select_option = 'Select an option'
+    message_contact_number = 'Enter a contact number'
+
+
+class ProcessJsonForOptions:
+    @staticmethod
+    def options_from_json(filename):
+        options = []
+        filename = os.path.join(current_app.static_folder, 'data', filename)
+        with open(filename) as file:
+            data = json.load(file)
+            for option in data:
+                options.append({
+                    'value': option['value'],
+                    'label': {
+                        'text': option['text']
+                    },
+                    'id': option['value']
+                })
+        return options
 
 
 class ProcessMobileNumber:

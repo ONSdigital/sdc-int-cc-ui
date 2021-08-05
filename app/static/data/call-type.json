@@ -1,0 +1,4 @@
+[
+  {"value": "OUTBOUND_CALL", "text": "Outbound call"},
+  {"value": "INBOUND_CALL", "text": "Inbound call"}
+]

@@ -5,12 +5,6 @@
 {%- from 'components/radios/_macro.njk' import onsRadios -%}
 {%- from 'components/checkboxes/_macro.njk' import onsCheckboxes -%}
 
-{%- if error_reason -%}
-    {%- set error_reason = {'id': 'error_reason', 'text': error_reason} -%}
-{%- else -%}
-    {%- set error_reason = {} -%}
-{%- endif -%}
-
 {%- set form =  {
     'method': 'POST',
     'attributes': {
