@@ -4,12 +4,6 @@
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from 'components/input/_macro.njk' import onsInput -%}
 
-{%- if error_message -%}
-    {%- set error_postcode = {'id': 'error_postcode', 'text': error_message} -%}
-{%- else -%}
-    {%- set error_postcode = {} -%}
-{%- endif -%}
-
 {%- set form =  {
     'method': 'POST',
     'attributes': {
@@ -39,7 +33,7 @@
                     'text': 'UK postcode'
                 },
                 'name': 'form_postcode_input',
-                'value': postcode_value,
+                'value': value_postcode,
                 'error': error_postcode
             })
         }}

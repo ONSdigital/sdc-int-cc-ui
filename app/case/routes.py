@@ -88,8 +88,6 @@ async def request_code_by_text(case_id):
                 mobile_number = \
                     ProcessMobileNumber.validate_uk_mobile_phone_number(request.form['form-case-mobile-number'])
                 current_app.logger.info('valid mobile number')
-                await CCSvc.post_sms_fulfilment(case_id, request.form['form-case-fulfilment'], mobile_number)
-                return redirect(url_for('case.code_sent_by_text', case_id=case_id))
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
                 flash(exc.message, 'error_mobile')
@@ -97,7 +95,10 @@ async def request_code_by_text(case_id):
                                         case_id=case_id,
                                         value_fulfilment=request.form['form-case-fulfilment'],
                                         value_mobile=request.form['form-case-mobile-number']))
-            # TODO Add except for ccsvc issues
+
+            await CCSvc.post_sms_fulfilment(case_id, request.form['form-case-fulfilment'], mobile_number)
+            return redirect(url_for('case.code_sent_by_text', case_id=case_id))
+
         else:
             if not ('form-case-fulfilment' in request.form):
                 flash(Common.message_select_fulfilment, 'error_fulfilment')
@@ -188,17 +189,13 @@ async def request_code_by_post(case_id):
                 and len(request.form['form-case-first-name']) <= 35 \
                 and ('form-case-last-name' in request.form) and request.form['form-case-last-name'] != '' \
                 and len(request.form['form-case-last-name']) <= 35:
-            try:
-                await CCSvc.post_postal_fulfilment(case_id,
-                                                   fulfilment_code,
-                                                   request.form['form-case-first-name'],
-                                                   request.form['form-case-last-name'])
-                return redirect(url_for('case.code_sent_by_post', case_id=case_id))
-            # TODO  Add ccsvc endpoint failure trap
-            except InvalidDataError as exc:
-                current_app.logger.info(exc)
-                flash(exc.message, 'error_mobile')
-                return redirect(url_for('case.request_code_by_post', case_id=case_id))
+
+            await CCSvc.post_postal_fulfilment(case_id,
+                                               fulfilment_code,
+                                               request.form['form-case-first-name'],
+                                               request.form['form-case-last-name'])
+            return redirect(url_for('case.code_sent_by_post', case_id=case_id))
+
         else:
             if not ('form-case-first-name' in request.form) or request.form['form-case-first-name'] == '':
                 flash('Enter a first name', 'error_first_name')
