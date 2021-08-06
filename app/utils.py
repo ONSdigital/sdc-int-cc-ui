@@ -27,6 +27,8 @@ class Common:
     message_select_call_outcome = 'Select a call outcome'
     message_select_option = 'Select an option'
     message_contact_number = 'Enter a contact number'
+    message_select_fulfilment = 'Select a fulfilment'
+    message_enter_mobile = 'Enter a mobile number'
 
 
 class ProcessJsonForOptions:

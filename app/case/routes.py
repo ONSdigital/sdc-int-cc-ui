@@ -81,8 +81,9 @@ async def refused(case_id):
 @case_bp.route('/case/<case_id>/request-code-by-text/', methods=['GET', 'POST'])
 async def request_code_by_text(case_id):
     if request.method == 'POST':
+        value_fulfilment = ''
+        value_mobile = ''
         if ('form-case-fulfilment' in request.form) and ('form-case-mobile-number' in request.form):
-
             try:
                 mobile_number = \
                     ProcessMobileNumber.validate_uk_mobile_phone_number(request.form['form-case-mobile-number'])
@@ -92,21 +93,42 @@ async def request_code_by_text(case_id):
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
                 flash(exc.message, 'error_mobile')
-                error_mobile = exc.message
-                return render_template('case/request-code-by-text.html', case_id=case_id, error_mobile=error_mobile)
+                return redirect(url_for('case.request_code_by_text',
+                                        case_id=case_id,
+                                        value_fulfilment=request.form['form-case-fulfilment'],
+                                        value_mobile=request.form['form-case-mobile-number']))
+            # TODO Add except for ccsvc issues
         else:
-            error_fulfilment = {}
-            error_mobile = {}
             if not ('form-case-fulfilment' in request.form):
-                flash('Select a fulfilment', 'error_fulfilment')
-                error_fulfilment = {'id': 'error_fulfilment', 'text': 'Select a fulfilment'}
+                flash(Common.message_select_fulfilment, 'error_fulfilment')
+            else:
+                value_fulfilment = request.form['form-case-fulfilment']
             if not ('form-case-mobile-number' in request.form):
-                flash('Enter a mobile number', 'error_mobile')
-                error_mobile = 'Enter a mobile number'
-            return render_template('case/request-code-by-text.html',
-                                   error_fulfilment=error_fulfilment,
-                                   error_mobile=error_mobile)
+                flash(Common.message_enter_mobile, 'error_mobile')
+            else:
+                value_mobile = request.form['form-case-mobile-number']
+            return redirect(url_for('case.request_code_by_text',
+                                    case_id=case_id,
+                                    value_fulfilment=value_fulfilment,
+                                    value_mobile=value_mobile))
     else:
+        page_title = 'Request code by text'
+
+        error_fulfilment = {}
+        error_mobile = {}
+        value_fulfilment = ''
+        value_mobile = ''
+        if flask.get_flashed_messages():
+            page_title = Common.page_title_error_prefix + page_title
+            value_fulfilment = request.args.get('value_fulfilment')
+            value_mobile = request.args.get('value_mobile')
+            if flask.get_flashed_messages(category_filter=['error_fulfilment']):
+                for message in flask.get_flashed_messages():
+                    error_fulfilment = {'id': 'error_fulfilment', 'text': message}
+            elif flask.get_flashed_messages(category_filter=['error_mobile']):
+                for message in flask.get_flashed_messages():
+                    error_mobile = {'id': 'error_mobile', 'text': message}
+
         cc_return = await CCSvc.get_case_by_id(case_id)
         region = cc_return['region']
         current_app.logger.info('Region: ' + str(region))
@@ -122,10 +144,21 @@ async def request_code_by_text(case_id):
                     },
                     'id': fulfilment['fulfilmentCode']
                 })
-            return render_template('case/request-code-by-text.html', fulfilment_options=fulfilment_options)
+            return render_template('case/request-code-by-text.html',
+                                   fulfilment_options=fulfilment_options,
+                                   page_title=page_title,
+                                   case_id=case_id,
+                                   error_fulfilment=error_fulfilment,
+                                   error_mobile=error_mobile,
+                                   value_fulfilment=value_fulfilment,
+                                   value_mobile=value_mobile)
         elif len(fulfilments) == 1:
             return render_template('case/request-code-by-text.html',
-                                   fulfilment_code=fulfilments[0]['fulfilmentCode'], case_id=case_id)
+                                   fulfilment_code=fulfilments[0]['fulfilmentCode'],
+                                   page_title=page_title,
+                                   case_id=case_id,
+                                   error_mobile=error_mobile,
+                                   value_mobile=value_mobile)
         else:
             return render_template('errors/500.html')
 
