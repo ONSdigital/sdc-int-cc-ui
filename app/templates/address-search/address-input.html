@@ -1,20 +1,5 @@
 {%- extends 'base.html' -%}
 
-{% set error_id = namespace(id='') %}
-{% set error_text = namespace(text='') %}
-
-{% if errors %}
-    {% for error in errors %}
-
-        {%- set error_id.id = 'error_postcode' -%}
-        {%- set error_text.text = error -%}
-
-    {% endfor %}
-    {% set error_postcode = {'id': error_id.id, 'text': error_text.text} %}
-{% else %}
-    {% set error_postcode = {} %}
-{% endif %}
-
 {%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from 'components/input/_macro.njk' import onsInput -%}
@@ -30,20 +15,24 @@
 
 {%- block main -%}
 
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
     {%- call onsQuestion({
         'title': question_title,
     }) -%}
 
         {{
             onsInput({
-                'id': 'postcode',
+                'id': 'address_input',
                 'type': 'text',
                 'classes': 'input--w-10',
                 'label': {
                     'text': 'Address'
                 },
                 'name': 'form_address_input',
-                'error': error_postcode
+                'error': error_input
             })
         }}
 
