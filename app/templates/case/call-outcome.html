@@ -1,0 +1,67 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    {%- call onsQuestion({
+        'title': "What was the outcome of the call?",
+    }) -%}
+        {{
+            onsRadios({
+                'name': 'form-case-call-type',
+                'radios': call_type_options,
+                'legend': "Select type of call",
+                'legendClasses': 'u-mt-xl',
+                'value': value_call_type,
+                'error': error_call_type
+            })
+        }}
+
+        {{
+            onsRadios({
+                'name': 'form-case-call-outcome',
+                'radios': call_outcome_options,
+                'legend': "Select call outcome",
+                'legendClasses': 'u-mt-xl',
+                'value': value_call_outcome,
+                'error': error_call_outcome
+            })
+        }}
+    {%- endcall -%}
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'text': 'Submit call outcome',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'classes': 'btn--secondary btn-group__btn',
+                'url': url_for('case.case', case_id=case_id),
+                'icon': 'false'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

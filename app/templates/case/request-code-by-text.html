@@ -5,12 +5,6 @@
 {%- from 'components/radios/_macro.njk' import onsRadios -%}
 {%- from 'components/input/_macro.njk' import onsInput -%}
 
-{%- if error_mobile -%}
-    {%- set error_mobile = {'id': 'error_mobile', 'text': error_mobile} -%}
-{%- else -%}
-    {%- set error_mobile = {} -%}
-{%- endif -%}
-
 {%- set form =  {
     'method': 'POST',
     'attributes': {
@@ -39,6 +33,7 @@
                     'radios': fulfilment_options,
                     'legend': "Select required fulfilment",
                     'legendClasses': 'u-mt-xl',
+                    'value': value_fulfilment,
                     'error': error_fulfilment
                 })
             }}
@@ -68,6 +63,7 @@
                     'text': "Enter the caller's UK mobile number"
                 },
                 'name': 'form-case-mobile-number',
+                'value': value_mobile,
                 'error': error_mobile
             })
         }}

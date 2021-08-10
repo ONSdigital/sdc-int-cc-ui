@@ -19,6 +19,10 @@
 
 {%- block main -%}
 
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
     {%- call onsQuestion({
         'title': 'Select the callers address',
         'description': question_description
@@ -32,7 +36,7 @@
                 'radios': results.addresses,
                 'legend': 'Select the callers address',
                 'legendClasses': 'u-vh',
-                'error': error_select_address
+                'error': error_selection
             })
         }}
 

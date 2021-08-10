@@ -1,0 +1,50 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- if postcode -%}
+    {%- set instruction = '<p>Confirm that the postcode <em>' + postcode + '</em> is correct.</p><p>If the postcode is incorrect, enter a corrected value, else use a different method to find the users case<p>' -%}
+{%- elif address_input -%}
+    {%- set instruction = '<p>Confirm that the input <em>' + address_input + '</em> is correct.</p><p>If the input is incorrect, enter a corrected value, else use a different method to find the users case<p>' -%}
+{%- else -%}
+    {%- set instruction = '' -%}
+{%- endif -%}
+
+{%- block main -%}
+
+    {%- call onsQuestion({
+        'title': "Address not found",
+        'instruction': instruction
+    }) -%}
+
+    {%- endcall -%}
+
+    <div class="btn-group u-mt-l u-mb-l">
+        {%- if postcode -%}
+            {{
+                onsButton({
+                    'text': 'Enter corrected postcode',
+                    'classes': 'u-mt-l',
+                    'url': url_for('address_search.postcode_input')
+                })
+            }}
+        {%- elif address_input -%}
+            {{
+                onsButton({
+                    'text': 'Enter corrected input',
+                    'classes': 'u-mt-l',
+                    'url': url_for('address_search.address_input')
+                })
+            }}
+        {%- endif -%}
+        {{
+            onsButton({
+                'text': 'Try another method',
+                'classes': 'u-mt-l',
+                'url': url_for('home')
+            })
+        }}
+    </div>
+
+{%- endblock -%}
