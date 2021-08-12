@@ -1,0 +1,8 @@
+[
+  {"value": "DERELICT", "text": "Derelict"},
+  {"value": "DEMOLISHED", "text": "Demolished"},
+  {"value": "NON_RESIDENTIAL", "text": "Non-Residential"},
+  {"value": "UNDER_CONSTRUCTION", "text": "Under Construction"},
+  {"value": "DOES_NOT_EXIST", "text": "Does not exist"},
+  {"value": "UNADDRESSABLE_OBJECT", "text": "Unaddressable object"}
+]

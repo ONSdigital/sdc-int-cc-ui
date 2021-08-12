@@ -406,3 +406,37 @@ async def data_removed(case_id):
         return render_template('case/data-removed.html', case_id=case_id)
     else:
         return render_template('errors/500.html')
+
+
+@case_bp.route('/case/<case_id>/invalidate-address/', methods=['GET', 'POST'])
+async def invalidate_address(case_id):
+    if request.method == 'POST':
+        if 'form-case-reason' in request.form:
+            # TODO  add invalid address endpoint call
+            return redirect(url_for('case.address_invalidated', case_id=case_id))
+        else:
+            flash('Select an invalidation reason', 'error_reason')
+            return redirect(url_for('case.invalidate_address', case_id=case_id))
+
+    else:
+        page_title = 'Invalidate address'
+        error_reason = {}
+        if flask.get_flashed_messages():
+            page_title = Common.page_title_error_prefix + page_title
+            error_reason = {'id': 'error_reason', 'text': Common.message_select_option}
+
+        invalidate_address_options = ProcessJsonForOptions.options_from_json('invalid-address-reasons.json')
+
+        return render_template('case/invalidate-address.html',
+                               page_title=page_title,
+                               case_id=case_id,
+                               invalidate_address_options=invalidate_address_options,
+                               error_reason=error_reason)
+
+
+@case_bp.route('/case/<case_id>/address-invalidated/', methods=['GET'])
+async def address_invalidated(case_id):
+    if case_id:
+        return render_template('case/address-invalidated.html', case_id=case_id)
+    else:
+        return render_template('errors/500.html')

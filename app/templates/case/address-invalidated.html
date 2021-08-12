@@ -1,0 +1,20 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>Address invalidated</h1>
+
+    <p>An address invalidation request has been submitted</p>
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to case',
+            'classes': 'u-mb-m',
+            'url': url_for('case.case', case_id=case_id)
+        })
+    }}
+
+{%- endblock -%}
