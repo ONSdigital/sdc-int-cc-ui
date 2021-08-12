@@ -2,7 +2,7 @@ import flask
 
 from . import case_bp
 from flask import render_template, request, redirect, url_for, flash, current_app, session
-from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common
+from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.errors.handlers import InvalidDataError
 
 
@@ -232,12 +232,10 @@ async def request_code_by_post(case_id):
             if 'values' in session:
                 value_first_name = session['values'].get('first_name')
                 value_last_name = session['values'].get('last_name')
-            if flask.get_flashed_messages(category_filter=['error_first_name']):
-                for message in flask.get_flashed_messages():
-                    error_first_name = {'id': 'error_first_name', 'text': message}
-            if flask.get_flashed_messages(category_filter=['error_last_name']):
-                for message in flask.get_flashed_messages():
-                    error_last_name = {'id': 'error_last_name', 'text': message}
+            for message in flask.get_flashed_messages(category_filter=['error_first_name']):
+                error_first_name = {'id': 'error_first_name', 'text': message}
+            for message in flask.get_flashed_messages(category_filter=['error_last_name']):
+                error_last_name = {'id': 'error_last_name', 'text': message}
 
         cc_return = await CCSvc.get_case_by_id(case_id)
         region = cc_return['region']
@@ -263,53 +261,125 @@ async def code_sent_by_post(case_id):
         return render_template('errors/500.html')
 
 
-@case_bp.route('/case/<case_id>/update-contact-number/', methods=['GET', 'POST'])
-async def update_contact_number(case_id):
+@case_bp.route('/case/<case_id>/update-contact-details/', methods=['GET', 'POST'])
+async def update_contact_details(case_id):
     if request.method == 'POST':
+        session['values'] = {}
+        valid_contact_number = True
+        value_contact_number = ''
+        valid_first_name = True
+        value_first_name = ''
+        valid_last_name = True
+        value_last_name = ''
+        valid_email = True
+        value_email = ''
+
+        if ('form-case-first-name' in request.form) and request.form['form-case-first-name'] != '' \
+                and len(request.form['form-case-first-name']) <= 35:
+            session['values']['first_name'] = request.form['form-case-first-name']
+            session.modified = True
+        else:
+            if not ('form-case-first-name' in request.form) or request.form['form-case-first-name'] == '':
+                flash('Enter a first name', 'error_first_name')
+            else:
+                if not len(request.form['form-case-first-name']) <= 35:
+                    flash('You have entered too many characters. Enter up to 35 characters', 'error_first_name')
+                session['values']['first_name'] = request.form['form-case-first-name']
+                session.modified = True
+            valid_first_name = False
+
+        if ('form-case-last-name' in request.form) and request.form['form-case-last-name'] != '' \
+                and len(request.form['form-case-last-name']) <= 35:
+            session['values']['last_name'] = request.form['form-case-last-name']
+            session.modified = True
+        else:
+            if not ('form-case-last-name' in request.form) or request.form['form-case-last-name'] == '':
+                flash('Enter a last name', 'error_last_name')
+            else:
+                if not len(request.form['form-case-last-name']) <= 35:
+                    flash('You have entered too many characters. Enter up to 35 characters', 'error_last_name')
+                session['values']['last_name'] = request.form['form-case-last-name']
+                session.modified = True
+            valid_first_name = False
+
         if 'form-case-contact-number' in request.form:
             try:
-                contact_number = \
+                value_contact_number = \
                     ProcessContactNumber.validate_uk_phone_number(request.form['form-case-contact-number'])
                 current_app.logger.info('valid contact number')
-                # TODO  add update contact number endpoint call
-                if 'values' in session:
-                    session.pop('values')
-                    session.modified = True
-                return redirect(url_for('case.contact_number_updated', case_id=case_id))
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
                 flash(exc.message, 'error_contact_number')
-                session['values'] = {'contact_number': request.form['form-case-contact-number']}
+                valid_contact_number = False
+            session['values']['contact_number'] = request.form['form-case-contact-number']
+            session.modified = True
+
+        if 'form-case-email' in request.form:
+            try:
+                value_email = \
+                    ProcessEmail.validate_email(request.form['form-case-email'])
+                current_app.logger.info('valid email address')
+            except InvalidDataError as exc:
+                current_app.logger.info(exc)
+                flash(exc.message, 'error_email')
+                valid_email = False
+            session['values']['email'] =request.form['form-case-email']
+            session.modified = True
+
+        if valid_contact_number and valid_first_name and valid_last_name and valid_email:
+            # TODO  add update contact details endpoint call
+            if 'values' in session:
+                session.pop('values')
                 session.modified = True
-                return redirect(url_for('case.update_contact_number', case_id=case_id))
+            return redirect(url_for('case.contact_details_updated', case_id=case_id))
         else:
-            flash(Common.message_contact_number, 'error_contact_number')
-            return redirect(url_for('case.update_contact_number', case_id=case_id))
+            return redirect(url_for('case.update_contact_details', case_id=case_id))
 
     else:
-        page_title = 'Update contact number'
+        page_title = 'Update contact details'
         error_contact_number = {}
+        error_first_name = {}
+        error_last_name = {}
+        error_email = {}
         value_contact_number = ''
+        value_first_name = ''
+        value_last_name = ''
+        value_email = ''
         if flask.get_flashed_messages():
             page_title = Common.page_title_error_prefix + page_title
-            for message in flask.get_flashed_messages():
+            for message in flask.get_flashed_messages(category_filter=['error_first_name']):
+                error_first_name = {'id': 'error_first_name', 'text': message}
+            for message in flask.get_flashed_messages(category_filter=['error_last_name']):
+                error_last_name = {'id': 'error_last_name', 'text': message}
+            for message in flask.get_flashed_messages(category_filter=['error_contact_number']):
                 if message == Common.message_contact_number:
                     error_contact_number = {'id': 'error_contact_number', 'text': Common.message_contact_number}
                 else:
                     error_contact_number = {'id': 'error_contact_number', 'text': message}
+            for message in flask.get_flashed_messages(category_filter=['error_email']):
+                error_email = {'id': 'error_email', 'text': message}
             if 'values' in session:
                 value_contact_number = session['values'].get('contact_number')
-        return render_template('case/update-contact-number.html',
+                value_first_name = session['values'].get('first_name')
+                value_last_name = session['values'].get('last_name')
+                value_email = session['values'].get('email')
+        return render_template('case/update-contact-details.html',
                                case_id=case_id,
                                page_title=page_title,
                                error_contact_number=error_contact_number,
-                               value_contact_number=value_contact_number)
+                               error_first_name=error_first_name,
+                               error_last_name=error_last_name,
+                               error_email=error_email,
+                               value_contact_number=value_contact_number,
+                               value_first_name=value_first_name,
+                               value_last_name=value_last_name,
+                               value_email=value_email)
 
 
-@case_bp.route('/case/<case_id>/contact-number-updated/', methods=['GET'])
-async def contact_number_updated(case_id):
+@case_bp.route('/case/<case_id>/contact-details-updated/', methods=['GET'])
+async def contact_details_updated(case_id):
     if case_id:
-        return render_template('case/contact-number-updated.html', case_id=case_id)
+        return render_template('case/contact-details-updated.html', case_id=case_id)
     else:
         return render_template('errors/500.html')
 

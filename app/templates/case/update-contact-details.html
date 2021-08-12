@@ -1,0 +1,116 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    {%- call onsQuestion({
+        'title': "What are the caller's contact details?"
+    }) -%}
+
+        {{
+            onsInput({
+                'id': 'form-case-first-name',
+                'type': 'text',
+                'label': {
+                    'text': 'First name'
+                },
+                'value': value_first_name,
+                'name': 'form-case-first-name',
+                'error': error_first_name,
+                'charCheckLimit': {
+                    'limit': 35,
+                    'charCountOverLimitSingular': '{x} character too many',
+                    'charCountOverLimitPlural': '{x} characters too many',
+                    'charCountSingular': 'You have {x} character remaining',
+                    'charCountPlural': 'You have {x} characters remaining'
+                }
+            })
+        }}
+
+        {{
+            onsInput({
+                'id': 'form-case-last-name',
+                'type': 'text',
+                'label': {
+                    'text': 'Last name'
+                },
+                'value': value_last_name,
+                'name': 'form-case-last-name',
+                'error': error_last_name,
+                'charCheckLimit': {
+                    'limit': 35,
+                    'charCountOverLimitSingular': '{x} character too many',
+                    'charCountOverLimitPlural': '{x} characters too many',
+                    'charCountSingular': 'You have {x} character remaining',
+                    'charCountPlural': 'You have {x} characters remaining'
+                }
+            })
+        }}
+
+        {{
+            onsInput({
+                'id': 'telephone',
+                'type': 'tel',
+                'autocomplete': 'tel',
+                'classes': 'input--w-15',
+                'label': {
+                    'text': "Enter the caller's UK telephone number"
+                },
+                'name': 'form-case-contact-number',
+                'value': value_contact_number,
+                'error': error_contact_number
+            })
+        }}
+
+        {{
+            onsInput({
+                'id': 'email',
+                'name': 'form-case-email',
+                'classes': 'input--w-30',
+                'type': 'email',
+                'autocomplete': 'email',
+                'label': {
+                    'text': 'Email address'
+                },
+                'value': value_email,
+                'error': error_email
+            })
+        }}
+
+    {%- endcall -%}
+
+    <div class="btn-group u-mt-l">
+        {{
+            onsButton({
+                'text': 'Update contact details',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'classes': 'btn--secondary btn-group__btn',
+                'url': url_for('case.case', case_id=case_id),
+                'icon': 'false'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

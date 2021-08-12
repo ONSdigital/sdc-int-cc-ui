@@ -16,26 +16,6 @@
     {%- set last_updated = 'Not available' -%}
 {%- endif -%}
 
-{%- set address_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Record invalid address',
-                'url': url_for('case.invalidate_address', case_id=case_id)
-            })
-        }}
-{%- endset -%}
-
-{%- set telephone_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Update contact number',
-                'url': url_for('case.update_contact_number', case_id=case_id)
-            })
-        }}
-{%- endset -%}
-
 {%- block main -%}
 
     <h1>Case: {{ case.id or 'Not available' }}</h1>
@@ -118,11 +98,11 @@
     </div>
 
 
-    <h2>Address and contact information</h2>
+    <h2>Contact information</h2>
 
     {{
         onsTable({
-            'caption': 'Address and contact information',
+            'caption': 'Contact information',
             'hideCaption': 'true',
             'id': 'basic-table',
             'ths': [
@@ -131,9 +111,79 @@
                 },
                 {
                     'value': 'Value'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'First name',
+                            'name': 'first-name'
+                        },
+                        {
+                            'value': 'Bob'
+                        }
+                    ]
                 },
                 {
-                    'value': 'Actions'
+                    'tds': [
+                        {
+                            'value': 'Last name',
+                            'name': 'last-name'
+                        },
+                        {
+                            'value': 'Bobbington'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Email',
+                            'name': 'email'
+                        },
+                        {
+                            'value': 'bob.bobbington@thebobbingtons.uk'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Telephone',
+                            'name': 'telephone'
+                        },
+                        {
+                            'value': '070 0000 0001'
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Update contact details',
+            'url': url_for('case.update_contact_details', case_id=case_id),
+            'classes': 'u-mb-l'
+        })
+    }}
+
+    <h2>Address information</h2>
+
+    {{
+        onsTable({
+            'caption': 'Address information',
+            'hideCaption': 'true',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'Field'
+                },
+                {
+                    'value': 'Value'
                 }
             ],
             'trs': [
@@ -145,9 +195,6 @@
                         },
                         {
                             'value': case.addressLine1
-                        },
-                        {
-                            'value': address_button
                         }
                     ]
                 },
@@ -194,25 +241,19 @@
                             'value': case.postcode
                         }
                     ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Telephone',
-                            'name': 'telephone'
-                        },
-                        {
-                            'value': '070 0000 0001'
-                        },
-                        {
-                            'value': telephone_button
-                        }
-                    ]
                 }
             ]
         })
     }}
 
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Record invalid address',
+            'url': url_for('case.invalidate_address', case_id=case_id),
+            'classes': 'u-mb-l'
+        })
+    }}
 
     {% set additional_case_data_content %}
         {{
