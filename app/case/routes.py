@@ -14,7 +14,7 @@ async def case(case_id):
 
         return render_template('case/case.html', case=cc_return, case_id=case_id, page_title=page_title)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/add-case-note/', methods=['GET', 'POST'])
@@ -40,7 +40,7 @@ async def case_note_added(case_id):
     if case_id:
         return render_template('case/case-note-added.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/request-refusal/', methods=['GET', 'POST'])
@@ -75,7 +75,7 @@ async def refused(case_id):
     if case_id:
         return render_template('case/refused.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/request-code-by-text/', methods=['GET', 'POST'])
@@ -174,7 +174,7 @@ async def code_sent_by_text(case_id):
     if case_id:
         return render_template('case/code-sent-by-text.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/request-code-by-post/', methods=['GET', 'POST'])
@@ -260,7 +260,7 @@ async def code_sent_by_post(case_id):
     if case_id:
         return render_template('case/code-sent-by-post.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/update-contact-number/', methods=['GET', 'POST'])
@@ -311,7 +311,7 @@ async def contact_number_updated(case_id):
     if case_id:
         return render_template('case/contact-number-updated.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/case/<case_id>/call-outcome/', methods=['GET', 'POST'])
@@ -372,4 +372,37 @@ async def call_outcome_recorded(case_id):
     if case_id:
         return render_template('case/call-outcome-recorded.html', case_id=case_id)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
+
+
+@case_bp.route('/case/<case_id>/data-removal-request/', methods=['GET', 'POST'])
+async def data_removal_request(case_id):
+    if request.method == 'POST':
+        if 'form-case-data-removal-request' in request.form:
+            if request.form['form-case-data-removal-request'] == 'yes':
+                # TODO  add call outcome endpoint call
+                return redirect(url_for('case.data_removed', case_id=case_id))
+            else:
+                return redirect(url_for('case.case', case_id=case_id))
+        else:
+            flash('Confirm data removal request', 'error_confirmation')
+            return redirect(url_for('case.data_removal_request', case_id=case_id))
+    else:
+        page_title = 'Data removal request'
+        error_confirmation = {}
+        if flask.get_flashed_messages():
+            page_title = Common.page_title_error_prefix + page_title
+            error_confirmation = {'id': 'error_confirmation', 'text': 'Select an option'}
+
+        return render_template('case/data-removal-request.html',
+                               case_id=case_id,
+                               page_title=page_title,
+                               error_confirmation=error_confirmation)
+
+
+@case_bp.route('/case/<case_id>/data-removed/', methods=['GET'])
+async def data_removed(case_id):
+    if case_id:
+        return render_template('case/data-removed.html', case_id=case_id)
+    else:
+        return render_template('errors/500.html')

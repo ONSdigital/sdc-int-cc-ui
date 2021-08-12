@@ -29,4 +29,4 @@ async def uprn_list(uprn):
 
         return render_template('uprn-list.html', uprn=uprn, address_output=address_output, case_list=case_list)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')

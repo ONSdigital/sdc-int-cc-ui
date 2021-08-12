@@ -75,11 +75,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Log data removal request',
-                'url': '#',
-                "classes": 'btn--disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
+                'url': url_for('case.data_removal_request', case_id=case_id),
             })
         }}
     </div>
