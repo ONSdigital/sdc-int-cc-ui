@@ -341,10 +341,11 @@ async def update_contact_details(case_id):
         error_first_name = {}
         error_last_name = {}
         error_email = {}
-        value_contact_number = ''
-        value_first_name = ''
-        value_last_name = ''
-        value_email = ''
+        # TODO  Call below values from case contact details
+        value_contact_number = '070 0000 0001'
+        value_first_name = 'Bob'
+        value_last_name = 'Bobbington'
+        value_email = 'bob.bobbington@thebobbingtons.uk'
         if flask.get_flashed_messages():
             page_title = Common.page_title_error_prefix + page_title
             for message in flask.get_flashed_messages(category_filter=['error_first_name']):
