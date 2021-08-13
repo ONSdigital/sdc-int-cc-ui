@@ -23,4 +23,4 @@ if not (REDIS_SERVER := os.getenv('REDIS_SERVER')):
 if not (REDIS_PORT := os.getenv('REDIS_PORT')):
     raise RuntimeError('no REDIS_PORT ENV variable set')
 
-SESSION_REDIS = redis.from_url('redis://' + REDIS_SERVER + ':' + REDIS_PORT)
+SESSION_REDIS = redis.Redis(host=REDIS_SERVER, port=REDIS_PORT)
