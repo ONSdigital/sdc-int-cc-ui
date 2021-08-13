@@ -26,7 +26,7 @@ else:
 app.config.from_object(config_env)
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
-server_session = Session(app)
+# server_session = Session(app)
 
 from app.case import case_bp as case_bp
 app.register_blueprint(case_bp)
