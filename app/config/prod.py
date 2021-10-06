@@ -1,12 +1,10 @@
 """FLASK PROD CONFIG"""
 import os
 
-CCSVC_PREFIX = '/ccsvc'
-
 if not (SECRET_KEY := os.getenv('SECRET_KEY')):
     raise RuntimeError('no SECRET_KEY ENV variable set')
 
-if not (CC_SVC_URL := os.getenv('CCSVC_URL') + CCSVC_PREFIX):
+if not (CC_SVC_URL := os.getenv('CCSVC_URL')):
     raise RuntimeError('no CCSVC_URL ENV variable set')
 
 if not (CC_SVC_USERNAME := os.getenv('CCSVC_USERNAME')):
