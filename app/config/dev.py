@@ -3,8 +3,9 @@ import os
 
 SECRET_KEY = b'secretkey'
 FLASK_DEBUG = 0
+CCSVC_PREFIX = '/ccsvc'
 
-if not (CC_SVC_URL := os.getenv('CCSVC_URL', 'http://localhost:8171/ccsvc')):
+if not (CC_SVC_URL := os.getenv('CCSVC_URL', 'http://localhost:8171') + CCSVC_PREFIX):
     raise RuntimeError('no CCSVC_URL ENV variable set')
 
 if not (CC_SVC_USERNAME := os.getenv('CCSVC_USERNAME', 'user')):
