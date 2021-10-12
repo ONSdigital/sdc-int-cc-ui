@@ -36,7 +36,7 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1 class="u-mt-l">Submit a refusal for this case?</h1>
+    <h1 class="ons-u-mt-l">Submit a refusal for this case?</h1>
 
     <p>The following information is required from the caller to process a refusal</p>
 
@@ -45,7 +45,7 @@
             'name': 'form-case-request-refusal-reason',
             'radios': form_reason_options,
             'legend': "What is the caller's reason for refusal?",
-            'legendClasses': 'u-mt-xl',
+            'legendClasses': 'ons-u-mt-xl',
             'error': error_reason
         })
     }}
@@ -56,7 +56,7 @@
             'checkboxes': [
                 {
                     'id': 'is-householder-yes',
-                    'classes': 'u-mb-m',
+                    'classes': 'ons-u-mb-m',
                     'name': 'form-case-request-refusal-householder',
                     'label': {
                         'text': 'The caller is the householder'
@@ -66,7 +66,7 @@
             ]
         })
     }}
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'text': 'Submit refusal',

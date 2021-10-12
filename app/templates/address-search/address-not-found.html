@@ -20,12 +20,12 @@
 
     {%- endcall -%}
 
-    <div class="btn-group u-mt-l u-mb-l">
+    <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
         {%- if postcode -%}
             {{
                 onsButton({
                     'text': 'Enter corrected postcode',
-                    'classes': 'u-mt-l',
+                    'classes': 'ons-u-mt-l',
                     'url': url_for('address_search.postcode_input')
                 })
             }}
@@ -33,7 +33,7 @@
             {{
                 onsButton({
                     'text': 'Enter corrected input',
-                    'classes': 'u-mt-l',
+                    'classes': 'ons-u-mt-l',
                     'url': url_for('address_search.address_input')
                 })
             }}
@@ -41,7 +41,7 @@
         {{
             onsButton({
                 'text': 'Try another method',
-                'classes': 'u-mt-l',
+                'classes': 'ons-u-mt-l',
                 'url': url_for('home')
             })
         }}

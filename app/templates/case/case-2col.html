@@ -233,7 +233,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Add call notes',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': url_for('case.case_add_case_note', case_id=case_id)
                         })
                     }}
@@ -243,7 +243,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Record caller refusal',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': url_for('case.case_request_refusal', case_id=case_id)
                         })
                     }}
@@ -253,7 +253,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Request code by text',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': url_for('case.case_request_code_by_text', case_id=case_id)
                         })
                     }}
@@ -263,7 +263,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Request code by post',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -273,7 +273,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Update contact number',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -283,7 +283,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Record invalid address',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -293,7 +293,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Schedule phone interview',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -303,7 +303,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Schedule field interview',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -313,7 +313,7 @@
                         onsButton({
                             'type': 'button',
                             'text': 'Log data removal request',
-                            'classes': 'u-mb-xl',
+                            'classes': 'ons-u-mb-xl',
                             'url': '#'
                         })
                     }}
@@ -333,12 +333,12 @@
 
     <h1>Case: {{ case.id or 'Not available' }}</h1>
 
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Record caller refusal',
-                'classes': 'u-mb-xl',
+                'classes': 'ons-u-mb-xl',
                 'url': url_for('case.case_request_refusal', case_id=case_id)
             })
         }}
@@ -347,7 +347,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Request SMS fulfilment',
-                'classes': 'u-mb-xl',
+                'classes': 'ons-u-mb-xl',
                 'url': url_for('case.case_request_code_by_text', case_id=case_id)
             })
         }}
