@@ -22,7 +22,7 @@
                 'type': 'button',
                 'text': 'Record invalid address',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }
@@ -35,7 +35,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Update contact number',
-                'url': url_for('case.update_contact_number', case_id=case_id)
+                'url': url_for('case.update_contact_number', case_id=case_id, org=org)
             })
         }}
 {%- endset -%}
@@ -46,19 +46,48 @@
 
     <h2>Call actions</h2>
 
+    {%- if org=='to' -%}
+        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Make call',
+                    'url': '#',
+                    "variants": 'disabled',
+                    "attributes": {
+                        "disabled": "true"
+                    }
+                })
+            }}
+
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Launch EQ',
+                    'url': '#',
+                    "variants": 'disabled',
+                    "newWindow": true,
+                    "attributes": {
+                        "disabled": "true"
+                    }
+                })
+            }}
+        </div>
+    {%- endif -%}
+
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Add call notes',
-                'url': url_for('case.add_case_note', case_id=case_id)
+                'url': url_for('case.add_case_note', case_id=case_id, org=org)
             })
         }}
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Record call outcome',
-                'url': url_for('case.call_outcome', case_id=case_id)
+                'url': url_for('case.call_outcome', case_id=case_id, org=org)
             })
         }}
     </div>
@@ -68,7 +97,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Record caller refusal',
-                'url': url_for('case.request_refusal', case_id=case_id)
+                'url': url_for('case.request_refusal', case_id=case_id, org=org)
             })
         }}
         {{
@@ -76,37 +105,39 @@
                 'type': 'button',
                 'text': 'Log data removal request',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }
             })
         }}
     </div>
-    <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Request code by post',
-                'url': url_for('case.request_code_by_post', case_id=case_id)
-            })
-        }}
+    {%- if org=='sel' -%}
+        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Request code by post',
+                    'url': url_for('case.request_code_by_post', case_id=case_id, org=org)
+                })
+            }}
 
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Request code by text',
-                'url': url_for('case.request_code_by_text', case_id=case_id)
-            })
-        }}
-    </div>
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Request code by text',
+                    'url': url_for('case.request_code_by_text', case_id=case_id, org=org)
+                })
+            }}
+        </div>
+    {%- endif -%}
     <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Schedule phone interview',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }
@@ -117,7 +148,7 @@
                 'type': 'button',
                 'text': 'Schedule field interview',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }

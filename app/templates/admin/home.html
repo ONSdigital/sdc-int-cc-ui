@@ -4,7 +4,7 @@
 
 {%- block main -%}
 
-    <h1>Contact Centre</h1>
+    <h1>Administration</h1>
 
     <div>
         <div class="ons-grid ons-grid--column@xxs@s">
@@ -12,27 +12,27 @@
                 {{ onsCard({
                     "id": 'title1',
                     "textId": 'text1',
-                    "title": 'Survey Enquiry Line (SEL)',
-                    "url": url_for('sel.sel_home'),
-                    "text": 'Answer incoming calls'
+                    "title": 'User management',
+                    "url": '#',
+                    "text": 'Modify user roles and permissions'
                 }) }}
             </div>
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title2',
                     "textId": 'text2',
-                    "title": 'Telephone Operations (TO)',
-                    "url": url_for('to.to_case_list'),
-                    "text": 'Make outgoing calls'
+                    "title": 'Call scheduling and assignment',
+                    "url": '#',
+                    "text": 'Schedule and assign calls to users'
                 }) }}
             </div>
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title2',
                     "textId": 'text2',
-                    "title": 'Administration',
-                    "url": url_for('admin.admin_home'),
-                    "text": 'Administer the system'
+                    "title": 'Reporting',
+                    "url": '#',
+                    "text": 'View management information reporting'
                 }) }}
             </div>
         </div>

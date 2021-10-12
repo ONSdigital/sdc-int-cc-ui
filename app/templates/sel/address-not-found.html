@@ -26,7 +26,7 @@
                 onsButton({
                     'text': 'Enter corrected postcode',
                     'classes': 'ons-u-mt-l',
-                    'url': url_for('address_search.postcode_input')
+                    'url': url_for('sel.postcode_input')
                 })
             }}
         {%- elif address_input -%}
@@ -34,7 +34,7 @@
                 onsButton({
                     'text': 'Enter corrected input',
                     'classes': 'ons-u-mt-l',
-                    'url': url_for('address_search.address_input')
+                    'url': url_for('sel.address_input')
                 })
             }}
         {%- endif -%}
