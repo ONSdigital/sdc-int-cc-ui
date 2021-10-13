@@ -1,0 +1,112 @@
+{%- extends 'base-wide.html' -%}
+
+{%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>Users and permissions</h1>
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Add new user',
+            'url': '#',
+            'classes': 'ons-u-mb-l'
+        })
+    }}
+
+    <h2>Existing users</h2>
+
+    {{
+        onsTable({
+            'caption': 'Users and permissions',
+            'hideCaption': 'true',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'User'
+                },
+                {
+                    'value': 'Role'
+                },
+                {
+                    'value': 'Actions'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'Adam Adamant (adamaa)',
+                            'name': 'adamaa'
+                        },
+                        {
+                            'value': 'Administrator'
+                        },
+                        {
+                            'value': '<a href="#">Change</a> | <a href="#">Remove</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Teresa Jolli-GoodFella (jollit)',
+                            'name': 'jollit'
+                        },
+                        {
+                            'value': 'TO User'
+                        },
+                        {
+                            'value': '<a href="#">Change</a> | <a href="#">Remove</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Sophie Selby (selbys)',
+                            'name': 'selbys'
+                        },
+                        {
+                            'value': 'SEL User'
+                        },
+                        {
+                            'value': '<a href="#">Change</a> | <a href="#">Remove</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Simon Sarsaparilla (sarsas)',
+                            'name': 'sarsas'
+                        },
+                        {
+                            'value': 'SEL User'
+                        },
+                        {
+                            'value': '<a href="#">Change</a> | <a href="#">Remove</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Toby Telephone (telept)',
+                            'name': 'telept'
+                        },
+                        {
+                            'value': 'TO User'
+                        },
+                        {
+                            'value': '<a href="#">Change</a> | <a href="#">Remove</a>'
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+{%- endblock -%}
