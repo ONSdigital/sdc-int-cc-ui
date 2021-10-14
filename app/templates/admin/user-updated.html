@@ -1,0 +1,18 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>User updated</h1>
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Return to user management',
+            'classes': 'ons-u-mb-m',
+            'url': url_for('admin.admin_user_list')
+        })
+    }}
+
+{%- endblock -%}

@@ -256,7 +256,7 @@ async def code_sent_by_post(org, case_id):
     if case_id:
         return render_template('case/code-sent-by-post.html', case_id=case_id, org=org)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/<org>/case/<case_id>/update-contact-number/', methods=['GET', 'POST'])
@@ -299,7 +299,7 @@ async def contact_number_updated(org, case_id):
     if case_id:
         return render_template('case/contact-number-updated.html', case_id=case_id, org=org)
     else:
-        return render_template('500.html')
+        return render_template('errors/500.html')
 
 
 @case_bp.route('/<org>/case/<case_id>/call-outcome/', methods=['GET', 'POST'])
