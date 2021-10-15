@@ -152,7 +152,7 @@
                             'name': 'address-line-1'
                         },
                         {
-                            'value': case.addressLine1
+                            'value': addr.addressLine1
                         },
                         {
                             'value': address_button
@@ -166,7 +166,7 @@
                             'name': 'address-line-2'
                         },
                         {
-                            'value': case.addressLine2
+                            'value': addr.addressLine2
                         }
                     ]
                 },
@@ -177,7 +177,7 @@
                             'name': 'address-line-3'
                         },
                         {
-                            'value': case.addressLine3
+                            'value': addr.addressLine3
                         }
                     ]
                 },
@@ -188,7 +188,7 @@
                             'name': 'town-name'
                         },
                         {
-                            'value': case.townName
+                            'value': addr.townName
                         }
                     ]
                 },
@@ -199,7 +199,7 @@
                             'name': 'postcode'
                         },
                         {
-                            'value': case.postcode
+                            'value': addr.postcode
                         }
                     ]
                 },
@@ -244,7 +244,7 @@
                                 'name': 'region'
                             },
                             {
-                                'value': case.region
+                                'value': addr.region
                             }
                         ]
                     },
@@ -255,106 +255,7 @@
                                 'name': 'uprn'
                             },
                             {
-                                'value': case.uprn
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment UPRN',
-                                'name': 'establishment-uprn'
-                            },
-                            {
-                                'value': case.estabUprn
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Secure establishment',
-                                'name': 'secure-establishment'
-                            },
-                            {
-                                'value': case.secureEstablishment | string
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Case Type',
-                                'name': 'case-type'
-                            },
-                            {
-                                'value': case.caseType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Address Type',
-                                'name': 'address-type'
-                            },
-                            {
-                                'value': case.addressType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment Type',
-                                'name': 'establishment-type'
-                            },
-                            {
-                                'value': case.estabType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment description',
-                                'name': 'establishment-desc'
-                            },
-                            {
-                                'value': case.estabDescription
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'CE Org Name',
-                                'name': 'ce-org-name'
-                            },
-                            {
-                                'value': case.ceOrgName
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Creation date',
-                                'name': 'creation-date'
-                            },
-                            {
-                                'value': creation_datetime
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Last updated',
-                                'name': 'last-updated'
-                            },
-                            {
-                                'value': last_updated
+                                'value': addr.uprn
                             }
                         ]
                     },

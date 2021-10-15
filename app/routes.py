@@ -17,15 +17,16 @@ async def uprn_list(uprn):
             case_list.append({'text': 'Census 2021: Household', 'url': url_for('case.case', case_id=single_case['id'])})
 
         address_output = ''
-        address_output = address_output + cc_return[0]['addressLine1']
-        if cc_return[0]['addressLine2']:
-            address_output = address_output + ', ' + cc_return[0]['addressLine2']
-        if cc_return[0]['addressLine3']:
-            address_output = address_output + ', ' + cc_return[0]['addressLine3']
-        if cc_return[0]['townName']:
-            address_output = address_output + ', ' + cc_return[0]['townName']
-        if cc_return[0]['postcode']:
-            address_output = address_output + ', ' + cc_return[0]['postcode']
+        addr_return = cc_return[0]['address']
+        address_output = address_output + addr_return['addressLine1']
+        if addr_return['addressLine2']:
+            address_output = address_output + ', ' + addr_return['addressLine2']
+        if addr_return['addressLine3']:
+            address_output = address_output + ', ' + addr_return['addressLine3']
+        if addr_return['townName']:
+            address_output = address_output + ', ' + addr_return['townName']
+        if addr_return['postcode']:
+            address_output = address_output + ', ' + addr_return['postcode']
 
         return render_template('uprn-list.html', uprn=uprn, address_output=address_output, case_list=case_list)
     else:
