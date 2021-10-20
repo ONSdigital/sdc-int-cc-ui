@@ -1,0 +1,173 @@
+{%- extends 'base-wide.html' -%}
+
+{%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>Telephone Operations</h1>
+
+    <h2>Call list</h2>
+
+    {{
+        onsTable({
+            'caption': 'Outstanding calls to make',
+            'hideCaption': 'true',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'Survey'
+                },
+                {
+                    'value': 'Call action required'
+                },
+                {
+                    'value': 'Case'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'Household Assets Survey (HAS)',
+                            'name': 'call-line-1'
+                        },
+                        {
+                            'value': 'First call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Labour Force Survey (LFS)',
+                            'name': 'call-line-2'
+                        },
+                        {
+                            'value': 'Scheduled interview'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Labour Force Survey (LFS)',
+                            'name': 'call-line-3'
+                        },
+                        {
+                            'value': 'Second call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Census Quality Survey',
+                            'name': 'call-line-4'
+                        },
+                        {
+                            'value': 'First call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Household Assets Survey (HAS)',
+                            'name': 'call-line-5'
+                        },
+                        {
+                            'value': 'Interview'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Family Resources Survey (FRS)',
+                            'name': 'call-line-6'
+                        },
+                        {
+                            'value': 'Reminder call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Labour Force Survey (LFS)',
+                            'name': 'call-line-7'
+                        },
+                        {
+                            'value': 'Second call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Census Quality Survey',
+                            'name': 'call-line-8'
+                        },
+                        {
+                            'value': 'First call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Household Assets Survey (HAS)',
+                            'name': 'call-line-9'
+                        },
+                        {
+                            'value': 'Interview'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='e37b0d05-3643-445e-8e71-73f7df3ff95e', org='to') + '">View case</a>'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Family Resources Survey (FRS)',
+                            'name': 'call-line-10'
+                        },
+                        {
+                            'value': 'Reminder call'
+                        },
+                        {
+                            'value': '<a href="'+ url_for('case.case', case_id='dc4477d1-dd3f-4c69-b181-7ff725dc9fa4', org='to') + '">View case</a>'
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+{%- endblock -%}

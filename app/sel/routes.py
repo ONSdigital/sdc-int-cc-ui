@@ -1,19 +1,24 @@
-from . import address_search_bp
+from . import sel_bp
 from flask import render_template, request, redirect, url_for, flash, current_app, get_flashed_messages
 from app.utils import CCSvc, ProcessPostcode, Common
 from app.errors.handlers import InvalidDataError
 
 
-@address_search_bp.route('/addresses/', methods=['GET', 'POST'])
+@sel_bp.route('/sel/')
+async def sel_home():
+    return render_template('sel/home.html')
+
+
+@sel_bp.route('/sel/input/', methods=['GET', 'POST'])
 async def address_input():
     if request.method == 'POST':
         form_input = request.form['form_address_input']
         if form_input:
-            return redirect(url_for('address_search.addresses_by_input', input=request.form['form_address_input']))
+            return redirect(url_for('sel.addresses_by_input', input=request.form['form_address_input']))
         else:
             current_app.logger.info('Address input error: No value entered')
             flash('Enter an address value', 'error_input')
-            return redirect(url_for('address_search.address_input'))
+            return redirect(url_for('sel.address_input'))
 
     else:
         page_title = 'Enter an address'
@@ -22,22 +27,22 @@ async def address_input():
             page_title = Common.page_title_error_prefix + page_title
             for message in get_flashed_messages():
                 error_input = {'id': 'error_input', 'text': message}
-        return render_template('address-search/address-input.html',
+        return render_template('sel/address-input.html',
                                page_title=page_title,
                                error_input=error_input)
 
 
-@address_search_bp.route('/addresses/input/', methods=['GET', 'POST'])
+@sel_bp.route('/sel/input/addresses/', methods=['GET', 'POST'])
 async def addresses_by_input():
     if request.method == 'POST':
         if 'form-pick-address' in request.form:
             if request.form['form-pick-address'] == 'xxxx':
-                return redirect(url_for('address_search.address_not_found', address_input=request.args.get('input')))
+                return redirect(url_for('sel.address_not_found', address_input=request.args.get('input')))
             else:
-                return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
+                return redirect(url_for('sel.uprn_list', uprn=request.form['form-pick-address']))
         else:
             flash('Select an address', 'error_selection')
-            return redirect(url_for('address_search.addresses_by_input', input=request.args.get('input')))
+            return redirect(url_for('sel.addresses_by_input', input=request.args.get('input')))
     else:
         page_title = 'Select an address'
         error_selection = {}
@@ -75,7 +80,7 @@ async def addresses_by_input():
                 'total_matches': cc_return['total']
             }
 
-            return render_template('address-search/address-results.html',
+            return render_template('sel/address-results.html',
                                    page_title=page_title,
                                    results=address_content,
                                    error_selection=error_selection)
@@ -83,17 +88,17 @@ async def addresses_by_input():
             return render_template('errors/500.html')
 
 
-@address_search_bp.route('/addresses/postcode/', methods=['GET', 'POST'])
+@sel_bp.route('/sel/postcode/', methods=['GET', 'POST'])
 async def postcode_input():
     if request.method == 'POST':
         postcode_unvalidated = request.form['form_postcode_input']
         try:
             postcode = ProcessPostcode.validate_postcode(postcode_unvalidated)
-            return redirect(url_for('address_search.addresses_by_postcode', postcode=postcode))
+            return redirect(url_for('sel.addresses_by_postcode', postcode=postcode))
         except InvalidDataError as exc:
             current_app.logger.info(exc)
             flash(exc.message, 'error_mobile')
-            return redirect(url_for('address_search.postcode_input',
+            return redirect(url_for('sel.postcode_input',
                                     value_postcode=postcode_unvalidated))
     else:
         page_title = 'Enter a postcode'
@@ -104,23 +109,23 @@ async def postcode_input():
             for message in get_flashed_messages():
                 error_postcode = {'id': 'error_postcode', 'text': message}
                 value_postcode = request.args.get('value_postcode')
-        return render_template('address-search/postcode-input.html',
+        return render_template('sel/postcode-input.html',
                                page_title=page_title,
                                error_postcode=error_postcode,
                                value_postcode=value_postcode)
 
 
-@address_search_bp.route('/addresses/postcode/<postcode>', methods=['GET', 'POST'])
+@sel_bp.route('/sel/postcode/<postcode>', methods=['GET', 'POST'])
 async def addresses_by_postcode(postcode):
     if request.method == 'POST':
         if 'form-pick-address' in request.form:
             if request.form['form-pick-address'] == 'xxxx':
-                return redirect(url_for('address_search.address_not_found', postcode=postcode))
+                return redirect(url_for('sel.address_not_found', postcode=postcode))
             else:
-                return redirect(url_for('uprn_list', uprn=request.form['form-pick-address']))
+                return redirect(url_for('sel.uprn_list', uprn=request.form['form-pick-address']))
         else:
             flash('Select an address', 'error_selection')
-            return redirect(url_for('address_search.addresses_by_postcode', postcode=postcode))
+            return redirect(url_for('sel.addresses_by_postcode', postcode=postcode))
     else:
         page_title = 'Select an address'
         error_selection = {}
@@ -153,7 +158,7 @@ async def addresses_by_postcode(postcode):
                 'total_matches': cc_return['total']
             }
 
-            return render_template('address-search/postcode-results.html',
+            return render_template('sel/postcode-results.html',
                                    page_title=page_title,
                                    results=address_content,
                                    error_selection=error_selection)
@@ -161,10 +166,36 @@ async def addresses_by_postcode(postcode):
             return render_template('errors/500.html')
 
 
-@address_search_bp.route('/addresses/address-not-found', methods=['GET'])
+@sel_bp.route('/sel/address-not-found', methods=['GET'])
 async def address_not_found():
     page_title = 'Address not found'
-    return render_template('address-search/address-not-found.html',
+    return render_template('sel/address-not-found.html',
                            page_title=page_title,
                            postcode=request.args.get('postcode'),
                            address_input=request.args.get('address_input'))
+
+
+@sel_bp.route('/sel/uprn/<uprn>', methods=['GET'])
+async def uprn_list(uprn):
+    if uprn:
+        cc_return = await CCSvc.get_case_by_uprn(uprn)
+        case_list = []
+        for single_case in cc_return:
+            case_list.append({'text': 'Census 2021: Household',
+                              'url': url_for('case.case', case_id=single_case['id'], org='sel')})
+
+        address_output = ''
+        addr_return = cc_return[0]['address']
+        address_output = address_output + addr_return['addressLine1']
+        if addr_return['addressLine2']:
+            address_output = address_output + ', ' + addr_return['addressLine2']
+        if addr_return['addressLine3']:
+            address_output = address_output + ', ' + addr_return['addressLine3']
+        if addr_return['townName']:
+            address_output = address_output + ', ' + addr_return['townName']
+        if addr_return['postcode']:
+            address_output = address_output + ', ' + addr_return['postcode']
+
+        return render_template('sel/uprn-list.html', uprn=uprn, address_output=address_output, case_list=case_list)
+    else:
+        return render_template('errors/500.html')

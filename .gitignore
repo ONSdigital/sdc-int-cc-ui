@@ -1,6 +1,4 @@
 # Design System Templates
-src/aims_ui/templates/layout
-src/aims_ui/templates/components
 .idea/
 app/cc_ui.egg-info/
 app/templates/components/

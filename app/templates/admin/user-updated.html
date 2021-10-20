@@ -4,16 +4,14 @@
 
 {%- block main -%}
 
-    <h1>Case note added</h1>
-
-    <p>The note has been added to the case</p>
+    <h1>User updated</h1>
 
     {{
         onsButton({
             'type': 'button',
-            'text': 'Return to case',
+            'text': 'Return to user management',
             'classes': 'ons-u-mb-m',
-            'url': url_for('case.case', case_id=case_id, org=org)
+            'url': url_for('admin.admin_user_list')
         })
     }}
 
