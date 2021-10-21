@@ -186,6 +186,9 @@ class CCSvc:
                 raise Case404
             else:
                 raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
 
         return cc_return.json()
 
@@ -200,6 +203,9 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for get_case_by_uprn call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
         if not cc_return.json():
@@ -227,6 +233,9 @@ class CCSvc:
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for case refusal call: ' + str(err))
             raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
 
         return cc_return.json()
 
@@ -241,6 +250,9 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for addresses by postcode call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
         return cc_return.json()
@@ -257,6 +269,9 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for addresses by input call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
         return cc_return.json()
@@ -281,6 +296,9 @@ class CCSvc:
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for get fulfilments call: ' + str(err))
             raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
 
         return cc_return.json()
 
@@ -301,6 +319,9 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for sms fulfilment call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
         return cc_return.json()
@@ -323,6 +344,9 @@ class CCSvc:
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for postal fulfilment call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
         return cc_return.json()

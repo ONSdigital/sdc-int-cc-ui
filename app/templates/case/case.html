@@ -16,69 +16,124 @@
     {%- set last_updated = 'Not available' -%}
 {%- endif -%}
 
+{%- set address_button -%}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Record invalid address',
+                'url': '#',
+                "variants": 'disabled',
+                "attributes": {
+                    "disabled": "true"
+                }
+            })
+        }}
+{%- endset -%}
+
+{%- set telephone_button -%}
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Update contact number',
+                'url': url_for('case.update_contact_number', case_id=case_id, org=org)
+            })
+        }}
+{%- endset -%}
+
 {%- block main -%}
 
     <h1>Case: {{ case.id or 'Not available' }}</h1>
 
     <h2>Call actions</h2>
 
-    <div class="btn-group u-mt-l">
+    {%- if org=='to' -%}
+        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Make call',
+                    'url': '#',
+                    "variants": 'disabled',
+                    "attributes": {
+                        "disabled": "true"
+                    }
+                })
+            }}
+
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Launch EQ',
+                    'url': '#',
+                    "variants": 'disabled',
+                    "newWindow": true,
+                    "attributes": {
+                        "disabled": "true"
+                    }
+                })
+            }}
+        </div>
+    {%- endif -%}
+
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Add call notes',
-                'url': url_for('case.add_case_note', case_id=case_id)
+                'url': url_for('case.add_case_note', case_id=case_id, org=org)
             })
         }}
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Record call outcome',
-                'url': url_for('case.call_outcome', case_id=case_id)
+                'url': url_for('case.call_outcome', case_id=case_id, org=org)
             })
         }}
     </div>
 
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Record caller refusal',
-                'url': url_for('case.request_refusal', case_id=case_id)
+                'url': url_for('case.request_refusal', case_id=case_id, org=org)
             })
         }}
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Log data removal request',
-                'url': url_for('case.data_removal_request', case_id=case_id)
+                'url': url_for('case.data_removal_request', case_id=case_id),
             })
         }}
     </div>
-    <div class="btn-group u-mt-l u-mb-l">
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Request code by post',
-                'url': url_for('case.request_code_by_post', case_id=case_id)
-            })
-        }}
+    {%- if org=='sel' -%}
+        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Request code by post',
+                    'url': url_for('case.request_code_by_post', case_id=case_id, org=org)
+                })
+            }}
 
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Request code by text',
-                'url': url_for('case.request_code_by_text', case_id=case_id)
-            })
-        }}
-    </div>
-    <div class="btn-group u-mt-l u-mb-l">
+            {{
+                onsButton({
+                    'type': 'button',
+                    'text': 'Request code by text',
+                    'url': url_for('case.request_code_by_text', case_id=case_id, org=org)
+                })
+            }}
+        </div>
+    {%- endif -%}
+    <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Schedule phone interview',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }
@@ -89,7 +144,7 @@
                 'type': 'button',
                 'text': 'Schedule field interview',
                 'url': '#',
-                "classes": 'btn--disabled',
+                "variants": 'disabled',
                 "attributes": {
                     "disabled": "true"
                 }
@@ -184,6 +239,9 @@
                 },
                 {
                     'value': 'Value'
+                },
+                {
+                    'value': 'Actions'
                 }
             ],
             'trs': [
@@ -194,7 +252,10 @@
                             'name': 'address-line-1'
                         },
                         {
-                            'value': case.addressLine1
+                            'value': addr.addressLine1
+                        },
+                        {
+                            'value': address_button
                         }
                     ]
                 },
@@ -205,7 +266,7 @@
                             'name': 'address-line-2'
                         },
                         {
-                            'value': case.addressLine2
+                            'value': addr.addressLine2
                         }
                     ]
                 },
@@ -216,7 +277,7 @@
                             'name': 'address-line-3'
                         },
                         {
-                            'value': case.addressLine3
+                            'value': addr.addressLine3
                         }
                     ]
                 },
@@ -227,7 +288,7 @@
                             'name': 'town-name'
                         },
                         {
-                            'value': case.townName
+                            'value': addr.townName
                         }
                     ]
                 },
@@ -238,7 +299,7 @@
                             'name': 'postcode'
                         },
                         {
-                            'value': case.postcode
+                            'value': addr.postcode
                         }
                     ]
                 }
@@ -277,7 +338,7 @@
                                 'name': 'region'
                             },
                             {
-                                'value': case.region
+                                'value': addr.region
                             }
                         ]
                     },
@@ -288,106 +349,7 @@
                                 'name': 'uprn'
                             },
                             {
-                                'value': case.uprn
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment UPRN',
-                                'name': 'establishment-uprn'
-                            },
-                            {
-                                'value': case.estabUprn
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Secure establishment',
-                                'name': 'secure-establishment'
-                            },
-                            {
-                                'value': case.secureEstablishment | string
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Case Type',
-                                'name': 'case-type'
-                            },
-                            {
-                                'value': case.caseType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Address Type',
-                                'name': 'address-type'
-                            },
-                            {
-                                'value': case.addressType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment Type',
-                                'name': 'establishment-type'
-                            },
-                            {
-                                'value': case.estabType
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Establishment description',
-                                'name': 'establishment-desc'
-                            },
-                            {
-                                'value': case.estabDescription
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'CE Org Name',
-                                'name': 'ce-org-name'
-                            },
-                            {
-                                'value': case.ceOrgName
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Creation date',
-                                'name': 'creation-date'
-                            },
-                            {
-                                'value': creation_datetime
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'Last updated',
-                                'name': 'last-updated'
-                            },
-                            {
-                                'value': last_updated
+                                'value': addr.uprn
                             }
                         ]
                     },
@@ -421,7 +383,7 @@
         {{ additional_case_data_content | safe }}
     {% endcall %}
 
-    <h2 class="u-mt-xl">Case history</h2>
+    <h2 class="ons-u-mt-xl">Case history</h2>
 
         {{
             onsTable({

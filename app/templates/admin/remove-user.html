@@ -1,0 +1,48 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from "components/panel/_macro.njk" import onsPanel -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    <h1 class="ons-u-mt-l">Remove all permissions for {{ username }}</h1>
+
+    {%- call onsPanel({
+            "type": 'warn',
+            "classes": "ons-u-mt-xl"
+        })
+    -%}
+        <p>Removing all permissions from a user will prevent them accessing the Contact Centre system.</p>
+    {%- endcall -%}
+
+
+
+    <div class="ons-btn-group ons-u-mt-l">
+        {{
+            onsButton({
+                'text': 'Confirm removal',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'classes': 'btn--secondary btn-group__btn',
+                'url': url_for('admin.admin_user_list'),
+                'icon': 'false'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

@@ -2,17 +2,25 @@
 
 {%- from 'components/button/_macro.njk' import onsButton -%}
 
+{%- if org=='to' -%}
+    {%- set home_url = url_for('to.to_case_list') -%}
+{%- elif org=='sel' -%}
+    {%- set home_url = url_for('sel.sel_home') -%}
+{%- else -%}
+    {%- set home_url = url_for('home') -%}
+{%- endif -%}
+
 {%- block main -%}
 
     <h1>Call outcome recorded</h1>
 
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'type': 'button',
                 'text': 'Return to case',
-                'classes': 'u-mb-m',
-                'url': url_for('case.case', case_id=case_id)
+                'classes': 'ons-u-mb-m',
+                'url': url_for('case.case', case_id=case_id, org=org)
             })
         }}
 
@@ -20,8 +28,8 @@
             onsButton({
                 'type': 'button',
                 'text': 'Return to homepage',
-                'classes': 'u-mb-m',
-                'url': url_for('home')
+                'classes': 'ons-u-mb-m',
+                'url': home_url
             })
         }}
     </div>

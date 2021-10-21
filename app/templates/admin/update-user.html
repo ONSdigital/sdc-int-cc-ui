@@ -1,0 +1,84 @@
+{%- extends 'base.html' -%}
+
+{%- from "components/question/_macro.njk" import onsQuestion -%}
+{%- from "components/checkboxes/_macro.njk" import onsCheckboxes -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from "components/panel/_macro.njk" import onsPanel -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- call onsQuestion({
+        "title": 'Update permissions for ' + username,
+        "legendIsQuestionTitle": true,
+        "classes": "ons-u-mt-no"
+    }) -%}
+
+        {%- call onsPanel({
+                "type": 'warn',
+                "classes": "ons-u-mt-xl"
+            })
+        -%}
+            <p>Removing all permissions from a user will prevent them accessing the Contact Centre system.</p>
+        {%- endcall -%}
+
+        {{
+            onsCheckboxes({
+                "checkboxesLabel": "Select all that apply",
+                "dontWrap": true,
+                "name": "devices",
+                "checkboxes": [
+                    {
+                        "id": "sel",
+                        "label": {
+                            "text": "SEL User"
+                        },
+                        "value": "sel-user"
+                    },
+                    {
+                        "id": "to",
+                        "label": {
+                            "text": "TO User"
+                        },
+                        "value": "to-user"
+                    },
+                    {
+                        "id": "admin",
+                        "label": {
+                            "text": "Administrator",
+                            "description": "Note: User will be able to change user permissions"
+                        },
+                        "value": "admin"
+                    }
+                ]
+            })
+        }}
+    {% endcall %}
+
+    <div class="ons-btn-group ons-u-mt-l">
+        {{
+            onsButton({
+                'text': 'Update user',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'classes': 'btn--secondary btn-group__btn',
+                'url': url_for('admin.admin_user_list'),
+                'icon': 'false'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

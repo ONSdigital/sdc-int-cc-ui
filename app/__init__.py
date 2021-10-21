@@ -30,8 +30,12 @@ server_session = Session(app)
 
 from app.case import case_bp as case_bp
 app.register_blueprint(case_bp)
-from app.address_search import address_search_bp as address_search_bp
-app.register_blueprint(address_search_bp)
+from app.to import to_bp as to_bp
+app.register_blueprint(to_bp)
+from app.sel import sel_bp as sel_bp
+app.register_blueprint(sel_bp)
+from app.admin import admin_bp as admin_bp
+app.register_blueprint(admin_bp)
 from app.errors import errors_bp as errors_bp
 app.register_blueprint(errors_bp)
 

@@ -11,7 +11,7 @@
     }
 } -%}
 
-{%- set question_title = "What is the caller's address?" -%}
+{%- set question_title = "What is the caller's postcode?" -%}
 
 {%- block main -%}
 
@@ -25,14 +25,16 @@
 
         {{
             onsInput({
-                'id': 'address_input',
+                'id': 'postcode',
                 'type': 'text',
-                'classes': 'input--w-10',
+                'autocomplete': 'postal-code',
+                'width': 6,
                 'label': {
-                    'text': 'Address'
+                    'text': 'UK postcode'
                 },
-                'name': 'form_address_input',
-                'error': error_input
+                'name': 'form_postcode_input',
+                'value': value_postcode,
+                'error': error_postcode
             })
         }}
 
@@ -41,7 +43,7 @@
     {{
         onsButton({
             'text': 'Continue',
-            'classes': 'u-mt-l',
+            'classes': 'ons-u-mt-l',
             'submitType': 'loader'
         })
     }}

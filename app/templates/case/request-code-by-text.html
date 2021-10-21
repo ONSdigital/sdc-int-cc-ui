@@ -18,7 +18,7 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1 class="u-mt-l">Request a new access code by text</h1>
+    <h1 class="ons-u-mt-l">Request a new access code by text</h1>
 
     <p>The following information is required from the caller to process this request</p>
 
@@ -32,7 +32,7 @@
                     'name': 'form-case-fulfilment',
                     'radios': fulfilment_options,
                     'legend': "Select required fulfilment",
-                    'legendClasses': 'u-mt-xl',
+                    'legendClasses': 'ons-u-mt-xl',
                     'value': value_fulfilment,
                     'error': error_fulfilment
                 })
@@ -58,7 +58,7 @@
                 'id': 'telephone',
                 'type': 'tel',
                 'autocomplete': 'tel',
-                'classes': 'input--w-15',
+                'width': '15',
                 'label': {
                     'text': "Enter the caller's UK mobile number"
                 },
@@ -69,7 +69,7 @@
         }}
     {%- endcall -%}
 
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'text': 'Request new code by text',
@@ -82,7 +82,7 @@
                 'type': 'button',
                 'text': 'Cancel',
                 'classes': 'btn--secondary btn-group__btn',
-                'url': url_for('case.case', case_id=case_id),
+                'url': url_for('case.case', case_id=case_id, org=org),
                 'icon': 'false'
             })
         }}
