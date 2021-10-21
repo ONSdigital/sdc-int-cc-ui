@@ -4,42 +4,6 @@
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from "components/collapsible/_macro.njk" import onsCollapsible -%}
 
-{%- if case.createdDateTime -%}
-    {%- set creation_datetime = case.createdDateTime | datetimefilter -%}
-{%- else -%}
-    {%- set creation_datetime = 'Not available' -%}
-{%- endif -%}
-
-{%- if case.lastUpdated -%}
-    {%- set last_updated = case.lastUpdated | datetimefilter -%}
-{%- else -%}
-    {%- set last_updated = 'Not available' -%}
-{%- endif -%}
-
-{%- set address_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Record invalid address',
-                'url': '#',
-                "variants": 'disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
-            })
-        }}
-{%- endset -%}
-
-{%- set telephone_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Update contact number',
-                'url': url_for('case.update_contact_number', case_id=case_id, org=org)
-            })
-        }}
-{%- endset -%}
-
 {%- block main -%}
 
     <h1>Case: {{ case.id or 'Not available' }}</h1>
@@ -104,7 +68,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Log data removal request',
-                'url': url_for('case.data_removal_request', case_id=case_id),
+                'url': url_for('case.data_removal_request', case_id=case_id, org=org),
             })
         }}
     </div>
@@ -221,8 +185,8 @@
         onsButton({
             'type': 'button',
             'text': 'Update contact details',
-            'url': url_for('case.update_contact_details', case_id=case_id),
-            'classes': 'u-mb-l'
+            'url': url_for('case.update_contact_details', case_id=case_id, org=org),
+            'classes': 'ons-u-mb-l'
         })
     }}
 
@@ -239,9 +203,6 @@
                 },
                 {
                     'value': 'Value'
-                },
-                {
-                    'value': 'Actions'
                 }
             ],
             'trs': [
@@ -253,9 +214,6 @@
                         },
                         {
                             'value': addr.addressLine1
-                        },
-                        {
-                            'value': address_button
                         }
                     ]
                 },
@@ -311,8 +269,8 @@
         onsButton({
             'type': 'button',
             'text': 'Record invalid address',
-            'url': url_for('case.invalidate_address', case_id=case_id),
-            'classes': 'u-mb-l'
+            'url': url_for('case.invalidate_address', case_id=case_id, org=org),
+            'classes': 'ons-u-mb-l'
         })
     }}
 

@@ -66,7 +66,7 @@
                 'id': 'telephone',
                 'type': 'tel',
                 'autocomplete': 'tel',
-                'classes': 'input--w-15',
+                'width': 15,
                 'label': {
                     'text': "Enter the caller's UK telephone number"
                 },
@@ -80,7 +80,7 @@
             onsInput({
                 'id': 'email',
                 'name': 'form-case-email',
-                'classes': 'input--w-30',
+                'width': '30',
                 'type': 'email',
                 'autocomplete': 'email',
                 'label': {
@@ -93,7 +93,7 @@
 
     {%- endcall -%}
 
-    <div class="btn-group u-mt-l">
+    <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
                 'text': 'Update contact details',
@@ -105,8 +105,8 @@
             onsButton({
                 'type': 'button',
                 'text': 'Cancel',
-                'classes': 'btn--secondary btn-group__btn',
-                'url': url_for('case.case', case_id=case_id),
+                'classes': 'ons-btn--secondary ons-btn-group__btn',
+                'url': url_for('case.case', case_id=case_id, org=org),
                 'icon': 'false'
             })
         }}

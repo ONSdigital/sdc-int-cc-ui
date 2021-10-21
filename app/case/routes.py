@@ -456,9 +456,9 @@ async def data_removal_request(org, case_id):
         if 'form-case-data-removal-request' in request.form:
             if request.form['form-case-data-removal-request'] == 'yes':
                 # TODO  add call outcome endpoint call
-                return redirect(url_for('case.data_removed', case_id=case_id))
+                return redirect(url_for('case.data_removed', case_id=case_id, org=org))
             else:
-                return redirect(url_for('case.case', case_id=case_id))
+                return redirect(url_for('case.case', case_id=case_id, org=org))
         else:
             flash('Confirm data removal request', 'error_confirmation')
             return redirect(url_for('case.data_removal_request', case_id=case_id, org=org))
@@ -472,13 +472,14 @@ async def data_removal_request(org, case_id):
         return render_template('case/data-removal-request.html',
                                case_id=case_id,
                                page_title=page_title,
-                               error_confirmation=error_confirmation)
+                               error_confirmation=error_confirmation,
+                               org=org)
 
 
 @case_bp.route('/<org>/case/<case_id>/data-removed/', methods=['GET'])
 async def data_removed(org, case_id):
     if case_id:
-        return render_template('case/data-removed.html', case_id=case_id)
+        return render_template('case/data-removed.html', case_id=case_id, org=org)
     else:
         return render_template('errors/500.html')
 
@@ -506,7 +507,8 @@ async def invalidate_address(org, case_id):
                                page_title=page_title,
                                case_id=case_id,
                                invalidate_address_options=invalidate_address_options,
-                               error_reason=error_reason)
+                               error_reason=error_reason,
+                               org=org)
 
 
 @case_bp.route('/<org>/case/<case_id>/address-invalidated/', methods=['GET'])
