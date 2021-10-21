@@ -12,7 +12,8 @@ async def case(org, case_id):
         page_title = 'Case ' + case_id
         cc_return = await CCSvc.get_case_by_id(case_id)
         address = cc_return['address']
-        return render_template('case/case.html', case=cc_return, addr=address, case_id=case_id, page_title=page_title, org=org)
+        return render_template('case/case.html', case=cc_return, addr=address, case_id=case_id,
+                               page_title=page_title, org=org)
     else:
         return render_template('errors/500.html')
 
@@ -268,13 +269,9 @@ async def update_contact_details(org, case_id):
     if request.method == 'POST':
         session['values'] = {}
         valid_contact_number = True
-        value_contact_number = ''
         valid_first_name = True
-        value_first_name = ''
         valid_last_name = True
-        value_last_name = ''
         valid_email = True
-        value_email = ''
 
         if ('form-case-first-name' in request.form) and request.form['form-case-first-name'] != '' \
                 and len(request.form['form-case-first-name']) <= 35:
@@ -306,8 +303,7 @@ async def update_contact_details(org, case_id):
 
         if 'form-case-contact-number' in request.form:
             try:
-                value_contact_number = \
-                    ProcessContactNumber.validate_uk_phone_number(request.form['form-case-contact-number'])
+                ProcessContactNumber.validate_uk_phone_number(request.form['form-case-contact-number'])
                 current_app.logger.info('valid contact number')
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
@@ -318,14 +314,13 @@ async def update_contact_details(org, case_id):
 
         if 'form-case-email' in request.form:
             try:
-                value_email = \
-                    ProcessEmail.validate_email(request.form['form-case-email'])
+                ProcessEmail.validate_email(request.form['form-case-email'])
                 current_app.logger.info('valid email address')
             except InvalidDataError as exc:
                 current_app.logger.info(exc)
                 flash(exc.message, 'error_email')
                 valid_email = False
-            session['values']['email'] =request.form['form-case-email']
+            session['values']['email'] = request.form['form-case-email']
             session.modified = True
 
         if valid_contact_number and valid_first_name and valid_last_name and valid_email:
