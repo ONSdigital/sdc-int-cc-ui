@@ -25,7 +25,7 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     id: Docker Build
-    args: [ 'build', '-t', 'europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:$BRANCH_NAME', '-f', 'Dockerfile', '.' ]
+    args: [ 'build', '-t', 'europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:$BRANCH_NAME-$SHORT_SHA', '-f', 'Dockerfile', '.' ]
 
 timeout: '2400s'
-images: [ 'europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:$BRANCH_NAME' ]
+images: [ 'europe-west2-docker.pkg.dev/ons-ci-int/int-docker-snapshot/cc-ui:$BRANCH_NAME-$SHORT_SHA' ]
