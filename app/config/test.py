@@ -16,13 +16,10 @@ if not (CC_SVC_USERNAME := os.getenv('CCSVC_USERNAME', 'user')):
 if not (CC_SVC_PWD := os.getenv('CCSVC_PASSWORD', 'password')):
     raise RuntimeError('no CCSVC_PASSWORD ENV variable set')
 
-if not (PERMANENT_SESSION_LIFETIME := os.getenv('SESSION_AGE', '2700')):
-    raise RuntimeError('no SESSION_AGE ENV variable set')
-
 if not (REDIS_SERVER := os.getenv('REDIS_SERVER', 'localhost')):
     raise RuntimeError('no REDIS_SERVER ENV variable set')
 
-if not (REDIS_PORT := os.getenv('REDIS_PORT', '7379')):
+if not (REDIS_PORT := os.getenv('REDIS_PORT', '6379')):
     raise RuntimeError('no REDIS_PORT ENV variable set')
 
-SESSION_REDIS = redis.Redis(host=REDIS_SERVER, port=REDIS_PORT)
+SESSION_REDIS = redis.Redis(host=REDIS_SERVER, port=REDIS_PORT, retry_on_timeout=True)
