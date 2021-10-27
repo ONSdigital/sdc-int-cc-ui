@@ -3,3 +3,6 @@
 app/cc_ui.egg-info/
 app/templates/components/
 app/templates/layout/
+htmlcov/
+.coverage
+coverage.xml

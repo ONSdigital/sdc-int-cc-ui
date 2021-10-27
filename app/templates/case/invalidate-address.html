@@ -2,6 +2,7 @@
 
 {%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
 {%- from 'components/input/_macro.njk' import onsInput -%}
 
 {%- set form =  {
@@ -18,19 +19,15 @@
     {%- endif -%}
 
     {%- call onsQuestion({
-        'title': "What is the new telephone number?"
+        'title': "Why should the address be invalidated?",
     }) -%}
         {{
-            onsInput({
-                'id': 'telephone',
-                'type': 'tel',
-                'autocomplete': 'tel',
-                'width': '15',
-                'label': {
-                    'text': "Enter the caller's UK telephone number"
-                },
-                'name': 'form-case-contact-number',
-                'error': error_contact_number
+            onsRadios({
+                'name': 'form-case-reason',
+                'radios': invalidate_address_options,
+                'legend': "Select invalidation reason",
+                'legendClasses': 'ons-u-mt-xl',
+                'error': error_reason
             })
         }}
     {%- endcall -%}
@@ -38,7 +35,7 @@
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
-                'text': 'Update contact number',
+                'text': 'Submit invalidation',
                 'submitType': 'loader'
             })
         }}

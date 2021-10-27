@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from .config import base as config_base
 from .logging import setup_logging
-# from flask_session import Session
+from flask_session import Session
 from datetime import datetime
 
 setup_logging(os.getenv('PLATFORM'))
@@ -26,7 +26,7 @@ else:
 app.config.from_object(config_env)
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
-# server_session = Session(app)
+server_session = Session(app)
 
 from app.case import case_bp as case_bp
 app.register_blueprint(case_bp)

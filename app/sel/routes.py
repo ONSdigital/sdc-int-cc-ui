@@ -1,5 +1,5 @@
 from . import sel_bp
-from flask import render_template, request, redirect, url_for, flash, current_app, get_flashed_messages
+from flask import render_template, request, redirect, url_for, flash, current_app, get_flashed_messages, session
 from app.utils import CCSvc, ProcessPostcode, Common
 from app.errors.handlers import InvalidDataError
 
@@ -94,12 +94,16 @@ async def postcode_input():
         postcode_unvalidated = request.form['form_postcode_input']
         try:
             postcode = ProcessPostcode.validate_postcode(postcode_unvalidated)
+            if 'values' in session:
+                session.pop('values')
+                session.modified = True
             return redirect(url_for('sel.addresses_by_postcode', postcode=postcode))
         except InvalidDataError as exc:
             current_app.logger.info(exc)
-            flash(exc.message, 'error_mobile')
-            return redirect(url_for('sel.postcode_input',
-                                    value_postcode=postcode_unvalidated))
+            flash(exc.message, 'error_postcode')
+            session['values'] = {'postcode': postcode_unvalidated}
+            session.modified = True
+            return redirect(url_for('sel.postcode_input'))
     else:
         page_title = 'Enter a postcode'
         error_postcode = {}
@@ -108,7 +112,7 @@ async def postcode_input():
             page_title = Common.page_title_error_prefix + page_title
             for message in get_flashed_messages():
                 error_postcode = {'id': 'error_postcode', 'text': message}
-                value_postcode = request.args.get('value_postcode')
+                value_postcode = session['values']['postcode']
         return render_template('sel/postcode-input.html',
                                page_title=page_title,
                                error_postcode=error_postcode,

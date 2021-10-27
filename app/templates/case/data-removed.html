@@ -1,16 +1,12 @@
 {%- extends 'base.html' -%}
 
-{%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 
 {%- block main -%}
 
-    <h1></h1>
+    <h1>Data removal request logged</h1>
 
-    {%- call onsQuestion({
-        "title": "The contact number has been updated"
-    }) -%}
-    {%- endcall -%}
+    <p>A data removal request has been submitted</p>
 
     {{
         onsButton({

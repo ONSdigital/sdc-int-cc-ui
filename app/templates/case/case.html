@@ -4,42 +4,6 @@
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from "components/collapsible/_macro.njk" import onsCollapsible -%}
 
-{%- if case.createdDateTime -%}
-    {%- set creation_datetime = case.createdDateTime | datetimefilter -%}
-{%- else -%}
-    {%- set creation_datetime = 'Not available' -%}
-{%- endif -%}
-
-{%- if case.lastUpdated -%}
-    {%- set last_updated = case.lastUpdated | datetimefilter -%}
-{%- else -%}
-    {%- set last_updated = 'Not available' -%}
-{%- endif -%}
-
-{%- set address_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Record invalid address',
-                'url': '#',
-                "variants": 'disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
-            })
-        }}
-{%- endset -%}
-
-{%- set telephone_button -%}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Update contact number',
-                'url': url_for('case.update_contact_number', case_id=case_id, org=org)
-            })
-        }}
-{%- endset -%}
-
 {%- block main -%}
 
     <h1>Case: {{ case.id or 'Not available' }}</h1>
@@ -104,11 +68,7 @@
             onsButton({
                 'type': 'button',
                 'text': 'Log data removal request',
-                'url': '#',
-                "variants": 'disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
+                'url': url_for('case.data_removal_request', case_id=case_id, org=org),
             })
         }}
     </div>
@@ -157,11 +117,11 @@
     </div>
 
 
-    <h2>Address and contact information</h2>
+    <h2>Contact information</h2>
 
     {{
         onsTable({
-            'caption': 'Address and contact information',
+            'caption': 'Contact information',
             'hideCaption': 'true',
             'id': 'basic-table',
             'ths': [
@@ -170,9 +130,79 @@
                 },
                 {
                     'value': 'Value'
+                }
+            ],
+            'trs': [
+                {
+                    'tds': [
+                        {
+                            'value': 'First name',
+                            'name': 'first-name'
+                        },
+                        {
+                            'value': 'Bob'
+                        }
+                    ]
                 },
                 {
-                    'value': 'Actions'
+                    'tds': [
+                        {
+                            'value': 'Last name',
+                            'name': 'last-name'
+                        },
+                        {
+                            'value': 'Bobbington'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Email',
+                            'name': 'email'
+                        },
+                        {
+                            'value': 'bob.bobbington@thebobbingtons.uk'
+                        }
+                    ]
+                },
+                {
+                    'tds': [
+                        {
+                            'value': 'Telephone',
+                            'name': 'telephone'
+                        },
+                        {
+                            'value': '070 0000 0001'
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
+
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Update contact details',
+            'url': url_for('case.update_contact_details', case_id=case_id, org=org),
+            'classes': 'ons-u-mb-l'
+        })
+    }}
+
+    <h2>Address information</h2>
+
+    {{
+        onsTable({
+            'caption': 'Address information',
+            'hideCaption': 'true',
+            'id': 'basic-table',
+            'ths': [
+                {
+                    'value': 'Field'
+                },
+                {
+                    'value': 'Value'
                 }
             ],
             'trs': [
@@ -184,9 +214,6 @@
                         },
                         {
                             'value': addr.addressLine1
-                        },
-                        {
-                            'value': address_button
                         }
                     ]
                 },
@@ -233,25 +260,19 @@
                             'value': addr.postcode
                         }
                     ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Telephone',
-                            'name': 'telephone'
-                        },
-                        {
-                            'value': '070 0000 0001'
-                        },
-                        {
-                            'value': telephone_button
-                        }
-                    ]
                 }
             ]
         })
     }}
 
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Record invalid address',
+            'url': url_for('case.invalidate_address', case_id=case_id, org=org),
+            'classes': 'ons-u-mb-l'
+        })
+    }}
 
     {% set additional_case_data_content %}
         {{

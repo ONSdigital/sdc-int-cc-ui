@@ -1,0 +1,65 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/radios/_macro.njk' import onsRadios -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- set form_confirmation_options = [
+                {
+                    'id': 'yes',
+                    'label': {
+                        'text': 'Yes, request data removal'
+                    },
+                    'value': 'yes'
+                },
+                {
+                    'id': 'no',
+                    'label': {
+                        'text': 'No, return to case'
+                    },
+                    'value': 'no'
+                }
+            ]
+-%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    {%- call onsQuestion({
+        'title': "Confirmation that the caller wishes to have there data removed from the studies system",
+        'instruction': 'Inform the caller that this will remove there data, and prevent them being called further for this survey, however they may still be contacted for future studies'
+    }) -%}
+
+        {{
+            onsRadios({
+                'name': 'form-case-data-removal-request',
+                'radios': form_confirmation_options,
+                'legend': "Confirm data removal",
+                'legendClasses': 'ons-u-mt-xl',
+                'error': error_confirmation
+            })
+        }}
+
+    {%- endcall -%}
+
+    <div class="ons-btn-group ons-u-mt-l">
+        {{
+            onsButton({
+                'text': 'Continue',
+                'submitType': 'loader'
+            })
+        }}
+    </div>
+
+
+{%- endblock -%}

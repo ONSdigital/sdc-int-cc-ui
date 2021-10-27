@@ -154,6 +154,21 @@ class ProcessPostcode:
         return postcode
 
 
+class ProcessEmail:
+    email_validation_pattern = re.compile(r'(^[^@\s]+@[^@\s]+\.[^@\s]+$)')
+
+    @staticmethod
+    def validate_email(email):
+
+        for character in string.whitespace + OBSCURE_WHITESPACE:
+            email = email.replace(character, '')
+
+        if not ProcessEmail.email_validation_pattern.fullmatch(email):
+            raise InvalidDataError("Enter a valid email address", message_type='invalid')
+
+        return email
+
+
 class CCSvc:
     @staticmethod
     async def get_case_by_id(case):
