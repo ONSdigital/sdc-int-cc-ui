@@ -1,11 +1,9 @@
-DESIGN_SYSTEM_VERSION=`cat .design-system-version`
-
 clean:
 	rm -rf templates/components
 	rm -rf templates/layout
 
 load-design-system-templates:
-	./scripts/load_templates.sh $(DESIGN_SYSTEM_VERSION)
+	./scripts/load_templates.sh
 
 build: load-design-system-templates
 
