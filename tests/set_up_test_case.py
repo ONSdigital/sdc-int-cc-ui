@@ -21,7 +21,7 @@ class SetUpTestCase(unittest.TestCase):  # pylint: disable=too-many-public-metho
         return self._application
 
     def _set_up_app(self, setting_overrides=None):
-        self._redis = patch("app.setup.redis.Redis", fakeredis.FakeStrictRedis)
+        self._redis = patch("app.setup.Session", fakeredis.FakeStrictRedis)
         self._redis.start()
 
         configure_logging()
@@ -48,6 +48,7 @@ class SetUpTestCase(unittest.TestCase):  # pylint: disable=too-many-public-metho
 
         The URL will be cached for future POST requests.
 
+        :param follow_redirects:
         :param url: the URL to GET
         """
         response = self._client.get(url, follow_redirects=follow_redirects, **kwargs)
@@ -71,8 +72,6 @@ class SetUpTestCase(unittest.TestCase):  # pylint: disable=too-many-public-metho
         self.assertIsNotNone(url)
 
         _post_data = (post_data.copy() or {}) if post_data else {}
-        if self.last_csrf_token is not None:
-            _post_data.update({"csrf_token": self.last_csrf_token})
 
         if action:
             _post_data.update({f"action[{action}]": ""})

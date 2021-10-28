@@ -127,8 +127,7 @@ def setup_secure_headers(application):
 
 
 def setup_redis(application):
-    server_session = Session(application)
-    application.cc["ephemeral_storage"] = redis.Redis(application.config["SESSION_REDIS"])
+    Session(application)
 
 
 def add_blueprints(application):
