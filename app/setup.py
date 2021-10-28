@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import Dict
 from uuid import uuid4
 
-from redis import Redis
+import redis
 from flask import Flask
 from flask import request as flask_request
 from flask import session as cookie_session
@@ -128,6 +128,7 @@ def setup_secure_headers(application):
 
 def setup_redis(application):
     server_session = Session(application)
+    application.cc["ephemeral_storage"] = redis.Redis(application.config["SESSION_REDIS"])
 
 
 def add_blueprints(application):

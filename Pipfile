@@ -21,6 +21,8 @@ structlog = "*"
 simplejson = "*"
 flask-talisman = "*"
 python-dotenv = "*"
+mock = "*"
+bs4 = "*"
 
 [requires]
 python_version = "3.9"
