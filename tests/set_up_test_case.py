@@ -13,6 +13,12 @@ from application import configure_logging
 
 class SetUpTestCase(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def setUp(self):
+        # Cache for requests
+        self.last_url = None
+        self.last_response = None
+        self.redirect_url = None
+        self.last_response_headers = None
+
         # Perform setup steps
         self._set_up_app()
 

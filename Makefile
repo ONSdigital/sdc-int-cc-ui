@@ -5,7 +5,7 @@ clean:
 	rm -rf templates/layout
 
 load-design-system-templates:
-	./scripts/load_templates.sh
+	./scripts/load_templates.sh $(DESIGN_SYSTEM_VERSION)
 
 build: load-design-system-templates
 

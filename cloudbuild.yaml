@@ -8,7 +8,7 @@ steps:
     - |
       date
       echo "Loading Pattern Library Templates"
-      ./scripts/load_templates.sh
+      ./scripts/load_templates.sh $('cat .design-system-version')
       date
       echo "Pip Install"
       date
