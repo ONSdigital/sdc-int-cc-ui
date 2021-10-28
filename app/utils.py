@@ -7,7 +7,7 @@ from flask import current_app, abort, json
 from unicodedata import normalize
 from datetime import datetime
 from pytz import utc
-from .errors.handlers import InvalidDataError, Case404, UPRN404
+from app.routes.errors import InvalidDataError, Case404, UPRN404
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
@@ -172,12 +172,12 @@ class ProcessEmail:
 class CCSvc:
     @staticmethod
     async def get_case_by_id(case):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case}'
 
         try:
-            cc_return = requests.get(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                current_app.config['CC_SVC_PWD']))
+            cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                current_app.config['CCSVC_PASSWORD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for get_case_by_id call: ' + str(err.response))
@@ -194,12 +194,12 @@ class CCSvc:
 
     @staticmethod
     async def get_case_by_uprn(uprn):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/uprn/{uprn}'
 
         try:
-            cc_return = requests.get(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                current_app.config['CC_SVC_PWD']))
+            cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                current_app.config['CCSVC_PASSWORD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for get_case_by_uprn call: ' + str(err))
@@ -215,7 +215,7 @@ class CCSvc:
 
     @staticmethod
     async def post_case_refusal(case_id, reason, is_householder=False):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/refusal'
         refusal_json = {
             'caseId': case_id,
@@ -226,8 +226,8 @@ class CCSvc:
         }
         current_app.logger.info('is_householder: ' + str(is_householder))
         try:
-            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                 current_app.config['CC_SVC_PWD']),
+            cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                 current_app.config['CCSVC_PASSWORD']),
                                       json=refusal_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -241,12 +241,12 @@ class CCSvc:
 
     @staticmethod
     async def get_addresses_by_postcode(postcode):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/addresses/postcode'
         params = {'postcode': postcode, 'limit': 5000}
         try:
-            cc_return = requests.get(url, params=params, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                               current_app.config['CC_SVC_PWD']))
+            cc_return = requests.get(url, params=params, auth=(current_app.config['CCSVC_USERNAME'],
+                                                               current_app.config['CCSVC_PASSWORD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for addresses by postcode call: ' + str(err))
@@ -259,13 +259,13 @@ class CCSvc:
 
     @staticmethod
     async def get_addresses_by_input(input_text):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/addresses'
         params = {'input': input_text}
         current_app.logger.info('Trying ' + input_text)
         try:
-            cc_return = requests.get(url, params=params, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                               current_app.config['CC_SVC_PWD']))
+            cc_return = requests.get(url, params=params, auth=(current_app.config['CCSVC_USERNAME'],
+                                                               current_app.config['CCSVC_PASSWORD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             current_app.logger.warn('Error returned by CCSvc for addresses by input call: ' + str(err))
@@ -278,7 +278,7 @@ class CCSvc:
 
     @staticmethod
     async def get_fulfilments(product_group, delivery_channel, region):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/fulfilments'
         params = {
             'caseType': 'HH',
@@ -289,8 +289,8 @@ class CCSvc:
         }
 
         try:
-            cc_return = requests.get(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                current_app.config['CC_SVC_PWD']),
+            cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                current_app.config['CCSVC_PASSWORD']),
                                      params=params)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -304,7 +304,7 @@ class CCSvc:
 
     @staticmethod
     async def post_sms_fulfilment(case_id, fulfilment_code, tel_no):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/fulfilment/sms'
         fulfilment_json = {
             'caseId': case_id,
@@ -313,8 +313,8 @@ class CCSvc:
             'telNo': tel_no
         }
         try:
-            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                 current_app.config['CC_SVC_PWD']),
+            cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                 current_app.config['CCSVC_PASSWORD']),
                                       json=fulfilment_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -328,7 +328,7 @@ class CCSvc:
 
     @staticmethod
     async def post_postal_fulfilment(case_id, fulfilment_code, first_name, last_name):
-        cc_svc_url = current_app.config['CC_SVC_URL']
+        cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/fulfilment/post'
         fulfilment_json = {
             'caseId': case_id,
@@ -338,8 +338,8 @@ class CCSvc:
             'surname': last_name
         }
         try:
-            cc_return = requests.post(url, auth=(current_app.config['CC_SVC_USERNAME'],
-                                                 current_app.config['CC_SVC_PWD']),
+            cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                 current_app.config['CCSVC_PASSWORD']),
                                       json=fulfilment_json)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:

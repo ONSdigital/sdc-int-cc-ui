@@ -1,9 +1,11 @@
 import flask
+from flask import Blueprint
 
-from . import case_bp
 from flask import render_template, request, redirect, url_for, flash, current_app, session
 from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
-from app.errors.handlers import InvalidDataError
+from app.routes.errors import InvalidDataError
+
+case_bp = Blueprint('case', __name__)
 
 
 @case_bp.route(r'/<org>/case/<case_id>/', methods=['GET'])

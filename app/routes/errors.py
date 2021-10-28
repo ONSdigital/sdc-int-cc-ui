@@ -1,5 +1,7 @@
 from flask import render_template
-from . import errors_bp
+from flask import Blueprint
+
+errors_bp = Blueprint('errors', __name__)
 
 
 class InvalidDataError(Exception):

@@ -9,3 +9,5 @@ setuptools==57.2.0
 pytest==6.2.4
 
 redis~=3.5.3
+structlog~=21.2.0
+simplejson~=3.17.5

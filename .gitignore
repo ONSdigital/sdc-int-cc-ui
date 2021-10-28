@@ -1,8 +1,8 @@
 # Design System Templates
 .idea/
 app/cc_ui.egg-info/
-app/templates/components/
-app/templates/layout/
+templates/components/
+templates/layout/
 htmlcov/
 .coverage
 coverage.xml

@@ -1,5 +1,7 @@
-from . import to_bp
 from flask import render_template
+from flask import Blueprint
+
+to_bp = Blueprint('to', __name__)
 
 
 @to_bp.route('/to/')

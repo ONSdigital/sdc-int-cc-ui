@@ -11,7 +11,7 @@ def client():
 
 
 class TestErrors:
-    def disable_test_404_renders_template(self, client):
+    def test_404_renders_template(self, client):
         response = client.get('/unknown-path')
         assert response.status_code == 404
         print(response)

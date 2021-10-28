@@ -1,7 +1,9 @@
-from . import sel_bp
 from flask import render_template, request, redirect, url_for, flash, current_app, get_flashed_messages, session
 from app.utils import CCSvc, ProcessPostcode, Common
-from app.errors.handlers import InvalidDataError
+from app.routes.errors import InvalidDataError
+from flask import Blueprint
+
+sel_bp = Blueprint('sel', __name__)
 
 
 @sel_bp.route('/sel/')

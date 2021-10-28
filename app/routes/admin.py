@@ -1,5 +1,7 @@
-from . import admin_bp
+from flask import Blueprint
 from flask import render_template, request, redirect, url_for
+
+admin_bp = Blueprint("admin", __name__)
 
 
 @admin_bp.route('/admin/')
