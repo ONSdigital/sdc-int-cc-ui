@@ -1,7 +1,7 @@
 import pytest
 
 from app.utils import ProcessPostcode, ProcessMobileNumber
-from app.errors.handlers import InvalidDataError
+from app.routes.errors import InvalidDataError
 
 
 class TestPostcodeValidation:

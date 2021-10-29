@@ -9,3 +9,11 @@ setuptools==57.2.0
 pytest==6.2.4
 
 redis~=3.5.3
+structlog~=21.2.0
+simplejson~=3.17.5
+fakeredis~=1.6.1
+mock~=4.0.3
+itsdangerous~=2.0.1
+bs4~=0.0.1
+beautifulsoup4~=4.10.0
+flask-talisman~=0.8.1
