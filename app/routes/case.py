@@ -52,11 +52,7 @@ async def request_refusal(org, case_id):
     if request.method == 'POST':
         if 'form-case-request-refusal-reason' in request.form:
             reason = request.form['form-case-request-refusal-reason']
-            if 'form-case-request-refusal-householder' in request.form:
-                is_householder = True
-            else:
-                is_householder = False
-            await CCSvc.post_case_refusal(case_id, reason, is_householder)
+            await CCSvc.post_case_refusal(case_id, reason)
             return redirect(url_for('case.refused', case_id=case_id, org=org))
         else:
             flash('Select a reason', 'error_reason')
@@ -68,10 +64,14 @@ async def request_refusal(org, case_id):
             page_title = Common.page_title_error_prefix + page_title
             error_reason = {'id': 'error_reason', 'text': 'Select an option'}
 
+        refusal_options = ProcessJsonForOptions.options_from_json('refusals.json')
+
         return render_template('case/request-refusal.html',
                                case_id=case_id,
                                page_title=page_title,
-                               error_reason=error_reason, org=org)
+                               error_reason=error_reason,
+                               refusal_options=refusal_options,
+                               org=org)
 
 
 @case_bp.route('/<org>/case/<case_id>/refused/', methods=['GET'])

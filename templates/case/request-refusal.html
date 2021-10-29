@@ -3,7 +3,6 @@
 {%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from 'components/radios/_macro.njk' import onsRadios -%}
-{%- from 'components/checkboxes/_macro.njk' import onsCheckboxes -%}
 
 {%- set form =  {
     'method': 'POST',
@@ -11,24 +10,6 @@
         'action': ''
     }
 } -%}
-
-{%- set form_reason_options = [
-                {
-                    'id': 'extraordinary',
-                    'label': {
-                        'text': 'Extraordinary'
-                    },
-                    'value': 'extraordinary'
-                },
-                {
-                    'id': 'hard',
-                    'label': {
-                        'text': 'Hard'
-                    },
-                    'value': 'hard'
-                }
-            ]
--%}
 
 {%- block main -%}
 
@@ -43,29 +24,13 @@
     {{
         onsRadios({
             'name': 'form-case-request-refusal-reason',
-            'radios': form_reason_options,
+            'radios': refusal_options,
             'legend': "What is the caller's reason for refusal?",
             'legendClasses': 'ons-u-mt-xl',
             'error': error_reason
         })
     }}
 
-    {{
-        onsCheckboxes({
-            'legend': 'Is the caller the householder?',
-            'checkboxes': [
-                {
-                    'id': 'is-householder-yes',
-                    'classes': 'ons-u-mb-m',
-                    'name': 'form-case-request-refusal-householder',
-                    'label': {
-                        'text': 'The caller is the householder'
-                    },
-                    'value': 'is-householder'
-                }
-            ]
-        })
-    }}
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({

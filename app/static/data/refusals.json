@@ -1,0 +1,5 @@
+[
+  {"value": "SOFT_REFUSAL", "text": "Soft refusal"},
+  {"value": "HARD_REFUSAL", "text": "Hard refusal"},
+  {"value": "EXTRAORDINARY_REFUSAL", "text": "Extraordinary refusal"}
+]
