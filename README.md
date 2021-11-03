@@ -7,7 +7,6 @@ Placeholder for SDC Integrations Contact Center UI Readme
 To be implemented.
 
 <h3>Manually</h3>
-
 To run CCUI locally you will need a running instance of redis. This can be the same redis as is run for RHUI.
 
 To start in development mode, clone the git repo.
