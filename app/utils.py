@@ -220,9 +220,7 @@ class CCSvc:
         refusal_json = {
             'caseId': case_id,
             'dateTime': datetime.now(utc).isoformat(),
-            'agentId': '13',
-            'reason': reason,
-            'isHouseholder': 'false'
+            'reason': reason
         }
         try:
             cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
