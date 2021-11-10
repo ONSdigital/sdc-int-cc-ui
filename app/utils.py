@@ -214,17 +214,14 @@ class CCSvc:
             return cc_return.json()
 
     @staticmethod
-    async def post_case_refusal(case_id, reason, is_householder=False):
+    async def post_case_refusal(case_id, reason):
         cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/refusal'
         refusal_json = {
             'caseId': case_id,
             'dateTime': datetime.now(utc).isoformat(),
-            'agentId': '13',
-            'reason': reason.upper(),
-            'isHouseholder': is_householder
+            'reason': reason
         }
-        current_app.logger.info('is_householder: ' + str(is_householder))
         try:
             cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
                                                  current_app.config['CCSVC_PASSWORD']),
