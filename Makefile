@@ -11,4 +11,4 @@ link-development-env:
 	ln -sf .development.env .env
 
 run: build link-development-env
-	pipenv run flask run
+	pipenv run flask run --port 5001

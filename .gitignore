@@ -6,3 +6,4 @@ templates/layout/
 htmlcov/
 .coverage
 coverage.xml
+.env
