@@ -1,0 +1,7 @@
+[
+  {"value": "FULFILMENT_REQUESTED", "text": "New Access Code Requested"},
+  {"value": "FULFILMENT_SMS", "text": "Requested by text"},
+  {"value": "CASE_NOTE_ADDED", "text": "Note added by operator"},
+  {"value": "OUTBOUND_PRIORITISED_CALL", "text": "Outgoing call"},
+  {"value": "CALL_UNANSWERED", "text": "No answer to outgoing call"}
+]

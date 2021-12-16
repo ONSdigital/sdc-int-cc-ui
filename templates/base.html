@@ -25,11 +25,34 @@
 
 {%- set pageConfig = {
     'title': page_title_value,
-    'header': {
-        'logoHref': 'https://www.ons.gov.uk/',
-        'title': 'Contact Centre',
-        'titleLogoHref': '/',
-    },
     'signoutButton': signout_button_value,
     'footer': footer_content
 } -%}
+
+{%- block header -%}
+    {% from "components/header/_macro.njk" import onsHeader %}
+
+    {{
+        onsHeader({
+            "title": 'Contact Centre',
+            "logoHref": 'https://www.ons.gov.uk/',
+            "classes": 'ons-header--internal',
+            "mobileLogo": 'ons-logo-stacked-en',
+            "titleLogoHref": '/',
+            'fullWidth': 'true',
+            "serviceLinks": {
+                "itemsList": [
+                    {
+                        "title": "My Account",
+                        "url": "#0"
+                    },
+                    {
+                        "title": "Sign out",
+                        "url": "#0"
+                    }
+                ]
+            }
+        })
+    }}
+
+{%- endblock header -%}
