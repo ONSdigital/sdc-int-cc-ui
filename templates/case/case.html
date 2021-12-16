@@ -1,4 +1,4 @@
-{%- extends 'base-wide.html' -%}
+{%- extends 'base.html' -%}
 
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
@@ -14,7 +14,7 @@
 
 {%- block main -%}
 
-    <h1 class="ons-u-mt-xl">Case: {{ case.id or 'Not available' }}</h1>
+    <h1>Case: {{ case.id or 'Not available' }}</h1>
 
     <div class="ons-grid">
         <div class="ons-grid__col ons-col-6@m">

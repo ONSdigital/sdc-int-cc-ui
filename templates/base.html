@@ -15,18 +15,10 @@
     -%}
 {%- endif -%}
 
-{%- set footer_content = {
-        'copyrightDeclaration': {
-            'copyright': 'Crown copyright and database rights 2020 OS 100019153.',
-            'text': 'Use of address data is subject to the terms and conditions.'
-        }
-    }
--%}
-
 {%- set pageConfig = {
     'title': page_title_value,
     'signoutButton': signout_button_value,
-    'footer': footer_content
+    'pageColNumber': '12'
 } -%}
 
 {%- block header -%}
@@ -39,7 +31,7 @@
             "classes": 'ons-header--internal',
             "mobileLogo": 'ons-logo-stacked-en',
             "titleLogoHref": '/',
-            'fullWidth': 'true',
+            'wide': 'true',
             "serviceLinks": {
                 "itemsList": [
                     {
@@ -56,3 +48,48 @@
     }}
 
 {%- endblock header -%}
+
+{%- block footer -%}
+
+{% from "components/footer/_macro.njk" import onsFooter %}
+{{
+    onsFooter({
+        'wide': 'true',
+        "rows": [
+            {
+                "itemsList": [
+                    {
+                        "text": 'Help',
+                        "url": '#0'
+                    },
+                    {
+                        "text": 'Cookies and privacy',
+                        "url": '#0'
+                    },
+                    {
+                        "text": 'Accessibility',
+                        "url": '#0'
+                    }
+                ]
+            }
+        ],
+        "OGLLink": {
+            "pre": 'All content is available under the',
+            "link": 'Open Government Licence v3.0',
+            "url": 'https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/',
+            "post": ', except where otherwise stated'
+        }
+    })
+}}
+
+{%- endblock footer -%}
+
+{%- block pageContent -%}
+<div class="ons-page__container ons-container ons-container--wide">
+    <div class="ons-grid">
+        <div class="ons-grid__col ons-col-12@m ons-u-mt-l ons-u-mb-l">
+            {%- block main -%}{%- endblock -%}
+        </div>
+    </div>
+</div>
+{%- endblock pageContent -%}

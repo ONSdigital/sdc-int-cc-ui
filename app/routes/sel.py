@@ -184,14 +184,14 @@ async def address_not_found():
 @sel_bp.route('/sel/uprn/<uprn>', methods=['GET'])
 async def uprn_list(uprn):
     if uprn:
-        cc_return = await CCSvc.get_case_by_uprn(uprn)
+        cc_return = await CCSvc.get_cases_by_attribute('uprn', uprn)
         case_list = []
         for single_case in cc_return:
             case_list.append({'text': 'Census 2021: Household',
                               'url': url_for('case.case', case_id=single_case['id'], org='sel')})
 
         address_output = ''
-        addr_return = cc_return[0]['address']
+        addr_return = cc_return[0]['sample']
         address_output = address_output + addr_return['addressLine1']
         if addr_return['addressLine2']:
             address_output = address_output + ', ' + addr_return['addressLine2']

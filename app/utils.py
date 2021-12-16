@@ -193,25 +193,22 @@ class CCSvc:
         return cc_return.json()
 
     @staticmethod
-    async def get_case_by_uprn(uprn):
+    async def get_cases_by_attribute(attribute_key, attribute_value):
         cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/uprn/{uprn}'
+        url = f'{cc_svc_url}/cases/attribute/{attribute_key}/{attribute_value}'
 
         try:
             cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
                                                 current_app.config['CCSVC_PASSWORD']))
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error returned by CCSvc for get_case_by_uprn call: ' + str(err))
+            current_app.logger.warn('Error returned by CCSvc for get_cases_by_attribute call: ' + str(err))
             raise abort(500)
         except requests.exceptions.ConnectionError:
             current_app.logger.warn('Error: Unable to connect to CCSvc')
             raise abort(500)
 
-        if not cc_return.json():
-            raise UPRN404
-        else:
-            return cc_return.json()
+        return cc_return.json()
 
     @staticmethod
     async def post_case_refusal(case_id, reason):
