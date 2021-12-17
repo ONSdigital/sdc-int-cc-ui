@@ -184,21 +184,23 @@
         </div>
     </div>
 
-    <div class="ons-grid">
-        <div class="ons-grid__col ons-col-8@m">
-            <h2 class="ons-u-mt-xl">Case history</h2>
+    {%- if interactions -%}
+
+        <div class="ons-grid">
+            <div class="ons-grid__col ons-col-8@m">
+                <h2 class="ons-u-mt-xl">Case history</h2>
+            </div>
+            <div class="ons-grid__col ons-col-4@m ons-u-rtl ons-u-mt-xl ons-u-mb-m">
+                {{
+                    onsButton({
+                        'type': 'button',
+                        'text': 'Add call notes',
+                        'url': url_for('case.add_case_note', case_id=case_id, org=org),
+                        'iconType': 'False'
+                    })
+                }}
+            </div>
         </div>
-        <div class="ons-grid__col ons-col-4@m ons-u-rtl ons-u-mt-xl ons-u-mb-m">
-            {{
-                onsButton({
-                    'type': 'button',
-                    'text': 'Add call notes',
-                    'url': url_for('case.add_case_note', case_id=case_id, org=org),
-                    'iconType': 'False'
-                })
-            }}
-        </div>
-    </div>
 
         {{
             onsTable({
@@ -228,6 +230,6 @@
                 'trs': interactions
             })
         }}
-
+    {%- endif -%}
 
 {%- endblock -%}

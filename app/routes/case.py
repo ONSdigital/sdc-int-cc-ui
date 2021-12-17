@@ -15,7 +15,10 @@ async def case(org, case_id):
         page_title = 'Case ' + case_id
         cc_return = await CCSvc.get_case_by_id(case_id)
         sample = cc_return['sample']
-        interactions = Case.build_case_history_content(cc_return['interactions'])
+        if cc_return.get('interactions'):
+            interactions = Case.build_case_history_content(cc_return['interactions'])
+        else:
+            interactions = ''
         return render_template('case/case.html', case=cc_return, sample=sample, interactions=interactions,
                                case_id=case_id, page_title=page_title, org=org)
     else:
