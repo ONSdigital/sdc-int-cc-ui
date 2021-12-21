@@ -1,0 +1,21 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>No cases found</h1>
+
+    <p>There are no cases found for this address. Please try an alternative method.</p>
+
+    <div class="ons-u-mt-l ons-u-mb-l">
+        {{
+            onsButton({
+                'text': 'Try another method',
+                'classes': 'ons-u-mt-l',
+                'url': url_for('sel.sel_home')
+            })
+        }}
+    </div>
+
+{%- endblock -%}
