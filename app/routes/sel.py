@@ -188,7 +188,7 @@ async def uprn_list(uprn):
         case_list = []
         for single_case in cc_return:
             case_list.append({'text': 'Census 2021: Household',
-                              'url': url_for('case.case', case_id=single_case['caseId'], org='sel')})
+                              'url': url_for('case.case', case_id=single_case['id'], org='sel')})
 
         address_output = ''
         sample_return = cc_return[0]['sample']
