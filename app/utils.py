@@ -7,7 +7,7 @@ from flask import current_app, abort, json
 from unicodedata import normalize
 from datetime import datetime
 from pytz import utc
-from app.routes.errors import InvalidDataError, Case404, UPRN404
+from app.routes.errors import InvalidDataError, Case404
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
