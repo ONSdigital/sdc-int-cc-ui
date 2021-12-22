@@ -1,0 +1,21 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/button/_macro.njk' import onsButton -%}
+
+{%- block main -%}
+
+    <h1>There are no cases for this address</h1>
+
+    <p>Confirm this is the correct address, and that the it is the address the caller was asked to complete the survey for</p>
+
+    <div class="ons-u-mt-l ons-u-mb-l">
+        {{
+            onsButton({
+                'text': 'Try another method',
+                'classes': 'ons-u-mt-l',
+                'url': url_for('sel.sel_home')
+            })
+        }}
+    </div>
+
+{%- endblock -%}

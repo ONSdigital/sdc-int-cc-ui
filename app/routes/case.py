@@ -13,8 +13,8 @@ async def case(org, case_id):
     if case_id:
         page_title = 'Case ' + case_id
         cc_return = await CCSvc.get_case_by_id(case_id)
-        address = cc_return['address']
-        return render_template('case/case.html', case=cc_return, addr=address, case_id=case_id,
+        sample = cc_return['sample']
+        return render_template('case/case.html', case=cc_return, sample=sample, case_id=case_id,
                                page_title=page_title, org=org)
     else:
         return render_template('errors/500.html')
@@ -140,7 +140,7 @@ async def request_code_by_text(org, case_id):
                     error_mobile = {'id': 'error_mobile', 'text': message}
 
         cc_return = await CCSvc.get_case_by_id(case_id)
-        region = cc_return['address']['region']
+        region = cc_return['sample']['region']
         current_app.logger.info('Region: ' + str(region))
         fulfilments = await CCSvc.get_fulfilments('UAC', 'SMS', region)
 
@@ -188,7 +188,7 @@ async def request_code_by_post(org, case_id):
             fulfilment_code = request.form['form-case-fulfilment']
         else:
             cc_return = await CCSvc.get_case_by_id(case_id)
-            region = cc_return['address']['region']
+            region = cc_return['sample']['region']
             fulfilments = await CCSvc.get_fulfilments('UAC', 'POST', region)
             fulfilment_code = fulfilments[0]['fulfilmentCode']
 
@@ -242,7 +242,7 @@ async def request_code_by_post(org, case_id):
                 error_last_name = {'id': 'error_last_name', 'text': message}
 
         cc_return = await CCSvc.get_case_by_id(case_id)
-        region = cc_return['address']['region']
+        region = cc_return['sample']['region']
         fulfilments = await CCSvc.get_fulfilments('UAC', 'POST', region)
         if len(fulfilments) == 1:
             return render_template('case/request-code-by-post.html',
