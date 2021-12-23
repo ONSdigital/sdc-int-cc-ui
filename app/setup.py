@@ -2,7 +2,6 @@ from copy import deepcopy
 from typing import Dict
 from uuid import uuid4
 
-import redis
 from flask import Flask
 from flask import request as flask_request
 from flask import session as cookie_session

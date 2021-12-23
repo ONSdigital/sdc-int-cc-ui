@@ -4,7 +4,7 @@ import re
 import os
 
 from flask import current_app, abort, json
-from unicodedata import normalize
+from unicodedata2 import normalize
 from datetime import datetime
 from pytz import utc
 from app.routes.errors import InvalidDataError, Case404
