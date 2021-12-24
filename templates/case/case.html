@@ -14,7 +14,7 @@
 
 {%- block main -%}
 
-    <h1>Case: {{ case.id or 'Not available' }}</h1>
+    <h1>Case: {{ case.caseRef or 'Not available' }}</h1>
 
     <div class="ons-grid">
         <div class="ons-grid__col ons-col-6@m">
@@ -28,11 +28,12 @@
                             {
                                 'tds': [
                                     {
-                                        'value': 'Case id:',
-                                        'name': 'case-id'
+                                        'value': 'Case Ref:',
+                                        'name': 'case-ref',
+                                        'tdClasses': 'ons-u-fs-r--b'
                                     },
                                     {
-                                        'value': case.id
+                                        'value': case.caseRef
                                     },
                                     {
                                         "numeric": true,
@@ -54,7 +55,8 @@
                                 'tds': [
                                     {
                                         'value': 'Address:',
-                                        'name': 'address'
+                                        'name': 'address',
+                                        'tdClasses': 'ons-u-fs-r--b'
                                     },
                                     {
                                         'value': address
@@ -69,19 +71,21 @@
                                 'tds': [
                                     {
                                         'value': 'Region:',
-                                        'name': 'region'
+                                        'name': 'region',
+                                        'tdClasses': 'ons-u-fs-r--b'
                                     },
                                     {
                                         'value': sample.region
+                                    },
+                                    {
+                                        "numeric": true,
+                                        'value': '<a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a>'
                                     }
                                 ]
                             }
                         ]
                     })
                 }}
-            <div class="ons-u-rtl">
-                <a href="{{ url_for('case.request_refusal', case_id=case_id, org=org) }}">Submit refusal</a>
-            </div>
 
         </div>
         <div class="ons-grid__col ons-push-1@m ons-col-5@m">
@@ -96,7 +100,8 @@
                             'tds': [
                                 {
                                     'value': 'First name:',
-                                    'name': 'first-name'
+                                    'name': 'first-name',
+                                    'tdClasses': 'ons-u-fs-r--b'
                                 },
                                 {
                                     'value': 'Bob'
@@ -108,7 +113,8 @@
                             'tds': [
                                 {
                                     'value': 'Last name:',
-                                    'name': 'last-name'
+                                    'name': 'last-name',
+                                    'tdClasses': 'ons-u-fs-r--b'
                                 },
                                 {
                                     'value': 'Bobbington'
@@ -120,7 +126,8 @@
                             'tds': [
                                 {
                                     'value': 'Home phone:',
-                                    'name': 'home-phone'
+                                    'name': 'home-phone',
+                                    'tdClasses': 'ons-u-fs-r--b'
                                 },
                                 {
                                     'value': '014 2000 0001'
@@ -140,7 +147,8 @@
                             'tds': [
                                 {
                                     'value': 'Mobile phone:',
-                                    'name': 'mobile-phone'
+                                    'name': 'mobile-phone',
+                                    'tdClasses': 'ons-u-fs-r--b'
                                 },
                                 {
                                     'value': '070 0000 0001'
@@ -160,7 +168,8 @@
                             'tds': [
                                 {
                                     'value': 'Email:',
-                                    'name': 'email'
+                                    'name': 'email',
+                                    'tdClasses': 'ons-u-fs-r--b'
                                 },
                                 {
                                     'value': 'bob.bobbington@thebobbingtons.uk'
@@ -204,7 +213,7 @@
 
         {{
             onsTable({
-                "variants": 'sortable',
+                "variants": ['compact', 'row-hover', 'sortable'],
                 "sortBy": "Sort by",
                 "ariaAsc": "ascending",
                 "ariaDesc": "descending",
@@ -215,6 +224,10 @@
                         'ariaSort': 'descending'
                     },
                     {
+                        'value': 'Source',
+                        'ariaSort': 'none'
+                    },
+                    {
                         'value': 'Event',
                         'ariaSort': 'none'
                     },
@@ -223,7 +236,7 @@
                         'ariaSort': 'none'
                     },
                     {
-                        'value': 'Operator',
+                        'value': 'User',
                         'ariaSort': 'none'
                     }
                 ],

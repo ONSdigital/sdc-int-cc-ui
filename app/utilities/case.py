@@ -1,7 +1,32 @@
-import os
-
 from datetime import datetime
-from flask import current_app, json
+
+case_interactions = {
+    "MANUAL_CASE_VIEW": "View case",
+    "SCHEDULED_CASE_VIEW": "Scheduled case view",
+    "SOFT_APPOINTMENT_MADE": "Soft appointment made",
+    "HARD_APPOINTMENT_MADE": "Hard appointment made",
+    "REFUSAL_REQUESTED": "Refusal requested",
+    "CASE_UPDATE_REQUESTED": "Case update requested",
+    "CONTACT_UPDATE_REQUESTED": "Contact update requested",
+    "DATA_REMOVAL_REQUESTED": "Data removal requested",
+    "TELEPHONE_CAPTURE_STARTED": "Telephone capture started",
+    "FULFILMENT_REQUESTED": "New Access Code Requested",
+    "CASE_NOTE_ADDED": "Note added by user",
+    "OUTBOUND_APPOINTMENT_CALL": "Outgoing appointment call",
+    "OUTBOUND_PRIORITISED_CALL": "Outgoing prioritised call",
+    "OUTBOUND_MANUAL_CALL": "Outgoing manual call"
+}
+
+case_sub_interactions = {
+    "CALL_NUMBER_ENGAGED": "engaged",
+    "CALL_NUMBER_UNOBTAINABLE": "unobtainable",
+    "CALL_ANSWERED": "answered",
+    "CALL_UNANSWERED": "not answered",
+    "CALL_VOICEMAIL": "went to voicemail",
+    "FULFILMENT_PRINT": "print",
+    "FULFILMENT_SMS": "SMS",
+    "FULFILMENT_EMAIL": "email"
+}
 
 
 class Case:
@@ -20,7 +45,10 @@ class Case:
                         'dataSort': formatted_sort_date
                     },
                     {
-                        'value': Case.enum_to_real_text(interaction['interaction'], 'case-history-enums.json')
+                        'value': interaction['interactionSource']
+                    },
+                    {
+                        'value': Case.interaction_event(interaction)
                     },
                     {
                         'value': interaction['note']
@@ -33,10 +61,10 @@ class Case:
         return case_history
 
     @staticmethod
-    def enum_to_real_text(lookup_enum, lookup_filename):
-        filename = os.path.join(current_app.static_folder, 'data', lookup_filename)
-        with open(filename) as file:
-            data = json.load(file)
-            for enum in data:
-                if enum['value'] == lookup_enum:
-                    return enum['text']
+    def interaction_event(interaction):
+        event_type = interaction['interaction']
+        event = case_interactions.get(event_type, event_type)
+        outcome = case_sub_interactions.get(interaction['subInteraction'], "")
+        if outcome:
+            event = event + ' (' + outcome + ')'
+        return event
