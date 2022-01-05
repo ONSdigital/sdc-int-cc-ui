@@ -88,7 +88,9 @@
 <div class="ons-page__container ons-container ons-container--wide">
     <div class="ons-grid">
         <div class="ons-grid__col ons-col-12@m ons-u-mt-l ons-u-mb-l">
-            {%- block main -%}{%- endblock -%}
+            <main id="main-content" class="ons-page__main {{ pageClasses }}">
+                {% block main %}{% endblock %}
+            </main>
         </div>
     </div>
 </div>
