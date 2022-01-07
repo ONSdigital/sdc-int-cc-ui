@@ -6,9 +6,38 @@ from flask import Blueprint
 sel_bp = Blueprint('sel', __name__)
 
 
-@sel_bp.route('/sel/')
+@sel_bp.route('/sel/', methods=['GET', 'POST'])
 async def sel_home():
-    return render_template('sel/home.html')
+    if request.method == 'POST':
+        addr_input = request.form['form_address_input']
+        results = []
+        if addr_input:
+            cc_return = await CCSvc.get_addresses_by_input(addr_input)
+            for address in cc_return['addresses']:
+                surveys = ''
+                case_refs = ''
+                for caze in address['cases']:
+                    surveys = surveys + caze['surveyName'] + '<br/>'
+                    case_link = '<a href="' + url_for('case.case', case_id=caze['id'], org='sel') \
+                                + '">' + caze['caseRef'] + '</a>'
+                    case_refs = case_refs + case_link + '<br/>'
+
+                results.append({
+                    'tds': [
+                        {
+                            'value': address['formattedAddress']
+                        },
+                        {
+                            'value': surveys
+                        },
+                        {
+                            'value': case_refs
+                        }
+                    ]
+                })
+        return render_template('sel/home2.html', results=results, addr_input=addr_input)
+    else:
+        return render_template('sel/home2.html')
 
 
 @sel_bp.route('/sel/input/', methods=['GET', 'POST'])

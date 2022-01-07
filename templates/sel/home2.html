@@ -1,0 +1,80 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- set question_title = "Search Addresses" -%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    {%- call onsQuestion({
+        'title': question_title,
+    }) -%}
+
+        {{
+            onsInput({
+                'id': 'address_input',
+                'type': 'text',
+                "classes": 'ons-u-pb-xs',
+                'name': 'form_address_input',
+                'value': addr_input,
+                'error': error_input,
+                'label': {
+                    'text': 'Enter address or postcode'
+                },
+                'searchButton': {
+                    'text': 'Search',
+                    'iconType': 'search',
+                    'submitType': 'loader'
+                }
+            })
+        }}
+
+    {%- endcall -%}
+
+    {%- if results -%}
+       <div class="ons-grid">
+            <div class="ons-grid__col ons-col-8@m">
+                <h2 class="ons-u-mt-xl">{{ results | length }} cases found for postcode {{ addr_input }}</h2>
+            </div>
+        </div>
+
+        {{
+            onsTable({
+                "variants": ['compact', 'row-hover', 'sortable'],
+                "sortBy": "Sort by",
+                "ariaAsc": "ascending",
+                "ariaDesc": "descending",
+                'id': 'addresses-found-table',
+                'ths': [
+                    {
+                        'value': 'Address',
+                        'ariaSort': 'descending'
+                    },
+                    {
+                        'value': 'Survey',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Cases',
+                        'ariaSort': 'none'
+                    }
+                ],
+                'trs': results
+            })
+        }}
+    {%- endif -%}
+
+{%- endblock -%}
