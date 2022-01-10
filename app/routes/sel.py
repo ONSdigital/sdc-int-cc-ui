@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, current_ap
 from app.utils import CCSvc, ProcessPostcode, Common
 from app.routes.errors import InvalidDataError
 from flask import Blueprint
+import re
 
 sel_bp = Blueprint('sel', __name__)
 
@@ -22,10 +23,16 @@ async def sel_home():
                                 + '">' + caze['caseRef'] + '</a>'
                     case_refs = case_refs + case_link + '<br/>'
 
+                addr = address['formattedAddress']
+                # FIXME this doesn't handle ignoring white space
+                match = re.search(addr_input, addr)
+                if match:
+                    addr = addr[:match.start()] + '<b>' + addr_input + '<b/>' + addr[match.end():]
+
                 results.append({
                     'tds': [
                         {
-                            'value': address['formattedAddress']
+                            'value': addr
                         },
                         {
                             'value': surveys
