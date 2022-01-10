@@ -1,398 +1,248 @@
-{%- extends 'base-wide.html' -%}
+{%- extends 'base.html' -%}
 
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from "components/collapsible/_macro.njk" import onsCollapsible -%}
 
+{%- set address -%}
+        {{ sample.addressLine1 }}<br>
+        {%- if sample.addressLine2 -%}{{ sample.addressLine2 }}<br>{%- endif -%}
+        {%- if sample.addressLine3 -%}{{ sample.addressLine3 }}<br>{%- endif -%}
+        {%- if sample.townName -%}{{ sample.townName }}<br>{%- endif -%}
+        {{ sample.postcode }}
+{%- endset -%}
+
 {%- block main -%}
 
-    <h1>Case: {{ case.id or 'Not available' }}</h1>
+    <h1>Case: {{ case.caseRef or 'Not available' }}</h1>
 
-    <h2>Call actions</h2>
-
-    {%- if org=='to' -%}
-        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
-            {{
-                onsButton({
-                    'type': 'button',
-                    'text': 'Make call',
-                    'url': '#',
-                    "variants": 'disabled',
-                    "attributes": {
-                        "disabled": "true"
-                    }
-                })
-            }}
-
-            {{
-                onsButton({
-                    'type': 'button',
-                    'text': 'Launch EQ',
-                    'url': '#',
-                    "variants": 'disabled',
-                    "newWindow": true,
-                    "attributes": {
-                        "disabled": "true"
-                    }
-                })
-            }}
-        </div>
-    {%- endif -%}
-
-    <div class="ons-btn-group ons-u-mt-l">
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Add call notes',
-                'url': url_for('case.add_case_note', case_id=case_id, org=org)
-            })
-        }}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Record call outcome',
-                'url': url_for('case.call_outcome', case_id=case_id, org=org)
-            })
-        }}
-    </div>
-
-    <div class="ons-btn-group ons-u-mt-l">
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Record caller refusal',
-                'url': url_for('case.request_refusal', case_id=case_id, org=org)
-            })
-        }}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Log data removal request',
-                'url': url_for('case.data_removal_request', case_id=case_id, org=org),
-            })
-        }}
-    </div>
-    {%- if org=='sel' -%}
-        <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
-            {{
-                onsButton({
-                    'type': 'button',
-                    'text': 'Request code by post',
-                    'url': url_for('case.request_code_by_post', case_id=case_id, org=org)
-                })
-            }}
-
-            {{
-                onsButton({
-                    'type': 'button',
-                    'text': 'Request code by text',
-                    'url': url_for('case.request_code_by_text', case_id=case_id, org=org)
-                })
-            }}
-        </div>
-    {%- endif -%}
-    <div class="ons-btn-group ons-u-mt-l ons-u-mb-l">
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Schedule phone interview',
-                'url': '#',
-                "variants": 'disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
-            })
-        }}
-        {{
-            onsButton({
-                'type': 'button',
-                'text': 'Schedule field interview',
-                'url': '#',
-                "variants": 'disabled',
-                "attributes": {
-                    "disabled": "true"
-                }
-            })
-        }}
-    </div>
-
-
-    <h2>Contact information</h2>
-
-    {{
-        onsTable({
-            'caption': 'Contact information',
-            'hideCaption': 'true',
-            'id': 'basic-table',
-            'ths': [
-                {
-                    'value': 'Field'
-                },
-                {
-                    'value': 'Value'
-                }
-            ],
-            'trs': [
-                {
-                    'tds': [
-                        {
-                            'value': 'First name',
-                            'name': 'first-name'
-                        },
-                        {
-                            'value': 'Bob'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Last name',
-                            'name': 'last-name'
-                        },
-                        {
-                            'value': 'Bobbington'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Email',
-                            'name': 'email'
-                        },
-                        {
-                            'value': 'bob.bobbington@thebobbingtons.uk'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Telephone',
-                            'name': 'telephone'
-                        },
-                        {
-                            'value': '070 0000 0001'
-                        }
-                    ]
-                }
-            ]
-        })
-    }}
-
-    {{
-        onsButton({
-            'type': 'button',
-            'text': 'Update contact details',
-            'url': url_for('case.update_contact_details', case_id=case_id, org=org),
-            'classes': 'ons-u-mb-l'
-        })
-    }}
-
-    <h2>Address information</h2>
-
-    {{
-        onsTable({
-            'caption': 'Address information',
-            'hideCaption': 'true',
-            'id': 'basic-table',
-            'ths': [
-                {
-                    'value': 'Field'
-                },
-                {
-                    'value': 'Value'
-                }
-            ],
-            'trs': [
-                {
-                    'tds': [
-                        {
-                            'value': 'Address Line 1',
-                            'name': 'address-line-1'
-                        },
-                        {
-                            'value': sample.addressLine1
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Address Line 2',
-                            'name': 'address-line-2'
-                        },
-                        {
-                            'value': sample.addressLine2
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Address Line 3',
-                            'name': 'address-line-3'
-                        },
-                        {
-                            'value': sample.addressLine3
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Town name',
-                            'name': 'town-name'
-                        },
-                        {
-                            'value': sample.townName
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Postcode',
-                            'name': 'postcode'
-                        },
-                        {
-                            'value': sample.postcode
-                        }
-                    ]
-                }
-            ]
-        })
-    }}
-
-    {{
-        onsButton({
-            'type': 'button',
-            'text': 'Record invalid address',
-            'url': url_for('case.invalidate_address', case_id=case_id, org=org),
-            'classes': 'ons-u-mb-l'
-        })
-    }}
-
-    {% set additional_case_data_content %}
-        {{
-            onsTable({
-                'caption': 'Additional case data',
-                'hideCaption': 'true',
-                'id': 'basic-table',
-                'ths': [
-                    {
-                        'value': 'Field'
-                    },
-                    {
-                        'value': 'Value'
-                    }
-                ],
-                'trs': [
-                    {
-                        'tds': [
+    <div class="ons-grid">
+        <div class="ons-grid__col ons-col-6@m">
+            <h2 class="ons-u-mt-xl">Case details</h2>
+                {{
+                    onsTable({
+                        'caption': 'Case details',
+                        'hideCaption': 'true',
+                        'id': 'basic-table',
+                        'trs': [
                             {
-                                'value': 'Region',
-                                'name': 'region'
+                                'tds': [
+                                    {
+                                        'value': 'Case Ref:',
+                                        'name': 'case-ref',
+                                        'tdClasses': 'ons-u-fs-r--b'
+                                    },
+                                    {
+                                        'value': case.caseRef
+                                    },
+                                    {
+                                        "numeric": true,
+                                        'value':
+                                            onsButton({
+                                                'type': 'button',
+                                                'text': 'Launch survey',
+                                                'url': '#',
+                                                "variants": 'secondary',
+                                                "newWindow": true
+                                            })
+            + '<div class="ons-u-mt-s"><a href="' + url_for('case.request_code_by_post', case_id=case_id, org=org) + '">Send new access code by post</a></div>'
+            + '<div class="ons-u-mt-s"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by text</a></div>'
+
+                                    }
+                                ]
                             },
                             {
-                                'value': sample.region
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': 'UPRN',
-                                'name': 'uprn'
+                                'tds': [
+                                    {
+                                        'value': 'Address:',
+                                        'name': 'address',
+                                        'tdClasses': 'ons-u-fs-r--b'
+                                    },
+                                    {
+                                        'value': address
+                                    },
+                                    {
+                                        "numeric": true,
+                                        'value': '<a href="' + url_for('case.invalidate_address', case_id=case_id, org=org) + '">Report issue with address</a>'
+                                    }
+                                ]
                             },
                             {
-                                'value': sample.uprn
+                                'tds': [
+                                    {
+                                        'value': 'Region:',
+                                        'name': 'region',
+                                        'tdClasses': 'ons-u-fs-r--b'
+                                    },
+                                    {
+                                        'value': sample.region
+                                    },
+                                    {
+                                        "numeric": true,
+                                        'value': '<a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a>'
+                                    }
+                                ]
                             }
                         ]
-                    }
-                ]
-            })
-        }}
+                    })
+                }}
 
-    {% endset %}
+        </div>
+        <div class="ons-grid__col ons-push-1@m ons-col-5@m">
+            <h2 class="ons-u-mt-xl">Contact details</h2>
+            {{
+                onsTable({
+                    'caption': 'Contact information',
+                    'hideCaption': 'true',
+                    'id': 'basic-table',
+                    'trs': [
+                        {
+                            'tds': [
+                                {
+                                    'value': 'First name:',
+                                    'name': 'first-name',
+                                    'tdClasses': 'ons-u-fs-r--b'
+                                },
+                                {
+                                    'value': 'Bob'
+                                },
+                                {}
+                            ]
+                        },
+                        {
+                            'tds': [
+                                {
+                                    'value': 'Last name:',
+                                    'name': 'last-name',
+                                    'tdClasses': 'ons-u-fs-r--b'
+                                },
+                                {
+                                    'value': 'Bobbington'
+                                },
+                                {}
+                            ]
+                        },
+                        {
+                            'tds': [
+                                {
+                                    'value': 'Home phone:',
+                                    'name': 'home-phone',
+                                    'tdClasses': 'ons-u-fs-r--b'
+                                },
+                                {
+                                    'value': '014 2000 0001'
+                                },
+                                {
+                                    'value': onsButton({
+                                        'type': 'button',
+                                        'text': 'Call',
+                                        'url': url_for('case.call_outcome', case_id=case_id, org=org),
+                                        "variants": 'secondary',
+                                        'iconType': 'False'
+                                    })
+                                }
+                            ]
+                        },
+                        {
+                            'tds': [
+                                {
+                                    'value': 'Mobile phone:',
+                                    'name': 'mobile-phone',
+                                    'tdClasses': 'ons-u-fs-r--b'
+                                },
+                                {
+                                    'value': '070 0000 0001'
+                                },
+                                {
+                                    'value': onsButton({
+                                        'type': 'button',
+                                        'text': 'Call',
+                                        'url': url_for('case.call_outcome', case_id=case_id, org=org),
+                                        "variants": 'secondary',
+                                        'iconType': 'False'
+                                    })
+                                }
+                            ]
+                        },
+                        {
+                            'tds': [
+                                {
+                                    'value': 'Email:',
+                                    'name': 'email',
+                                    'tdClasses': 'ons-u-fs-r--b'
+                                },
+                                {
+                                    'value': 'bob.bobbington@thebobbingtons.uk'
+                                },
+                                {}
+                            ]
+                        }
+                    ]
+                })
+            }}
 
-    {% call onsCollapsible({
-            'id': 'collapsible',
-            'title': 'View additional case data',
-            'titleTag': 'h2',
-            'button': {
-                'close': 'Hide this',
-                'contextSuffix': 'additional_case_data_content'
-            }
-        })
-    %}
-        {{ additional_case_data_content | safe }}
-    {% endcall %}
+            <div class="ons-grid">
+                <div class="ons-grid__col ons-col-6@m">
+                    <a href="{{ url_for('case.update_contact_details', case_id=case_id, org=org) }}">Edit contact details</a>
+                </div>
+                <div class="ons-grid__col ons-col-6@m ons-u-rtl">
+                    <a href="{{ url_for('case.data_removal_request', case_id=case_id, org=org) }}">Request to remove data</a>
+                </div>
+            </div>
 
-    <h2 class="ons-u-mt-xl">Case history</h2>
+        </div>
+    </div>
+
+    {%- if interactions -%}
+
+        <div class="ons-grid">
+            <div class="ons-grid__col ons-col-8@m">
+                <h2 class="ons-u-mt-xl">Case history</h2>
+            </div>
+            <div class="ons-grid__col ons-col-4@m ons-u-rtl ons-u-mt-xl ons-u-mb-m">
+                {{
+                    onsButton({
+                        'type': 'button',
+                        'text': 'Add call notes',
+                        'url': url_for('case.add_case_note', case_id=case_id, org=org),
+                        'iconType': 'False'
+                    })
+                }}
+            </div>
+        </div>
 
         {{
             onsTable({
-                'caption': 'Case history',
-                'hideCaption': 'true',
-                'id': 'basic-table',
+                "variants": ['compact', 'row-hover', 'sortable'],
+                "sortBy": "Sort by",
+                "ariaAsc": "ascending",
+                "ariaDesc": "descending",
+                'id': 'case-history-table',
                 'ths': [
                     {
-                        'value': 'Data/time'
+                        'value': 'Data and time',
+                        'ariaSort': 'descending'
                     },
                     {
-                        'value': 'Action'
+                        'value': 'Source',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Event',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Details',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'User',
+                        'ariaSort': 'none'
                     }
                 ],
-                'trs': [
-                    {
-                        'tds': [
-                            {
-                                'value': '14 July 2021, 13:51:32',
-                                'name': 'case_action_id4'
-                            },
-                            {
-                                'value': 'Updated telephone number to 070 0000 0001'
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': '12 July 2021, 11:25:59',
-                                'name': 'case_action_id3'
-                            },
-                            {
-                                'value': 'Call attempted by operator #207 - no response'
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': '11 July 2021, 15:43:21',
-                                'name': 'case_action_id2'
-                            },
-                            {
-                                'value': 'Call attempted by operator #47 - no response'
-                            }
-                        ]
-                    },
-                    {
-                        'tds': [
-                            {
-                                'value': '11 July 2021, 04:01:56',
-                                'name': 'case_action_id1'
-                            },
-                            {
-                                'value': 'Case added to call register'
-                            }
-                        ]
-                    }
-                ]
+                'trs': interactions
             })
         }}
-
+    {%- endif -%}
 
 {%- endblock -%}

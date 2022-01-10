@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash, current_app, session
 from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.routes.errors import InvalidDataError
+from app.utilities.case import Case
 
 case_bp = Blueprint('case', __name__)
 
@@ -14,8 +15,12 @@ async def case(org, case_id):
         page_title = 'Case ' + case_id
         cc_return = await CCSvc.get_case_by_id(case_id)
         sample = cc_return['sample']
-        return render_template('case/case.html', case=cc_return, sample=sample, case_id=case_id,
-                               page_title=page_title, org=org)
+        if cc_return.get('interactions'):
+            interactions = Case.build_case_history_content(cc_return['interactions'])
+        else:
+            interactions = ''
+        return render_template('case/case.html', case=cc_return, sample=sample, interactions=interactions,
+                               case_id=case_id, page_title=page_title, org=org)
     else:
         return render_template('errors/500.html')
 
