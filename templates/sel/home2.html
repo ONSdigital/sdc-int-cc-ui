@@ -75,6 +75,9 @@
                 'trs': results
             })
         }}
+    {%- elif not get_flashed_messages() -%}
+        <br/>
+        <p>No results were found</p>
     {%- endif -%}
 
 {%- endblock -%}

@@ -36,37 +36,59 @@ def highlight_term(addr, addr_input, hi_start, hi_end):
     return highlighted
 
 
+def is_address_input_valid(addr_input):
+    """
+    Ensure input term is valid for lookup
+    """
+    stripped_input = addr_input.replace("'", '').replace(',', '').strip()
+    return len(stripped_input) >= 5
+
+
+def build_address_results(addr_input, cc_return):
+    results = []
+    for address in cc_return['addresses']:
+        surveys = ''
+        case_refs = ''
+        for caze in address['cases']:
+            surveys = surveys + caze['surveyName'] + '<br/>'
+            case_link = '<a href="' + url_for('case.case', case_id=caze['id'], org='sel') \
+                        + '">' + caze['caseRef'] + '</a>'
+            case_refs = case_refs + case_link + '<br/>'
+
+        addr = highlight_term(address['formattedAddress'], addr_input, '<b>', '<b/>')
+
+        results.append({
+            'tds': [
+                {
+                    'value': addr
+                },
+                {
+                    'value': surveys
+                },
+                {
+                    'value': case_refs
+                }
+            ]
+        })
+    return results
+
+
 @sel_bp.route('/sel/', methods=['GET', 'POST'])
 async def sel_home():
     if request.method == 'POST':
         addr_input = request.form['form_address_input']
         results = []
         if addr_input:
-            cc_return = await CCSvc.get_addresses_by_input(addr_input)
-            for address in cc_return['addresses']:
-                surveys = ''
-                case_refs = ''
-                for caze in address['cases']:
-                    surveys = surveys + caze['surveyName'] + '<br/>'
-                    case_link = '<a href="' + url_for('case.case', case_id=caze['id'], org='sel') \
-                                + '">' + caze['caseRef'] + '</a>'
-                    case_refs = case_refs + case_link + '<br/>'
+            if is_address_input_valid(addr_input):
+                cc_return = await CCSvc.get_addresses_by_input(addr_input)
+                results = build_address_results(addr_input, cc_return)
+            else:
+                current_app.logger.info('Address input error: Please supply a longer search term')
+                flash('Please supply a longer search term', 'error_input')
+        else:
+            current_app.logger.info('Address input error: No value entered')
+            flash('Enter an address value', 'error_input')
 
-                addr = highlight_term(address['formattedAddress'], addr_input, '<b>', '<b/>')
-
-                results.append({
-                    'tds': [
-                        {
-                            'value': addr
-                        },
-                        {
-                            'value': surveys
-                        },
-                        {
-                            'value': case_refs
-                        }
-                    ]
-                })
         return render_template('sel/home2.html', results=results, addr_input=addr_input)
     else:
         return render_template('sel/home2.html')
