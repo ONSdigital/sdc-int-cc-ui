@@ -7,6 +7,35 @@ import re
 sel_bp = Blueprint('sel', __name__)
 
 
+def highlight_term(addr, addr_input, hi_start, hi_end):
+    """
+    Highlight the term searched.
+    Do some work to make this space insensitive.
+    """
+    if not addr_input:
+        return addr
+
+    highlighted = addr
+    condensed_addr = re.sub(r"\s+", "", addr)
+    condensed_input = re.sub(r"\s+", "", addr_input)
+
+    mapping = {}
+    index = 0
+    for i, v in enumerate(addr):
+        if not v.isspace():
+            mapping[index] = i
+            index = index + 1
+
+    match = re.search(condensed_input, condensed_addr)
+    if match:
+        start = mapping.get(match.start(), 0)
+        end = mapping.get(match.end(), len(addr))
+        while addr[end - 1].isspace():
+            end = end - 1
+        highlighted = addr[:start] + hi_start + addr[start:end] + hi_end + addr[end:]
+    return highlighted
+
+
 @sel_bp.route('/sel/', methods=['GET', 'POST'])
 async def sel_home():
     if request.method == 'POST':
@@ -23,11 +52,7 @@ async def sel_home():
                                 + '">' + caze['caseRef'] + '</a>'
                     case_refs = case_refs + case_link + '<br/>'
 
-                addr = address['formattedAddress']
-                # FIXME this doesn't handle ignoring white space
-                match = re.search(addr_input, addr)
-                if match:
-                    addr = addr[:match.start()] + '<b>' + addr_input + '<b/>' + addr[match.end():]
+                addr = highlight_term(address['formattedAddress'], addr_input, '<b>', '<b/>')
 
                 results.append({
                     'tds': [
