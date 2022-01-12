@@ -13,7 +13,7 @@ case_bp = Blueprint('case', __name__)
 async def case(org, case_id):
     if case_id:
         page_title = 'Case ' + case_id
-        cc_return = await CCSvc.get_case_by_id(case_id)
+        cc_return = await CCSvc.get_case_by_id(case_id, True)
         sample = cc_return['sample']
         if cc_return.get('interactions'):
             interactions = Case.build_case_history_content(cc_return['interactions'])
