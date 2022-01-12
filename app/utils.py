@@ -171,9 +171,9 @@ class ProcessEmail:
 
 class CCSvc:
     @staticmethod
-    async def get_case_by_id(case):
+    async def get_case_by_id(case, case_events=False):
         cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case}'
+        url = f'{cc_svc_url}/cases/{case}?caseEvents={case_events}'
 
         try:
             cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
