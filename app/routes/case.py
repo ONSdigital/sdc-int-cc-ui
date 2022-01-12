@@ -29,8 +29,13 @@ async def case(org, case_id):
 async def add_case_note(org, case_id):
     if request.method == 'POST':
         if 'form-case-add-note' in request.form:
-            # TODO  add case note endpoint call
-            return redirect(url_for('case.case_note_added', case_id=case_id, org=org))
+            note = request.form['form-case-add-note']
+            if note:
+                await CCSvc.post_add_note(case_id, note)
+                return redirect(url_for('case.case_note_added', case_id=case_id, org=org))
+            else:
+                flash('Please add some note text', 'error_note')
+                return redirect(url_for('case.add_case_note', case_id=case_id, org=org))
         else:
             flash('Add a note', 'error_note')
             return redirect(url_for('case.add_case_note', case_id=case_id, org=org))
