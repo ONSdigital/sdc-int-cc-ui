@@ -1,35 +1,84 @@
 {%- extends 'base.html' -%}
 
-{% from "components/card/_macro.njk" import onsCard %}
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from "components/table/_macro.njk" import onsTable -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- set question_title = "Search Addresses" -%}
 
 {%- block main -%}
 
-    <h1>Survey Enquiry Line</h1>
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
 
-    <h2>Find caller's case by address</h2>
-    <div>
-        <div class="ons-grid ons-grid--column@xxs@s">
-            <div class="ons-grid__col ons-col-4@m">
-                {{ onsCard({
-                    "id": 'title1',
-                    "textId": 'text1',
-                    "title": 'Find case via postcode',
-                    "url": url_for('sel.postcode_input'),
-                    "text": 'Find the callers case via postcode search'
-                }) }}
-            </div>
-            <div class="ons-grid__col ons-col-4@m">
-                {{ onsCard({
-                    "id": 'title2',
-                    "textId": 'text2',
-                    "title": 'Find case via address text search',
-                    "url": url_for('sel.address_input'),
-                    "text": 'Find the callers case via address text search'
-                }) }}
+    {%- call onsQuestion({
+        'title': question_title,
+    }) -%}
+
+        {{
+            onsInput({
+                'id': 'address_input',
+                'type': 'text',
+                "classes": 'ons-u-pb-xs',
+                'name': 'form_address_input',
+                'value': addr_input,
+                'error': error_input,
+                'label': {
+                    'text': 'Enter address or postcode'
+                },
+                'searchButton': {
+                    'text': 'Search',
+                    'iconType': 'search',
+                    'submitType': 'loader'
+                }
+            })
+        }}
+
+    {%- endcall -%}
+
+    {%- if results -%}
+       <div class="ons-grid">
+            <div class="ons-grid__col ons-col-8@m">
+                <h2 class="ons-u-mt-xl">{{ results | length }} cases found when searching for {{ addr_input }}</h2>
             </div>
         </div>
-    </div>
 
-
+        {{
+            onsTable({
+                "variants": ['compact', 'row-hover', 'sortable'],
+                "sortBy": "Sort by",
+                "ariaAsc": "ascending",
+                "ariaDesc": "descending",
+                'id': 'addresses-found-table',
+                'thClasses': ' ons-u-fs-m',
+                'ths': [
+                    {
+                        'value': 'Address',
+                        'ariaSort': 'descending'
+                    },
+                    {
+                        'value': 'Survey',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Cases',
+                        'ariaSort': 'none'
+                    }
+                ],
+                'trs': results
+            })
+        }}
+    {%- elif addr_input and not get_flashed_messages() -%}
+        <br/>
+        <p>No results were found</p>
+    {%- endif -%}
 
 {%- endblock -%}
