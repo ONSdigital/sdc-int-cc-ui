@@ -193,6 +193,29 @@ class CCSvc:
         return cc_return.json()
 
     @staticmethod
+    async def post_add_note(case_id, note):
+        cc_svc_url = current_app.config['CCSVC_URL']
+        url = f'{cc_svc_url}/cases/{case_id}/interaction'
+        interaction_json = {
+            'caseId': case_id,
+            'type': 'CASE_NOTE_ADDED',
+            'note': note
+        }
+        try:
+            cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
+                                                 current_app.config['CCSVC_PASSWORD']),
+                                      json=interaction_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            current_app.logger.warn('Error returned by CCSvc for interaction call: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            current_app.logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+
+        return cc_return.json()
+
+    @staticmethod
     async def post_case_refusal(case_id, reason):
         cc_svc_url = current_app.config['CCSVC_URL']
         url = f'{cc_svc_url}/cases/{case_id}/refusal'
