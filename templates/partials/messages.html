@@ -3,25 +3,23 @@
 {%- from './components/panel/_macro.njk' import onsPanel -%}
 {%- from './components/lists/_macro.njk' import onsList -%}
 
-{%- if messages | length == 1 -%}
-    {%- set errorTitle = 'There is a problem with this page' -%}
-{%- else -%}
-    {%- set errorTitle = 'There are ' + messages | length | string + ' problems with this page' -%}
-{%- endif -%}
-
 {%- set itemsList = [] -%}
 
 {%- for category, message in messages -%}
-
-{%- if itemsList.append( {
-                'text': message,
-                'url': '#' + category,
-                'classes': 'js-inpagelink'
-            } )
--%} {%- endif -%}
-
+    {%- if category != 'info' -%}
+        {%- if itemsList.append( {
+                    'text': message,
+                    'url': '#' + category,
+                    'classes': 'js-inpagelink'
+                } ) -%}{%- endif -%}
+    {%- endif -%}
 {%- endfor -%}
 
+{%- if itemsList | length == 1 -%}
+    {%- set errorTitle = 'There is a problem with this page' -%}
+{%- else -%}
+    {%- set errorTitle = 'There are ' + itemsList | length | string + ' problems with this page' -%}
+{%- endif -%}
 
 {%- call
     onsPanel({

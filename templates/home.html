@@ -4,8 +4,11 @@
 
 {%- block main -%}
 
-    {%- if get_flashed_messages() -%}
-        {%- include 'partials/messages2.html' with context -%}
+    {%- if get_flashed_messages(category_filter=["info"]) -%}
+        {%- include 'partials/messages_info.html' with context -%}
+    {%- endif -%}
+    {%- if get_flashed_messages(category_filter=["error"]) -%}
+        {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
     <h1 class="ons-u-mt-xl">Role Operations</h1>
