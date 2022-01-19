@@ -5,11 +5,13 @@ from flask import render_template, request, redirect, url_for, flash, current_ap
 from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.routes.errors import InvalidDataError
 from app.utilities.case import Case
+from user_auth import login_required
 
 case_bp = Blueprint('case', __name__)
 
 
 @case_bp.route(r'/<org>/case/<case_id>/', methods=['GET'])
+@login_required
 async def case(org, case_id):
     if case_id:
         page_title = 'Case ' + case_id
@@ -26,6 +28,7 @@ async def case(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/add-case-note/', methods=['GET', 'POST'])
+@login_required
 async def add_case_note(org, case_id):
     if request.method == 'POST':
         if 'form-case-add-note' in request.form:
@@ -50,6 +53,7 @@ async def add_case_note(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/case-note-added/', methods=['GET'])
+@login_required
 async def case_note_added(org, case_id):
     if case_id:
         return render_template('case/case-note-added.html', case_id=case_id, org=org)
@@ -58,6 +62,7 @@ async def case_note_added(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/request-refusal/', methods=['GET', 'POST'])
+@login_required
 async def request_refusal(org, case_id):
     if request.method == 'POST':
         if 'form-case-request-refusal-reason' in request.form:
@@ -85,6 +90,7 @@ async def request_refusal(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/refused/', methods=['GET'])
+@login_required
 async def refused(org, case_id):
     if case_id:
         return render_template('case/refused.html', case_id=case_id, org=org)
@@ -93,6 +99,7 @@ async def refused(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/request-code-by-text/', methods=['GET', 'POST'])
+@login_required
 async def request_code_by_text(org, case_id):
     if request.method == 'POST':
         session['values'] = {}
@@ -184,6 +191,7 @@ async def request_code_by_text(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/code-sent-by-text/', methods=['GET'])
+@login_required
 async def code_sent_by_text(org, case_id):
     if case_id:
         return render_template('case/code-sent-by-text.html', case_id=case_id, org=org)
@@ -192,6 +200,7 @@ async def code_sent_by_text(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/request-code-by-post/', methods=['GET', 'POST'])
+@login_required
 async def request_code_by_post(org, case_id):
     if request.method == 'POST':
         if 'form-case-fulfilment' in request.form:
@@ -269,6 +278,7 @@ async def request_code_by_post(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/code-sent-by-post/', methods=['GET'])
+@login_required
 async def code_sent_by_post(org, case_id):
     if case_id:
         return render_template('case/code-sent-by-post.html', case_id=case_id, org=org)
@@ -277,6 +287,7 @@ async def code_sent_by_post(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/update-contact-details/', methods=['GET', 'POST'])
+@login_required
 async def update_contact_details(org, case_id):
     if request.method == 'POST':
         session['values'] = {}
@@ -388,6 +399,7 @@ async def update_contact_details(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/contact-details-updated/', methods=['GET'])
+@login_required
 async def contact_details_updated(org, case_id):
     if case_id:
         return render_template('case/contact-details-updated.html', case_id=case_id, org=org)
@@ -396,6 +408,7 @@ async def contact_details_updated(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/call-outcome/', methods=['GET', 'POST'])
+@login_required
 async def call_outcome(org, case_id):
     if request.method == 'POST':
         if 'form-case-call-type' in request.form and 'form-case-call-outcome' in request.form:
@@ -450,6 +463,7 @@ async def call_outcome(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/call-outcome-recorded/', methods=['GET'])
+@login_required
 async def call_outcome_recorded(org, case_id):
     if case_id:
         return render_template('case/call-outcome-recorded.html', case_id=case_id, org=org)
@@ -458,6 +472,7 @@ async def call_outcome_recorded(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/data-removal-request/', methods=['GET', 'POST'])
+@login_required
 async def data_removal_request(org, case_id):
     if request.method == 'POST':
         if 'form-case-data-removal-request' in request.form:
@@ -484,6 +499,7 @@ async def data_removal_request(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/data-removed/', methods=['GET'])
+@login_required
 async def data_removed(org, case_id):
     if case_id:
         return render_template('case/data-removed.html', case_id=case_id, org=org)
@@ -492,6 +508,7 @@ async def data_removed(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/invalidate-address/', methods=['GET', 'POST'])
+@login_required
 async def invalidate_address(org, case_id):
     if request.method == 'POST':
         if 'form-case-reason' in request.form:
@@ -519,6 +536,7 @@ async def invalidate_address(org, case_id):
 
 
 @case_bp.route('/<org>/case/<case_id>/address-invalidated/', methods=['GET'])
+@login_required
 async def address_invalidated(org, case_id):
     if case_id:
         return render_template('case/address-invalidated.html', case_id=case_id, org=org)

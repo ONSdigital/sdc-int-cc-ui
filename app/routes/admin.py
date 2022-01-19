@@ -12,11 +12,13 @@ async def admin_home():
 
 
 @admin_bp.route('/admin/user-list/')
+@login_required
 async def admin_user_list():
     return render_template('admin/user-list.html')
 
 
 @admin_bp.route('/admin/update-user/<username>/', methods=['GET', 'POST'])
+@login_required
 async def update_user(username):
     if request.method == 'POST':
         return redirect(url_for('admin.user_updated'))
@@ -27,11 +29,13 @@ async def update_user(username):
 
 
 @admin_bp.route('/admin/user-updated/', methods=['GET'])
+@login_required
 async def user_updated():
     return render_template('admin/user-updated.html')
 
 
 @admin_bp.route('/admin/remove-user/<username>/', methods=['GET', 'POST'])
+@login_required
 async def remove_user(username):
     if request.method == 'POST':
         return redirect(url_for('admin.user_removed'))
@@ -42,5 +46,6 @@ async def remove_user(username):
 
 
 @admin_bp.route('/admin/user-removed/', methods=['GET'])
+@login_required
 async def user_removed():
     return render_template('admin/user-removed.html')
