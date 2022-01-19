@@ -1,6 +1,7 @@
 from flask import render_template, request, url_for, flash, current_app
 from app.utils import CCSvc
 from flask import Blueprint
+from user_auth import login_required
 import re
 
 sel_bp = Blueprint('sel', __name__)
@@ -73,6 +74,7 @@ def build_address_results(addr_input, cc_return):
 
 
 @sel_bp.route('/sel/', methods=['GET', 'POST'])
+@login_required
 async def sel_home():
     if request.method == 'POST':
         addr_input = request.form['form_address_input']

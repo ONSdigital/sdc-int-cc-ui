@@ -18,7 +18,9 @@ from app.routes.case import case_bp
 from app.routes.sel import sel_bp
 from app.routes.structural import structural_bp
 from app.routes.to import to_bp
+from app.user_auth import saml_bp
 
+from app.user_auth import setup_auth_utilities
 from app.utilities.json import json_dumps
 
 CACHE_HEADERS = {
@@ -82,6 +84,8 @@ def create_app(  # noqa: C901  pylint: disable=too-complex, too-many-statements
     add_blueprints(application)
 
     add_info(application)
+
+    setup_auth_utilities(application)
 
     setup_jinja_env(application)
 
@@ -148,6 +152,9 @@ def add_blueprints(application):
 
     application.register_blueprint(to_bp)
     to_bp.config = application.config.copy()
+
+    application.register_blueprint(saml_bp)
+    saml_bp.config = application.config.copy()
 
     application.register_blueprint(filter_blueprint)
 

@@ -6,20 +6,35 @@
     {%- set page_title_value = 'Contact Centre' -%}
 {%- endif -%}
 
-{%- if page_url and ('/start/' in page_url) and (page_url != '/start/') and (timeout != 'true') -%}
-    {%- set signout_button_value = {
-            'text': 'Exit',
-            'buttonStyle': 'exit',
-            'url': url('StartExit:get', display_region='en')
-        }
-    -%}
-{%- endif -%}
-
 {%- set pageConfig = {
     'title': page_title_value,
-    'signoutButton': signout_button_value,
     'pageColNumber': '12'
 } -%}
+
+{%- if is_logged_in() -%}
+    {%- set service_links = {
+                "itemsList": [
+                    {
+                        "title": get_id(),
+                        "url": "#0"
+                    },
+                    {
+                        "title": "Log out",
+                        "url": url_for('saml.slo')
+                    }
+                ]
+            } -%}
+{%- else -%}
+    {%- set service_links = {
+                "itemsList": [
+                    {
+                        "title": "Log in",
+                        "url": url_for('saml.sso')
+                    }
+                ]
+            } -%}
+{%- endif -%}
+
 
 {%- block header -%}
     {% from "components/header/_macro.njk" import onsHeader %}
@@ -32,18 +47,7 @@
             "mobileLogo": 'ons-logo-stacked-en',
             "titleLogoHref": '/',
             'wide': 'true',
-            "serviceLinks": {
-                "itemsList": [
-                    {
-                        "title": "My Account",
-                        "url": "#0"
-                    },
-                    {
-                        "title": "Sign out",
-                        "url": "#0"
-                    }
-                ]
-            }
+            "serviceLinks": service_links
         })
     }}
 
