@@ -1,6 +1,6 @@
 
 from flask import (request, render_template, redirect, session,
-                   make_response, current_app, Blueprint)
+                   make_response, current_app, Blueprint, flash)
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -38,6 +38,7 @@ def sso():
     """
     single sign-on from user , redirects to IDP
     """
+    current_app.logger.info('Initiating login')
     auth, _ = do_auth()
     return redirect(auth.login(request.host_url))
     # If AuthNRequest ID need to be stored in order to later validate it, do instead
@@ -51,6 +52,7 @@ def slo():
     """
     single logout from user. Redirects to IDP
     """
+    current_app.logger.info('Initiating logout for user ' + get_logged_in_user())
     auth, _ = do_auth()
     name_id = session_index = name_id_format = name_id_nq = name_id_spnq = None
     if 'samlNameId' in session:
@@ -97,11 +99,15 @@ def get_user_data():
     return paint_logout, attributes
 
 
+def get_logged_in_user():
+    return session.get('samlNameId', 'nobody')
+
+
 def setup_auth_utilities(application):
     @application.context_processor
     def utility_processor():
         def get_id():
-            return session['samlNameId']
+            return get_logged_in_user()
 
         def is_logged_in():
             return 'samlNameId' in session and len(session['samlNameId']) > 0
@@ -126,6 +132,8 @@ def sls():
             # the value of the url is a trusted URL.
             return redirect(url)
         else:
+            flash('Logged out', 'info')
+            current_app.logger.info('Successful logout')
             success_slo = True
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()
@@ -156,6 +164,8 @@ def acs():
     not_auth_warn = not auth.is_authenticated()
     if len(errors) == 0:
         store_in_session(auth)
+        current_app.logger.info('Successful login for user ' + get_logged_in_user())
+        flash('Welcome <b>' + get_logged_in_user() + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
             # To avoid 'Open Redirect' attacks, before execute the redirection confirm

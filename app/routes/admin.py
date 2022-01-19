@@ -1,10 +1,12 @@
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for
+from user_auth import login_required
 
 admin_bp = Blueprint("admin", __name__)
 
 
 @admin_bp.route('/admin/')
+@login_required
 async def admin_home():
     return render_template('admin/home.html')
 

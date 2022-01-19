@@ -4,6 +4,10 @@
 
 {%- block main -%}
 
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages2.html' with context -%}
+    {%- endif -%}
+
     <h1 class="ons-u-mt-xl">Role Operations</h1>
 
     <div>
