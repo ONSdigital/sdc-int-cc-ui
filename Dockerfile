@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 EXPOSE 5000
 COPY . .
 RUN pip install -e .
-CMD ["flask","run"]
+CMD ["flask","run","--no-reload"]
