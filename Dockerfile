@@ -6,6 +6,12 @@ ENV FLASK_ENV=development
 ENV SECRET_KEY=secretkeysetasenvva
 ENV FLASK_RUN_HOST=0.0.0.0
 RUN apk add --no-cache gcc musl-dev linux-headers
+
+# updates and packages
+RUN apt-get update \
+    && apt-get -y --no-install-recommends install libxml2-dev libxmlsec1-dev libxmlsec1-openssl \
+    && apt-get clean
+
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 EXPOSE 5000
