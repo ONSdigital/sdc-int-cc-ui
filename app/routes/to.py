@@ -1,6 +1,6 @@
 from flask import render_template
 from flask import Blueprint
-from user_auth import login_required
+from app.user_auth import login_required
 
 to_bp = Blueprint('to', __name__)
 

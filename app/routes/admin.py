@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for
-from user_auth import login_required
+from app.user_auth import login_required
 
 admin_bp = Blueprint("admin", __name__)
 

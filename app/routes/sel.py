@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, flash, current_app
 from app.utils import CCSvc
 from flask import Blueprint
-from user_auth import login_required
+from app.user_auth import login_required
 import re
 
 sel_bp = Blueprint('sel', __name__)

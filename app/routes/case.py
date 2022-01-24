@@ -5,7 +5,7 @@ from flask import render_template, request, redirect, url_for, flash, current_ap
 from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.routes.errors import InvalidDataError
 from app.utilities.case import Case
-from user_auth import login_required
+from app.user_auth import login_required
 
 case_bp = Blueprint('case', __name__)
 
