@@ -7,6 +7,9 @@ steps:
     - -c
     - |
       date
+      apt-get update
+      apt-get -y --no-install-recommends install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+      apt-get clean
       echo "Loading Pattern Library Templates"
       ./scripts/load_templates.sh
       date
