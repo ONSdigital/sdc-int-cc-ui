@@ -59,5 +59,5 @@ SESSION_USE_SIGNER = True
 SESSION_COOKIE_NAME = 'ons_cc'
 PERMANENT_SESSION_LIFETIME = 2700
 SESSION_REDIS = Redis(host=REDIS_SERVER, port=REDIS_PORT, retry_on_timeout=True)
-SAML_DIR = os.getenv('SAML_DIR', 'saml')
+SAML_DIR = os.getenv('SAML_DIR', 'saml/local')
 SAML_PATH = str(Path(__file__).resolve().parent.parent / SAML_DIR)
