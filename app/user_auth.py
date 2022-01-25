@@ -134,7 +134,7 @@ def prepare_flask_request():
         'script_name': request.path,
         'get_data': request.args.copy(),
         # Uncomment if using ADFS as IdP, https://github.com/onelogin/python-saml/pull/144
-        # 'lowercase_urlencoding': True,
+        'lowercase_urlencoding': True if current_app.config['ADFS'] == 'True' else False,
         'post_data': request.form.copy()
     }
 

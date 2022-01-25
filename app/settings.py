@@ -61,3 +61,8 @@ PERMANENT_SESSION_LIFETIME = 2700
 SESSION_REDIS = Redis(host=REDIS_SERVER, port=REDIS_PORT, retry_on_timeout=True)
 SAML_DIR = os.getenv('SAML_DIR', 'saml/local')
 SAML_PATH = str(Path(__file__).resolve().parent.parent / SAML_DIR)
+ADFS = os.getenv('ADFS', 'False')
+
+logger.info('SAML_PATH: ' + SAML_PATH)
+logger.info('ADFS: ' + ADFS)
+
