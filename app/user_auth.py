@@ -107,7 +107,9 @@ def acs():
     if len(errors) == 0:
         store_in_session(auth)
         current_app.logger.info('Successful login for user ' + get_logged_in_user())
-        flash('Welcome <b>' + get_logged_in_user() + '</b>', 'info')
+        name = get_name()
+        welcome_name = name if name else  get_logged_in_user()
+        flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
             # To avoid 'Open Redirect' attacks, before execute the redirection confirm
@@ -185,6 +187,28 @@ def get_from_session(key):
 
 def get_logged_in_user():
     return session.get('samlNameId', 'nobody')
+
+
+def get_attributes():
+    attributes = None
+    if 'samlUserdata' in session:
+        if len(session['samlUserdata']) > 0:
+            attributes = session['samlUserdata']
+            current_app.logger.info('attributes: ' + str(attributes))
+    return attributes
+
+
+def get_name():
+    name = ''
+    attributes = get_attributes()
+    if attributes:
+        givenname = session['samlUserdata'].get('givenname', [None])[0]
+        surname = session['samlUserdata'].get('surname', [None])[0]
+        if givenname:
+            name = givenname
+        if surname:
+            name = name + ' ' + surname
+    return name
 
 
 def setup_auth_utilities(application):
