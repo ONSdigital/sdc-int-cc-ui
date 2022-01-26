@@ -202,10 +202,17 @@ def get_name():
     name = ''
     attributes = get_attributes()
     if attributes:
-        givenname = session['samlUserdata'].get('givenname', [None])[0]
-        surname = session['samlUserdata'].get('surname', [None])[0]
-        if givenname:
-            name = givenname
+        forename_key = 'givenname'
+        surname_key = 'surname'
+        if current_app.config['ADFS'] == 'True':
+            claim_prefix = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/'
+            forename_key = claim_prefix + forename_key
+            surname_key = claim_prefix + surname_key
+
+        forename = session['samlUserdata'].get(forename_key, [None])[0]
+        surname = session['samlUserdata'].get(surname_key, [None])[0]
+        if forename:
+            name = forename
         if surname:
             name = name + ' ' + surname
     return name
