@@ -5,6 +5,7 @@ from flask import (request, render_template, redirect, session,
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from functools import wraps
+from datetime import datetime
 
 saml_bp = Blueprint('saml', __name__)
 
@@ -107,8 +108,10 @@ def acs():
     if len(errors) == 0:
         store_in_session(auth)
         current_app.logger.info('Successful login for user ' + get_logged_in_user())
+        current_app.logger.info('SAML session valid until: ' +
+                                datetime.utcfromtimestamp(auth.get_session_expiration()).strftime('%Y-%m-%d %H:%M:%S'))
         name = get_name()
-        welcome_name = name if name else  get_logged_in_user()
+        welcome_name = name if name else get_logged_in_user()
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
