@@ -108,8 +108,7 @@ def acs():
     if len(errors) == 0:
         store_in_session(auth)
         current_app.logger.info('Successful login for user ' + get_logged_in_user())
-        current_app.logger.info('SAML session valid until: ' +
-                                datetime.utcfromtimestamp(auth.get_session_expiration()).strftime('%Y-%m-%d %H:%M:%S'))
+        log_session_info(auth)
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
@@ -124,6 +123,15 @@ def acs():
         current_app.logger.warning('Login error occurred: ' + error_reason)
 
     return render_template('home.html')
+
+
+def log_session_info(auth):
+    expiry_secs = auth.get_session_expiration()
+    if expiry_secs:
+        expiry_formatted = datetime.utcfromtimestamp(expiry_secs).strftime('%Y-%m-%d %H:%M:%S')
+        current_app.logger.info('SAML session valid until: ' + expiry_formatted)
+    else:
+        current_app.logger.info('SAML session unknown expiry time')
 
 
 def init_saml_auth(req):
