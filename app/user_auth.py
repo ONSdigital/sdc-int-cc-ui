@@ -168,6 +168,11 @@ def login_required(func):
 
 
 def store_in_session(auth):
+    """
+    Store information in the session that we get during SAML login, particularly
+    the identity name, the attributes, and some information which will be required
+    when we logout.
+    """
     if 'AuthNRequestID' in session:
         del session['AuthNRequestID']
     session['samlUserdata'] = auth.get_attributes()
@@ -190,6 +195,9 @@ def get_logged_in_user():
 
 
 def get_attributes():
+    """
+    get the attributes dictionary from the session that was stored when we logged in.
+    """
     attributes = None
     if 'samlUserdata' in session:
         if len(session['samlUserdata']) > 0:
@@ -199,6 +207,9 @@ def get_attributes():
 
 
 def get_name():
+    """
+    Create a "forename surname" name from the attributes
+    """
     name = ''
     attributes = get_attributes()
     if attributes:
