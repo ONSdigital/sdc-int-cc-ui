@@ -74,6 +74,7 @@ def sls():
     """
     auth, req = do_auth()
     request_id = get_from_session('LogoutRequestID')
+    timed_out = session.get('timed_out', None)
     url = auth.process_slo(request_id=request_id, delete_session_cb=lambda: session.clear())
     errors = auth.get_errors()
     if len(errors) == 0:
@@ -82,7 +83,10 @@ def sls():
             # the value of the url is a trusted URL.
             return redirect(url)
         else:
-            flash('Logged out', 'info')
+            if timed_out:
+                flash('Your session expired so you have been logged out. Please login again.', 'info')
+            else:
+                flash('Logged out', 'info')
             current_app.logger.info('Successful logout')
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()
@@ -176,6 +180,22 @@ def login_required(func):
         else:
             return redirect('/saml/sso')
     return decorated_view
+
+
+def session_timeout():
+    """
+    If we are in a logged in state, then make sure we logout with the IDP.
+    To be called when we are managing our own session timeout
+    """
+    if 'samlNameId' in session and len(session['samlNameId']) > 0:
+        current_app.logger.info("Session timed out so we must log out user")
+        session['timed_out'] = True
+        return redirect('/saml/slo')
+    else:
+        current_app.logger.info("Session timed out without login")
+        session.clear()
+        flash('Your session has expired - you may need to login again', 'info')
+        return render_template('home.html')
 
 
 def store_in_session(auth):

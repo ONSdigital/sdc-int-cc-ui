@@ -11,6 +11,7 @@ from flask_talisman import Talisman
 from flask_session import Session
 from structlog import get_logger
 from werkzeug import serving
+from datetime import datetime
 
 from app import settings
 from app.jinja_filters import blueprint as filter_blueprint
@@ -23,7 +24,7 @@ from app.routes.structural import structural_bp
 from app.routes.to import to_bp
 from app.user_auth import saml_bp
 
-from app.user_auth import setup_auth_utilities
+from app.user_auth import setup_auth_utilities, session_timeout
 from app.utilities.json import json_dumps
 
 CACHE_HEADERS = {
@@ -80,6 +81,18 @@ def create_app(  # noqa: C901  pylint: disable=too-complex, too-many-statements
                 csrf_token_present="csrf_token" in cookie_session,
                 user_agent=flask_request.user_agent.string,
             )
+
+    @application.before_request
+    def check_for_session_timeout():
+        now = datetime.now()
+        last_active = cookie_session.get('last_active', None)
+        cookie_session['last_active'] = now
+        url_path = flask_request.full_path
+        if last_active and url_path != '/saml/sso?':
+            delta = now - last_active
+            if delta.seconds > settings.SESSION_TIMEOUT_SECS:
+                logger.info("session expired")
+                return session_timeout()
 
     disable_endpoint_logs()
 
