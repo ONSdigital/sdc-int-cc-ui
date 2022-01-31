@@ -1,13 +1,16 @@
 import flask
 from flask import Blueprint
+from structlog import get_logger
 
-from flask import render_template, request, redirect, url_for, flash, current_app, session
+from flask import render_template, request, redirect, url_for, flash, session
 from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.routes.errors import InvalidDataError
 from app.utilities.case import Case
 from app.user_auth import login_required
 
 case_bp = Blueprint('case', __name__)
+
+logger = get_logger()
 
 
 @case_bp.route(r'/<org>/case/<case_id>/', methods=['GET'])
@@ -117,9 +120,9 @@ async def request_code_by_text(org, case_id):
             try:
                 mobile_number = \
                     ProcessMobileNumber.validate_uk_mobile_phone_number(request.form['form-case-mobile-number'])
-                current_app.logger.info('valid mobile number')
+                logger.info('valid mobile number')
             except InvalidDataError as exc:
-                current_app.logger.info(exc)
+                logger.info(exc)
                 flash(exc.message, 'error_mobile')
                 session['values']['mobile'] = request.form['form-case-mobile-number']
                 session.modified = True
@@ -158,7 +161,7 @@ async def request_code_by_text(org, case_id):
 
         cc_return = await CCSvc.get_case_by_id(case_id)
         region = cc_return['sample']['region']
-        current_app.logger.info('Region: ' + str(region))
+        logger.info('Region: ' + str(region))
         fulfilments = await CCSvc.get_fulfilments('UAC', 'SMS', region)
 
         if len(fulfilments) > 1:
@@ -327,9 +330,9 @@ async def update_contact_details(org, case_id):
         if 'form-case-contact-number' in request.form:
             try:
                 ProcessContactNumber.validate_uk_phone_number(request.form['form-case-contact-number'])
-                current_app.logger.info('valid contact number')
+                logger.info('valid contact number')
             except InvalidDataError as exc:
-                current_app.logger.info(exc)
+                logger.info(exc)
                 flash(exc.message, 'error_contact_number')
                 valid_contact_number = False
             session['values']['contact_number'] = request.form['form-case-contact-number']
@@ -338,9 +341,9 @@ async def update_contact_details(org, case_id):
         if 'form-case-email' in request.form:
             try:
                 ProcessEmail.validate_email(request.form['form-case-email'])
-                current_app.logger.info('valid email address')
+                logger.info('valid email address')
             except InvalidDataError as exc:
-                current_app.logger.info(exc)
+                logger.info(exc)
                 flash(exc.message, 'error_email')
                 valid_email = False
             session['values']['email'] = request.form['form-case-email']

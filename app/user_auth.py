@@ -6,8 +6,11 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from functools import wraps
 from datetime import datetime
+from structlog import get_logger
 
 saml_bp = Blueprint('saml', __name__)
+
+logger = get_logger()
 
 
 @saml_bp.route('/saml/metadata/')
@@ -34,7 +37,7 @@ def sso():
     """
     single sign-on from user , redirects to IDP
     """
-    current_app.logger.info('Initiating login')
+    logger.info('Initiating login')
     auth, _ = do_auth()
     return redirect(auth.login(request.host_url))
     # If AuthNRequest ID need to be stored in order to later validate it, do instead
@@ -48,7 +51,7 @@ def slo():
     """
     single logout from user. Redirects to IDP
     """
-    current_app.logger.info('Initiating logout for user ' + get_logged_in_user())
+    logger.info('Initiating logout for user ' + get_logged_in_user())
     auth, _ = do_auth()
     name_id = session_index = name_id_format = name_id_nq = name_id_spnq = None
     if 'samlNameId' in session:
@@ -87,11 +90,11 @@ def sls():
                 flash('Your session expired so you have been logged out. Please login again.', 'info')
             else:
                 flash('Logged out', 'info')
-            current_app.logger.info('Successful logout')
+            logger.info('Successful logout')
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()
         flash('Failed to logout', 'error')
-        current_app.logger.warning('Logout error occurred: ' + error_reason)
+        logger.warning('Logout error occurred: ' + error_reason)
 
     return render_template('home.html')
 
@@ -107,11 +110,11 @@ def acs():
     errors = auth.get_errors()
     if not auth.is_authenticated():
         flash('User is not authenticated', 'error')
-        current_app.logger.warning('User is not authenticated')
+        logger.warning('User is not authenticated')
 
     if len(errors) == 0:
         store_in_session(auth)
-        current_app.logger.info('Successful login for user ' + get_logged_in_user())
+        logger.info('Successful login for user ' + get_logged_in_user())
         log_session_info(auth)
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
@@ -124,7 +127,7 @@ def acs():
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()
         flash('Failed to login', 'error')
-        current_app.logger.warning('Login error occurred: ' + error_reason)
+        logger.warning('Login error occurred: ' + error_reason)
 
     return render_template('home.html')
 
@@ -133,9 +136,9 @@ def log_session_info(auth):
     expiry_secs = auth.get_session_expiration()
     if expiry_secs:
         expiry_formatted = datetime.utcfromtimestamp(expiry_secs).strftime('%Y-%m-%d %H:%M:%S')
-        current_app.logger.info('SAML session valid until: ' + expiry_formatted)
+        logger.info('SAML session valid until: ' + expiry_formatted)
     else:
-        current_app.logger.info('SAML session unknown expiry time')
+        logger.info('SAML session unknown expiry time')
 
 
 def init_saml_auth(req):
@@ -188,11 +191,11 @@ def session_timeout():
     To be called when we are managing our own session timeout
     """
     if 'samlNameId' in session and len(session['samlNameId']) > 0:
-        current_app.logger.info("Session timed out so we must log out user")
+        logger.info("Session timed out so we must log out user")
         session['timed_out'] = True
         return redirect('/saml/slo')
     else:
-        current_app.logger.info("Session timed out without login")
+        logger.info("Session timed out without login")
         session.clear()
         flash('Your session has expired - you may need to login again', 'info')
         return render_template('home.html')
@@ -233,7 +236,7 @@ def get_attributes():
     if 'samlUserdata' in session:
         if len(session['samlUserdata']) > 0:
             attributes = session['samlUserdata']
-            current_app.logger.info('attributes: ' + str(attributes))
+            logger.info('attributes: ' + str(attributes))
     return attributes
 
 
