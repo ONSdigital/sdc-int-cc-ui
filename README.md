@@ -82,9 +82,13 @@ In SAML terminology:
 - IDP = Identity Provider (for example, our local simplesaml docker image, or Azure AD)
 
 In the "sp" section of **settings.json** the follow items need configuring:
-- **entityId** - <CCUI-base-URL>/saml/metadata
-- **assertionConsumerService** "url" - <CCUI-base-URL>/saml/acs
-- **singleLogoutService** "url" - <CCUI-base-URL>/saml/sls
+- **entityId** - _CCUI-base-URL_/saml/metadata
+- **assertionConsumerService** "url" - _CCUI-base-URL_/saml/acs
+- **singleLogoutService** "url" - _CCUI-base-URL_/saml/sls
+
+where for the above _CCUI-base-URL_ is the base URL, for example:
+- http://localhost:5001 for running locally
+- https://cc-dev.int.gcp.onsdigital.uk for running in DEV environment
 
 In the "idp" section of **settings,json** the following items need configuring:
 - **entityId** - the IDP entity ID
