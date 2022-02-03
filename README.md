@@ -1,12 +1,50 @@
-Placeholder for SDC Integrations Contact Center UI Readme
+# Contact Center UI
 
-<h2>To run locally</h2>
+## Running locally
 
-<h3>Run via docker</h3>
+### Prerequisites
 
-To be implemented.
+Various services are called by the CCUI and must be present for proper operation.
+Many of the services will be started in your local docker desktop.
 
-<h3>Manually</h3>
+Services required:
+
+- **local IDP** - a SAML IDP (Identity Provider) is required for login/logout by CCUI
+- **redis** - this can be the same redis as is run for RHUI. Required directly by CCUI for sesssions.
+- **PubSub** - this will typically be a dockerised pubsub emulator, required by CCSvc.
+- **Mock Services** - this provides AIMS and RM case service emulation, required by CCUI and CCSvc.
+- **Postgres** - database required by CCSvc
+- **CC Service** - provides primary backend services called by CCUI
+ 
+In addition, the PubSub will need appropriate topics and subscribers created.
+
+See below for guidance on setting up the local IDP; for all other prerequisites,
+see the help documentation and scripts in CCSvc and RHSvc code repositories.
+
+### Starting up the local SAML IDP
+
+An IDP (Identity Provider) is required for CCUI SAML login/logout. For running
+locally it is convenient to run up a **SimpleSaml** docker instance, configured for port 8080. 
+
+To do this run the following script:
+```shell
+scripts/local-idp.sh
+```
+This is configured with a handful of users with simple credentials, such as username="fred", password="pw".
+You can see the user configuration in the _**scripts/simplesaml-config**_ directory.
+
+To check the IDP is up and running you can navigate to http://localhost:8080/simplesaml .
+If you wish to login as **admin** the password is **secret**.
+
+By default, CCUI running locally will use the configuration in 
+[saml/settings.json](saml/settings.json) which is configured to use the local IDP
+started with the **local-idp.sh** script above.
+
+For more information about the local IDP setup see the 
+[IDP configuration README](scripts/simplesaml-config/README.md).
+
+
+### Starting CCUI
 To run CCUI locally you will need a running instance of redis. This can be the same redis as is run for RHUI.
 
 To start in development mode, clone the git repo.
@@ -23,16 +61,54 @@ Depending on your local set-up, you may also need to be running CCSvc and/or the
 
 When not run in production mode, CCUI has defaults for connecting to CCSvc, however you may need to set/modify environment variables for ‘CCSVC_URL’, ‘CCSVC_USERNAME’ and ‘CCSVC_PASSWORD’ to talk to you local CCSvc.
 
-<h2>ONS Design System</h2>
+## SAML IDP configuration when running CCUI in GCP
 
-<a href="https://ons-design-system.netlify.app/">https://ons-design-system.netlify.app/
+The SAML IDP configuration is overridden in GCP environment in the following way:
+- In the **cc-config** configmap, **saml-adfs** must be set to "True" for Azure IDP, or "False" otherwise
+- A secret configuration **saml-settings** is used to hold the customised **settings.json**.
+
+To view the **settings.json** run the following at the terminal:
+```shell
+kubectl get secret saml-settings -o json | jq -r '.data."settings.json"' | base64 -d
+```
+
+### A note about settings.json SAML configuration
+
+The **settings.json** file configures the OneLogin SAML toolkit used by CCUI to talk to the correct IDP.
+The settings file that CCUI uses will either be the local one (see above information
+on running the local IDP), or the one in the **saml-settings** kubernetes secret (see above).
+
+See https://github.com/onelogin/python3-saml for detailed information on **settings.json**.
+
+In SAML terminology:
+- SP = Service Provider (which in our case is the CCUI)
+- IDP = Identity Provider (for example, our local simplesaml docker image, or Azure AD)
+
+In the "sp" section of **settings.json** the follow items need configuring:
+- **entityId** - <CCUI-base-URL>/saml/metadata
+- **assertionConsumerService** "url" - <CCUI-base-URL>/saml/acs
+- **singleLogoutService** "url" - <CCUI-base-URL>/saml/sls
+
+In the "idp" section of **settings,json** the following items need configuring:
+- **entityId** - the IDP entity ID
+- **singleSignOnService** "url" - the IDP sign-on URL
+- **singleLogoutService** "url" - the IDP logout URL
+- **x509cert** - the IDP x509 certificate - one long string with no spaces.
+
+In order to format an x509 certifcate in one long string, it may be convenient to
+use the online converter at the useful webpage: 
+https://developers.onelogin.com/saml/online-tools/x509-certs/format-x509-certificate .
+
+
+## ONS Design System
+
+See https://ons-design-system.netlify.app/ .
 
 The required version of the design system is now loaded automatically via the 'Make run' command. If you wish to load it manually, you can run scripts > load_templates.sh to pull down the appropriate version of the Design System (DS).
 
 To run a different instance of the Design System, update the 'DESIGN_SYSTEM_VERSION' in scripts > load_templates.sh
 
-
-<h2>Secret Key Generation</h2>
+## Secret Key Generation
 A secret_key must be generated for CCUI for each environment and stored in GCP as a secret. A proforma secret is available in the sdc-int-cc-terraform repo. When running locally, a dummy default key is set in the config.
 
 A key can be generated by running the following python code
