@@ -45,7 +45,6 @@ For more information about the local IDP setup see the
 
 
 ### Starting CCUI
-To run CCUI locally you will need a running instance of redis. This can be the same redis as is run for RHUI.
 
 To start in development mode, clone the git repo.
 
