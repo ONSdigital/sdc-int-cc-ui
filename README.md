@@ -56,8 +56,6 @@ Once this is done you can run up a virtual environment (venv), and then use the 
 $ make run
 </pre>
 
-Depending on your local set-up, you may also need to be running CCSvc and/or the AIMS mock service.
-
 When not run in production mode, CCUI has defaults for connecting to CCSvc, however you may need to set/modify environment variables for ‘CCSVC_URL’, ‘CCSVC_USERNAME’ and ‘CCSVC_PASSWORD’ to talk to you local CCSvc.
 
 ## SAML IDP configuration when running CCUI in GCP
