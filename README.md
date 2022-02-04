@@ -69,6 +69,11 @@ To view the **settings.json** run the following at the terminal:
 kubectl get secret saml-settings -o json | jq -r '.data."settings.json"' | base64 -d
 ```
 
+See:
+https://github.com/ONSdigital/sdc-int-cc-terraform/tree/main/kubernetes/contact-centre/simple-idp/readme.txt
+for the instructions for configuring and deploying a **simpleSaml IDP** in GCP for testing.
+
+
 ### A note about settings.json SAML configuration
 
 The **settings.json** file configures the OneLogin SAML toolkit used by CCUI to talk to the correct IDP.

@@ -20,24 +20,53 @@ $config = array(
             'givenname' => 'Jane',
             'surname' => 'Doe',
         ),
-        'marge:pw' => array(
-            'uid' => array('3'),
-            'emailaddress' => 'marge@home.com',
-            'givenname' => 'Margerie',
-            'surname' => 'Smith',
+        'sel:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'sel@ons.gov.uk',
+            'givenname' => 'Survey Enquiry Line',
+            'surname' => 'Operator',
         ),
-        'joe:pw' => array(
-            'uid' => array('4'),
-            'emailaddress' => 'joe@home.com',
-            'givenname' => 'Joseph',
-            'surname' => 'Jones',
+        'top:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'top@ons.gov.uk',
+            'givenname' => 'Telephone',
+            'surname' => 'Operator',
         ),
-        'grace:pw' => array(
-            'uid' => array('5'),
-            'emailaddress' => 'grace@home.com',
-            'givenname' => 'Grace',
-            'surname' => 'Kelly',
+        'mgr:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'mgr@ons.gov.uk',
+            'givenname' => 'The',
+            'surname' => 'Manager',
+        ),
+        'phil:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'philip.whiles@ext.ons.gov.uk',
+            'givenname' => 'Philip',
+            'surname' => 'Whiles',
+        ),
+        'pete:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'peter.bochel@ext.ons.gov.uk',
+            'givenname' => 'Peter',
+            'surname' => 'Bochel',
+        ),
+        'rob:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'robert.catling@ext.ons.gov.uk',
+            'givenname' => 'Robert',
+            'surname' => 'Catling',
+        ),
+        'simon:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'simon.diaz@ext.ons.gov.uk',
+            'givenname' => 'Simon',
+            'surname' => 'Diaz',
+        ),
+        'kieran:pw' => array(
+            'uid' => array('2'),
+            'emailaddress' => 'kieran.wardle@ext.ons.gov.uk',
+            'givenname' => 'Kieran',
+            'surname' => 'Wardle',
         ),
     ),
-
 );
