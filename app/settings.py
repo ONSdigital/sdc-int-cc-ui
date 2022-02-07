@@ -1,5 +1,6 @@
 import os
 
+from pathlib import Path
 from structlog import get_logger
 from redis import Redis
 
@@ -56,5 +57,11 @@ SESSION_TYPE = 'redis'
 SESSION_PERMANENT = True
 SESSION_USE_SIGNER = True
 SESSION_COOKIE_NAME = 'ons_cc'
-PERMANENT_SESSION_LIFETIME = 2700
+SESSION_TIMEOUT_SECS = 2700
 SESSION_REDIS = Redis(host=REDIS_SERVER, port=REDIS_PORT, retry_on_timeout=True)
+SAML_PATH = os.getenv('SAML_PATH', str(Path(__file__).resolve().parent.parent / 'saml'))
+ADFS = os.getenv('SAML_ADFS', 'False')
+
+logger.info('SAML_PATH: ' + SAML_PATH)
+logger.info('ADFS: ' + ADFS)
+

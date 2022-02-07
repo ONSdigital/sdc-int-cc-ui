@@ -1,0 +1,14 @@
+{%- with messages = get_flashed_messages(category_filter=["info"]) -%}
+
+{%- from './components/panel/_macro.njk' import onsPanel -%}
+
+{{
+    onsPanel({
+        "type": 'success',
+        "id": 'success-id',
+        "iconType": 'check',
+        "body": messages[0]
+    })
+}}
+
+{%- endwith -%}

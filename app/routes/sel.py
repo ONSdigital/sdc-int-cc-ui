@@ -1,9 +1,13 @@
-from flask import render_template, request, url_for, flash, current_app
+from flask import render_template, request, url_for, flash
 from app.utils import CCSvc
 from flask import Blueprint
+from structlog import get_logger
+from app.user_auth import login_required
 import re
 
 sel_bp = Blueprint('sel', __name__)
+
+logger = get_logger()
 
 
 def highlight_term(addr, addr_input, hi_start, hi_end):
@@ -73,6 +77,7 @@ def build_address_results(addr_input, cc_return):
 
 
 @sel_bp.route('/sel/', methods=['GET', 'POST'])
+@login_required
 async def sel_home():
     if request.method == 'POST':
         addr_input = request.form['form_address_input']
@@ -82,10 +87,10 @@ async def sel_home():
                 cc_return = await CCSvc.get_addresses_by_input(addr_input)
                 results = build_address_results(addr_input, cc_return)
             else:
-                current_app.logger.info('Address input error: Please supply a longer search term')
+                logger.info('Address input error: Please supply a longer search term')
                 flash('Please supply a longer search term', 'error_input')
         else:
-            current_app.logger.info('Address input error: No value entered')
+            logger.info('Address input error: No value entered')
             flash('Enter an address value', 'error_input')
 
         return render_template('sel/home.html', results=results, addr_input=addr_input)

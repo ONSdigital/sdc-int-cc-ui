@@ -2,12 +2,16 @@ from copy import deepcopy
 from typing import Dict
 from uuid import uuid4
 
+import re
+
 from flask import Flask
 from flask import request as flask_request
 from flask import session as cookie_session
 from flask_talisman import Talisman
 from flask_session import Session
 from structlog import get_logger
+from werkzeug import serving
+from datetime import datetime
 
 from app import settings
 from app.jinja_filters import blueprint as filter_blueprint
@@ -18,7 +22,9 @@ from app.routes.case import case_bp
 from app.routes.sel import sel_bp
 from app.routes.structural import structural_bp
 from app.routes.to import to_bp
+from app.user_auth import saml_bp
 
+from app.user_auth import setup_auth_utilities, session_timeout
 from app.utilities.json import json_dumps
 
 CACHE_HEADERS = {
@@ -64,14 +70,31 @@ def create_app(  # noqa: C901  pylint: disable=too-complex, too-many-statements
         request_id = str(uuid4())
         logger.new(request_id=request_id)
 
-        logger.info(
-            "request",
-            method=flask_request.method,
-            url_path=flask_request.full_path,
-            session_cookie_present="session" in flask_request.cookies,
-            csrf_token_present="csrf_token" in cookie_session,
-            user_agent=flask_request.user_agent.string,
-        )
+        url_path = flask_request.full_path
+
+        if not url_path == '/info?':
+            logger.info(
+                "request",
+                method=flask_request.method,
+                url_path=url_path,
+                session_cookie_present="session" in flask_request.cookies,
+                csrf_token_present="csrf_token" in cookie_session,
+                user_agent=flask_request.user_agent.string,
+            )
+
+    @application.before_request
+    def check_for_session_timeout():
+        now = datetime.now()
+        last_active = cookie_session.get('last_active', None)
+        cookie_session['last_active'] = now
+        url_path = flask_request.full_path
+        if last_active and url_path != '/saml/sso?':
+            delta = now - last_active
+            if delta.seconds > settings.SESSION_TIMEOUT_SECS:
+                logger.info("session expired")
+                return session_timeout()
+
+    disable_endpoint_logs()
 
     setup_redis(application)
 
@@ -83,9 +106,23 @@ def create_app(  # noqa: C901  pylint: disable=too-complex, too-many-statements
 
     add_info(application)
 
+    setup_auth_utilities(application)
+
     setup_jinja_env(application)
 
     return application
+
+
+def disable_endpoint_logs():
+    """Disable logs for requests to healthcheck endpoints."""
+    disabled_endpoints = ('/info', '/healthz')
+    parent_log_request = serving.WSGIRequestHandler.log_request
+
+    def log_request(self, *args, **kwargs):
+        if not any(re.match(f"{de}$", self.path) for de in disabled_endpoints):
+            parent_log_request(self, *args, **kwargs)
+
+    serving.WSGIRequestHandler.log_request = log_request
 
 
 def setup_jinja_env(application):
@@ -148,6 +185,9 @@ def add_blueprints(application):
 
     application.register_blueprint(to_bp)
     to_bp.config = application.config.copy()
+
+    application.register_blueprint(saml_bp)
+    saml_bp.config = application.config.copy()
 
     application.register_blueprint(filter_blueprint)
 
