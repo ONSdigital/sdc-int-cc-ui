@@ -10,9 +10,16 @@ NAME=testsamlidp_idp
 docker ps | grep "$NAME" >/dev/null 2>&1
 if [[ "$?" = "0" ]]
 then
-	echo "Stopping existing $NAME ..."
+	echo "Stopping and removing existing container $NAME ..."
 	docker stop $NAME
 	docker rm $NAME
+else
+	docker container ls --all | grep "$NAME" > /dev/null 2>&1
+	if [[ "$?" = "0" ]]
+	then
+		echo "Removing existing container $NAME ..."
+		docker rm $NAME
+	fi
 fi
 
 DIR=$(dirname $(realpath $0))
