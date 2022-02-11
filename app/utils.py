@@ -1,14 +1,10 @@
-import requests
 import string
 import re
 import os
 
-from flask import current_app, abort, json
+from flask import current_app, json
 from unicodedata2 import normalize
-from datetime import datetime
-from pytz import utc
-from app.routes.errors import InvalidDataError, Case404
-from app.user_auth import get_logged_in_user
+from app.routes.errors import InvalidDataError
 
 OBSCURE_WHITESPACE = (
     '\u180E'  # Mongolian vowel separator
@@ -168,124 +164,3 @@ class ProcessEmail:
             raise InvalidDataError("Enter a valid email address", message_type='invalid')
 
         return email
-
-
-class CCSvc:
-    @staticmethod
-    def get(url, check404, description, params=None):
-        try:
-            cc_return = requests.get(url, auth=(current_app.config['CCSVC_USERNAME'],
-                                                current_app.config['CCSVC_PASSWORD']),
-                                     params=params,
-                                     headers={"x-user-id": get_logged_in_user()})
-            cc_return.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err.response))
-            if check404 and err.response.status_code == 404:
-                current_app.logger.warn('404: No matching case')
-                raise Case404
-            else:
-                raise abort(500)
-        except requests.exceptions.ConnectionError:
-            current_app.logger.warn('Error: Unable to connect to CCSvc')
-            raise abort(500)
-
-        return cc_return.json()
-
-    @staticmethod
-    def post(url, payload, description):
-        try:
-            cc_return = requests.post(url, auth=(current_app.config['CCSVC_USERNAME'],
-                                                 current_app.config['CCSVC_PASSWORD']),
-                                      headers={"x-user-id": get_logged_in_user()},
-                                      json=payload)
-            cc_return.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            current_app.logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
-            raise abort(500)
-        except requests.exceptions.ConnectionError:
-            current_app.logger.warn('Error: Unable to connect to CCSvc')
-            raise abort(500)
-
-        return cc_return.json()
-
-    @staticmethod
-    async def get_case_by_id(case, case_events=False):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case}?caseEvents={case_events}'
-        return CCSvc.get(url, True, 'get_case_by_id')
-
-    @staticmethod
-    async def post_add_note(case_id, note):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case_id}/interaction'
-        interaction_json = {
-            'caseId': case_id,
-            'type': 'CASE_NOTE_ADDED',
-            'note': note
-        }
-        return CCSvc.post(url, interaction_json, 'post_add_note')
-
-    @staticmethod
-    async def post_case_refusal(case_id, reason):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case_id}/refusal'
-        refusal_json = {
-            'caseId': case_id,
-            'dateTime': datetime.now(utc).isoformat(),
-            'reason': reason
-        }
-        return CCSvc.post(url, refusal_json, 'case refusal')
-
-    @staticmethod
-    async def get_addresses_by_postcode(postcode):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/addresses/postcode'
-        params = {'postcode': postcode, 'limit': 5000}
-        return CCSvc.get(url, False, 'addresses by postcode', params)
-
-    @staticmethod
-    async def get_addresses_by_input(input_text):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/addresses'
-        params = {'input': input_text}
-        current_app.logger.info('Trying ' + input_text)
-        return CCSvc.get(url, False, 'addresses by input', params)
-
-    @staticmethod
-    async def get_fulfilments(product_group, delivery_channel, region):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/fulfilments'
-        params = {
-            'caseType': 'HH',
-            'productGroup': product_group,
-            'deliveryChannel': delivery_channel,
-            'region': region,
-            'individual': 'false'
-        }
-        return CCSvc.get(url, False, 'get fulfilments', params)
-
-    @staticmethod
-    async def post_sms_fulfilment(case_id, fulfilment_code, tel_no):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case_id}/fulfilment/sms'
-        fulfilment_json = {
-            'caseId': case_id,
-            'dateTime': datetime.now(utc).isoformat(),
-            'fulfilmentCode': fulfilment_code,
-            'telNo': tel_no
-        }
-        return CCSvc.post(url, fulfilment_json, 'SMS fulfilment')
-
-    @staticmethod
-    async def post_postal_fulfilment(case_id, fulfilment_code, first_name, last_name):
-        cc_svc_url = current_app.config['CCSVC_URL']
-        url = f'{cc_svc_url}/cases/{case_id}/fulfilment/post'
-        fulfilment_json = {
-            'caseId': case_id,
-            'dateTime': datetime.now(utc).isoformat(),
-            'fulfilmentCode': fulfilment_code,
-            'forename': first_name,
-            'surname': last_name
-        }
-        return CCSvc.post(url, fulfilment_json, 'postal fulfilment')

@@ -1,5 +1,5 @@
 from flask import render_template, request, url_for, flash
-from app.utils import CCSvc
+from app.backend import CCSvc
 from flask import Blueprint
 from structlog import get_logger
 from app.user_auth import login_required
@@ -84,7 +84,7 @@ async def sel_home():
         results = []
         if addr_input:
             if is_address_input_valid(addr_input):
-                cc_return = await CCSvc.get_addresses_by_input(addr_input)
+                cc_return = await CCSvc().get_addresses_by_input(addr_input)
                 results = build_address_results(addr_input, cc_return)
             else:
                 logger.info('Address input error: Please supply a longer search term')

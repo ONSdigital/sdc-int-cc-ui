@@ -7,8 +7,6 @@ from app.routes.errors import InvalidDataError
 class TestPostcodeValidation:
     def test_validate_postcode_valid(self):
         postcode = 'PO15 5RR'
-        locale = 'en'
-
         # When validate_postcode is called
         ProcessPostcode.validate_postcode(postcode)
         # Nothing happens

@@ -3,10 +3,11 @@ from flask import Blueprint
 from structlog import get_logger
 
 from flask import render_template, request, redirect, url_for, flash, session
-from app.utils import CCSvc, ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
+from app.utils import ProcessMobileNumber, ProcessContactNumber, ProcessJsonForOptions, Common, ProcessEmail
 from app.routes.errors import InvalidDataError
 from app.utilities.case import Case
 from app.user_auth import login_required
+from app.backend import CCSvc
 
 case_bp = Blueprint('case', __name__)
 
@@ -18,7 +19,7 @@ logger = get_logger()
 async def case(org, case_id):
     if case_id:
         page_title = 'Case ' + case_id
-        cc_return = await CCSvc.get_case_by_id(case_id, True)
+        cc_return = await CCSvc().get_case_by_id(case_id, True)
         sample = cc_return['sample']
         if cc_return.get('interactions'):
             interactions = Case.build_case_history_content(cc_return['interactions'])
@@ -37,7 +38,7 @@ async def add_case_note(org, case_id):
         if 'form-case-add-note' in request.form:
             note = request.form['form-case-add-note']
             if note:
-                await CCSvc.post_add_note(case_id, note)
+                await CCSvc().post_add_note(case_id, note)
                 return redirect(url_for('case.case_note_added', case_id=case_id, org=org))
             else:
                 flash('Please add some note text', 'error_note')
@@ -70,7 +71,7 @@ async def request_refusal(org, case_id):
     if request.method == 'POST':
         if 'form-case-request-refusal-reason' in request.form:
             reason = request.form['form-case-request-refusal-reason']
-            await CCSvc.post_case_refusal(case_id, reason)
+            await CCSvc().post_case_refusal(case_id, reason)
             return redirect(url_for('case.refused', case_id=case_id, org=org))
         else:
             flash('Select a reason', 'error_reason')
@@ -132,7 +133,7 @@ async def request_code_by_text(org, case_id):
             valid_mobile_number = False
 
         if valid_fulfilment and valid_mobile_number:
-            await CCSvc.post_sms_fulfilment(case_id, request.form['form-case-fulfilment'], mobile_number)
+            await CCSvc().post_sms_fulfilment(case_id, request.form['form-case-fulfilment'], mobile_number)
             if 'values' in session:
                 session.pop('values')
                 session.modified = True
@@ -159,10 +160,10 @@ async def request_code_by_text(org, case_id):
                 for message in flask.get_flashed_messages():
                     error_mobile = {'id': 'error_mobile', 'text': message}
 
-        cc_return = await CCSvc.get_case_by_id(case_id)
+        cc_return = await CCSvc().get_case_by_id(case_id)
         region = cc_return['sample']['region']
         logger.info('Region: ' + str(region))
-        fulfilments = await CCSvc.get_fulfilments('UAC', 'SMS', region)
+        fulfilments = await CCSvc().get_fulfilments('UAC', 'SMS', region)
 
         if len(fulfilments) > 1:
             fulfilment_options = []
@@ -209,9 +210,9 @@ async def request_code_by_post(org, case_id):
         if 'form-case-fulfilment' in request.form:
             fulfilment_code = request.form['form-case-fulfilment']
         else:
-            cc_return = await CCSvc.get_case_by_id(case_id)
+            cc_return = await CCSvc().get_case_by_id(case_id)
             region = cc_return['sample']['region']
-            fulfilments = await CCSvc.get_fulfilments('UAC', 'POST', region)
+            fulfilments = await CCSvc().get_fulfilments('UAC', 'POST', region)
             fulfilment_code = fulfilments[0]['fulfilmentCode']
 
         if ('form-case-first-name' in request.form) and request.form['form-case-first-name'] != '' \
@@ -219,10 +220,10 @@ async def request_code_by_post(org, case_id):
                 and ('form-case-last-name' in request.form) and request.form['form-case-last-name'] != '' \
                 and len(request.form['form-case-last-name']) <= 35:
 
-            await CCSvc.post_postal_fulfilment(case_id,
-                                               fulfilment_code,
-                                               request.form['form-case-first-name'],
-                                               request.form['form-case-last-name'])
+            await CCSvc().post_postal_fulfilment(case_id,
+                                                 fulfilment_code,
+                                                 request.form['form-case-first-name'],
+                                                 request.form['form-case-last-name'])
             if 'values' in session:
                 session.pop('values')
                 session.modified = True
@@ -263,9 +264,9 @@ async def request_code_by_post(org, case_id):
             for message in flask.get_flashed_messages(category_filter=['error_last_name']):
                 error_last_name = {'id': 'error_last_name', 'text': message}
 
-        cc_return = await CCSvc.get_case_by_id(case_id)
+        cc_return = await CCSvc().get_case_by_id(case_id)
         region = cc_return['sample']['region']
-        fulfilments = await CCSvc.get_fulfilments('UAC', 'POST', region)
+        fulfilments = await CCSvc().get_fulfilments('UAC', 'POST', region)
         if len(fulfilments) == 1:
             return render_template('case/request-code-by-post.html',
                                    page_title=page_title,
