@@ -129,7 +129,7 @@ def acs():
         flash('Failed to login', 'error')
         logger.warning('Login error occurred: ' + error_reason)
 
-    return render_template('home.html')
+    return redirect('/')
 
 
 def log_session_info(auth):
@@ -178,7 +178,7 @@ def login_required(func):
     """
     @wraps(func)
     async def decorated_view(*args, **kwargs):
-        if 'samlNameId' in session and len(session['samlNameId']) > 0:
+        if is_logged_in():
             return await func(*args, **kwargs)
         else:
             return redirect('/saml/sso')
@@ -190,7 +190,7 @@ def session_timeout():
     If we are in a logged in state, then make sure we logout with the IDP.
     To be called when we are managing our own session timeout
     """
-    if 'samlNameId' in session and len(session['samlNameId']) > 0:
+    if is_logged_in():
         logger.info("Session timed out so we must log out user")
         session['timed_out'] = True
         return redirect('/saml/slo')
@@ -226,6 +226,10 @@ def get_from_session(key):
 
 def get_logged_in_user():
     return session.get('samlNameId', 'nobody')
+
+
+def is_logged_in():
+    return 'samlNameId' in session and len(session['samlNameId']) > 0
 
 
 def get_attributes():
@@ -269,10 +273,4 @@ def setup_auth_utilities(application):
     """
     @application.context_processor
     def utility_processor():
-        def get_id():
-            return get_logged_in_user()
-
-        def is_logged_in():
-            return 'samlNameId' in session and len(session['samlNameId']) > 0
-
-        return dict(get_id=get_id, is_logged_in=is_logged_in)
+        return dict(get_id=get_logged_in_user, is_logged_in=is_logged_in)

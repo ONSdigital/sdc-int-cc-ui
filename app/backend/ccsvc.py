@@ -1,6 +1,6 @@
 import requests
 
-from flask import current_app, abort
+from flask import current_app, abort, json
 from app.user_auth import get_logged_in_user
 from app.routes.errors import Case404
 from datetime import datetime
@@ -20,13 +20,17 @@ class CCSvc:
         self.__password = current_app.config['CCSVC_PASSWORD']
         self.__creds = (self.__username, self.__password)
         self.__svc_url = current_app.config['CCSVC_URL']
+        self.__user_logged_in = get_logged_in_user()
         pass
+
+    def __get_response(self, url, params=None):
+        return requests.get(url, auth=self.__creds,
+                            params=params,
+                            headers={"x-user-id": self.__user_logged_in})
 
     def __get(self, url, check404, description, params=None):
         try:
-            cc_return = requests.get(url, auth=self.__creds,
-                                     params=params,
-                                     headers={"x-user-id": get_logged_in_user()})
+            cc_return = self.__get_response(url, params)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err.response))
@@ -44,7 +48,7 @@ class CCSvc:
     def __post(self, url, payload, description):
         try:
             cc_return = requests.post(url, auth=self.__creds,
-                                      headers={"x-user-id": get_logged_in_user()},
+                                      headers={"x-user-id": self.__user_logged_in},
                                       json=payload)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -55,6 +59,13 @@ class CCSvc:
             raise abort(500)
 
         return cc_return.json()
+
+    async def get_permissions(self):
+        url = f'{self.__svc_url}/users/{self.__user_logged_in}/permissions'
+        resp = self.__get_response(url)
+        perms = resp.json() if resp.ok else json.loads('[]')
+        logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
+        return perms
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'

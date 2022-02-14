@@ -1,7 +1,7 @@
 {%- extends 'base.html' -%}
 
 {% from "components/card/_macro.njk" import onsCard %}
-
+{% from "components/call-to-action/_macro.njk" import onsCallToAction %}
 {%- block main -%}
 
     {%- if get_flashed_messages(category_filter=["info"]) -%}
@@ -11,10 +11,24 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
+    {%- if is_logged_in() -%}
     <h1 class="ons-u-mt-xl">Role Operations</h1>
+    {%- else -%}
+    <br/><br/>
+        {{ onsCallToAction({
+            "headingText": 'Please Login.',
+            "paragraphText": 'You must login to see the available operations',
+            "button": {
+                "text": 'Login',
+                "variants": 'small',
+                "url": url_for('saml.sso')
+            }
+        }) }}
+    {%- endif -%}
 
     <div>
         <div class="ons-grid ons-grid--column@xxs@s">
+            {%- if view_sel() -%}
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title1',
@@ -24,6 +38,8 @@
                     "text": 'Answer incoming calls'
                 }) }}
             </div>
+            {%- endif -%}
+            {%- if view_tops() -%}
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title2',
@@ -33,6 +49,8 @@
                     "text": 'Make outgoing calls'
                 }) }}
             </div>
+            {%- endif -%}
+            {%- if view_admin() -%}
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title2',
@@ -42,6 +60,7 @@
                     "text": 'Administer the system'
                 }) }}
             </div>
+            {%- endif -%}
         </div>
     </div>
 
