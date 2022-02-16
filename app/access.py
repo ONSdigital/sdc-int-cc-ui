@@ -44,7 +44,7 @@ def has_single_permission(perm):
 
 
 def view_admin():
-    return _has_any_permission('CAN_MANAGE_SYSTEM')
+    return _has_any_permission({'CAN_MANAGE_SYSTEM'})
 
 
 def view_sel():
