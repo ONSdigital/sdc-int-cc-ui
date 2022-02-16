@@ -61,7 +61,7 @@ class CCSvc:
         return cc_return.json()
 
     async def get_permissions(self):
-        url = f'{self.__svc_url}/users/{self.__user_logged_in}/permissions'
+        url = f'{self.__svc_url}/users/permissions'
         resp = self.__get_response(url)
         perms = resp.json() if resp.ok else json.loads('[]')
         logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
