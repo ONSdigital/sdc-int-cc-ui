@@ -67,6 +67,10 @@ class CCSvc:
         logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
         return perms
 
+    def put_update_user_name(self, name):
+        """ Update the user with their name """
+        pass
+
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
         return self.__get(url, True, 'get_case_by_id')

@@ -9,6 +9,7 @@ from datetime import datetime
 from structlog import get_logger
 from user_context import get_name, is_logged_in, get_logged_in_user
 from access import load_permissions
+from backend.ccsvc import CCSvc
 
 
 saml_bp = Blueprint('saml', __name__)
@@ -126,6 +127,8 @@ def acs():
         load_permissions()
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
+        if name:
+            _store_name_in_backend(name)
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
@@ -147,6 +150,10 @@ def _log_session_info(auth):
         logger.info('SAML session valid until: ' + expiry_formatted)
     else:
         logger.info('SAML session unknown expiry time')
+
+
+def _store_name_in_backend(name):
+    CCSvc().put_update_user_name(name)
 
 
 def init_saml_auth(req):

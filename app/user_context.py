@@ -25,8 +25,30 @@ def get_attributes():
     if 'samlUserdata' in session:
         if len(session['samlUserdata']) > 0:
             attributes = session['samlUserdata']
-            logger.info('attributes: ' + str(attributes))
     return attributes
+
+
+def _get_name(base_key):
+    """
+    Get name from the attributes, given by key
+    """
+    name = ''
+    key = base_key
+    attributes = get_attributes()
+    if attributes:
+        if current_app.config['ADFS'] == 'True':
+            claim_prefix = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/'
+            key = claim_prefix + base_key
+        name = session['samlUserdata'].get(key, [None])[0]
+    return name
+
+
+def get_forename():
+    return _get_name('givenname')
+
+
+def get_surname():
+    return _get_name('surname')
 
 
 def get_name():
@@ -34,21 +56,12 @@ def get_name():
     Create a "forename surname" name from the attributes
     """
     name = ''
-    attributes = get_attributes()
-    if attributes:
-        forename_key = 'givenname'
-        surname_key = 'surname'
-        if current_app.config['ADFS'] == 'True':
-            claim_prefix = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/'
-            forename_key = claim_prefix + forename_key
-            surname_key = claim_prefix + surname_key
-
-        forename = session['samlUserdata'].get(forename_key, [None])[0]
-        surname = session['samlUserdata'].get(surname_key, [None])[0]
-        if forename:
-            name = forename
-        if surname:
-            name = name + ' ' + surname
+    forename = get_forename()
+    surname = get_surname()
+    if forename:
+        name = forename
+    if surname:
+        name = name + ' ' + surname
     return name
 
 
