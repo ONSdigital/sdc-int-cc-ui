@@ -1,5 +1,3 @@
-from functools import wraps
-from app.user_auth import is_logged_in
 from app.backend import CCSvc
 from flask import session
 from structlog import get_logger
@@ -11,21 +9,18 @@ Control access to resources. i.e police authorisation.
 """
 
 
-def load_permissions(func):
+def load_permissions():
     """
-    Decorator to load permissions
+    load permissions
     """
-    @wraps(func)
-    async def ensure_permissions(*args, **kwargs):
-        if is_logged_in() and 'permissions' not in session:
-            logger.debug('Getting user permissions')
-            perms = await CCSvc().get_permissions()
-            session['permissions'] = perms
-        return await func(*args, **kwargs)
-    return ensure_permissions
+    logger.debug('Getting user permissions')
+    perms = CCSvc().get_permissions()
+    session['permissions'] = perms
 
 
-def _has_any_permission(perms=set()):
+def _has_any_permission(perms=None):
+    if perms is None:
+        return False
     if 'permissions' in session:
         user_perms = set(session['permissions'])
         return bool(set(perms).intersection(user_perms))

@@ -1,7 +1,7 @@
 import requests
 
 from flask import current_app, abort, json
-from app.user_auth import get_logged_in_user
+from app.user_context import get_logged_in_user
 from app.routes.errors import Case404
 from datetime import datetime
 from pytz import utc
@@ -60,7 +60,7 @@ class CCSvc:
 
         return cc_return.json()
 
-    async def get_permissions(self):
+    def get_permissions(self):
         url = f'{self.__svc_url}/users/permissions'
         resp = self.__get_response(url)
         perms = resp.json() if resp.ok else json.loads('[]')
