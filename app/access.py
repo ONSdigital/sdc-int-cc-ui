@@ -16,7 +16,9 @@ def load_permissions():
     logger.debug('Getting user permissions')
     perms = CCSvc().get_permissions()
     if not perms:
-        flash('You have no associated roles. Please ask an administrator to add one or more roles for you', 'error')
+        flash('Your login user is not correctly setup or is inactive. ' +
+              'Please ask an administrator to correctly configure roles, surveys and status for you.',
+              'error')
     session['permissions'] = perms
 
 
@@ -56,6 +58,7 @@ def setup_access_utilities(application):
     """
     Set up utility methods that can be called from the jinja2 HTML templates.
     """
+
     @application.context_processor
     def utility_processor():
         return dict(view_admin=view_admin, view_sel=view_sel, view_tops=view_tops,
