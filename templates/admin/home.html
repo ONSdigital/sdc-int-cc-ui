@@ -8,6 +8,7 @@
 
     <div>
         <div class="ons-grid ons-grid--column@xxs@s">
+            {%- if has_permission('CAN_MANAGE_USERS') -%}
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title1',
@@ -17,6 +18,7 @@
                     "text": 'Modify user roles and permissions'
                 }) }}
             </div>
+            {%- endif -%}
             <div class="ons-grid__col ons-col-4@m">
                 {{ onsCard({
                     "id": 'title2',

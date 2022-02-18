@@ -1,5 +1,5 @@
 from app.backend import CCSvc
-from flask import session
+from flask import session, flash
 from structlog import get_logger
 
 logger = get_logger()
@@ -15,6 +15,8 @@ def load_permissions():
     """
     logger.debug('Getting user permissions')
     perms = CCSvc().get_permissions()
+    if not perms:
+        flash('You have no associated roles. Please ask an administrator to add one or more roles for you', 'error')
     session['permissions'] = perms
 
 
@@ -39,7 +41,7 @@ def has_single_permission(perm):
 
 
 def view_admin():
-    return _has_any_permission({'CAN_MANAGE_SYSTEM'})
+    return _has_any_permission({'CAN_MANAGE_SYSTEM', 'CAN_MANAGE_USERS'})
 
 
 def view_sel():
