@@ -60,6 +60,20 @@ class CCSvc:
 
         return cc_return.json()
 
+    def __put(self, url, payload, description, json_response=True):
+        try:
+            cc_return = requests.put(url, headers={"x-user-id": self.__user_logged_in},
+                                     json=payload)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+        if json_response:
+            return cc_return.json()
+
     def get_permissions(self):
         url = f'{self.__svc_url}/users/permissions'
         resp = self.__get_response(url)
@@ -67,9 +81,17 @@ class CCSvc:
         logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
         return perms
 
-    def put_update_user_name(self, name):
-        """ Update the user with their name """
-        pass
+    def login(self, forename, surname):
+        url = f'{self.__svc_url}/users/login'
+        login_json = {
+            'forename': forename,
+            'surname': surname
+        }
+        return self.__put(url, login_json, 'login', False)
+
+    def logout(self):
+        url = f'{self.__svc_url}/users/logout'
+        return self.__put(url, None, 'logout', False)
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
