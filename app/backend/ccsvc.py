@@ -16,17 +16,13 @@ class CCSvc:
     """
 
     def __init__(self):
-        self.__username = current_app.config['CCSVC_USERNAME']
-        self.__password = current_app.config['CCSVC_PASSWORD']
-        self.__creds = (self.__username, self.__password)
         self.__svc_url = current_app.config['CCSVC_URL']
         self.__user_logged_in = get_logged_in_user()
+        self.__headers = {"x-user-id": self.__user_logged_in}
         pass
 
     def __get_response(self, url, params=None):
-        return requests.get(url, auth=self.__creds,
-                            params=params,
-                            headers={"x-user-id": self.__user_logged_in})
+        return requests.get(url, params=params, headers=self.__headers)
 
     def __get(self, url, check404, description, params=None):
         try:
@@ -47,9 +43,7 @@ class CCSvc:
 
     def __post(self, url, payload, description):
         try:
-            cc_return = requests.post(url, auth=self.__creds,
-                                      headers={"x-user-id": self.__user_logged_in},
-                                      json=payload)
+            cc_return = requests.post(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
@@ -62,8 +56,7 @@ class CCSvc:
 
     def __put(self, url, payload, description, json_response=True):
         try:
-            cc_return = requests.put(url, headers={"x-user-id": self.__user_logged_in},
-                                     json=payload)
+            cc_return = requests.put(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
