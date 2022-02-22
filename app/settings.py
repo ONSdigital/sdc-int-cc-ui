@@ -64,4 +64,3 @@ ADFS = os.getenv('SAML_ADFS', 'False')
 
 logger.info('SAML_PATH: ' + SAML_PATH)
 logger.info('ADFS: ' + ADFS)
-

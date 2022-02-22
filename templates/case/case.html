@@ -37,17 +37,16 @@
                                     },
                                     {
                                         "numeric": true,
-                                        'value':
-                                            onsButton({
-                                                'type': 'button',
-                                                'text': 'Launch survey',
-                                                'url': '#',
-                                                "variants": 'secondary',
-                                                "newWindow": true
-                                            })
-            + '<div class="ons-u-mt-s"><a href="' + url_for('case.request_code_by_post', case_id=case_id, org=org) + '">Send new access code by post</a></div>'
-            + '<div class="ons-u-mt-s"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by text</a></div>'
-
+                                        'value': onsButton({
+                                            'type': 'button',
+                                            'text': 'Launch survey',
+                                            'url': '#',
+                                            "variants": 'secondary',
+                                            "classes": permit_class('LAUNCH_EQ', ''),
+                                            "newWindow": true
+                                        })
+            + '<div class="' + permit_class('REQUEST_POSTAL_FULFILMENT', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by post</a></div>'
+            + '<div class="' + permit_class('REQUEST_SMS_FULFILMENT', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by text</a></div>'
                                     }
                                 ]
                             },
@@ -79,7 +78,7 @@
                                     },
                                     {
                                         "numeric": true,
-                                        'value': '<a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a>'
+                                        'value': '<div class="' + permit_class('REFUSE_CASE', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a></div>'
                                     }
                                 ]
                             }
@@ -137,6 +136,7 @@
                                         'type': 'button',
                                         'text': 'Call',
                                         'url': url_for('case.call_outcome', case_id=case_id, org=org),
+                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', ''),
                                         "variants": 'secondary',
                                         'iconType': 'False'
                                     })
@@ -158,6 +158,7 @@
                                         'type': 'button',
                                         'text': 'Call',
                                         'url': url_for('case.call_outcome', case_id=case_id, org=org),
+                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', ''),
                                         "variants": 'secondary',
                                         'iconType': 'False'
                                     })
@@ -182,11 +183,16 @@
             }}
 
             <div class="ons-grid">
+
                 <div class="ons-grid__col ons-col-6@m">
+                    {%- if has_permission('MODIFY_CASE') -%}
                     <a href="{{ url_for('case.update_contact_details', case_id=case_id, org=org) }}">Edit contact details</a>
+                    {%- endif -%}
                 </div>
                 <div class="ons-grid__col ons-col-6@m ons-u-rtl">
+                    {%- if has_permission('REMOVE_CASE') -%}
                     <a href="{{ url_for('case.data_removal_request', case_id=case_id, org=org) }}">Request to remove data</a>
+                    {%- endif -%}
                 </div>
             </div>
 
@@ -207,6 +213,7 @@
                     'type': 'button',
                     'text': 'Add call notes',
                     'url': url_for('case.add_case_note', case_id=case_id, org=org),
+                    "classes": permit_class('ADD_CASE_INTERACTION', ''),
                     'iconType': 'False'
                 })
             }}

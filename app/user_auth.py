@@ -7,10 +7,18 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from functools import wraps
 from datetime import datetime
 from structlog import get_logger
+from user_context import get_name, is_logged_in, get_logged_in_user
+from access import load_permissions
+from backend.ccsvc import CCSvc
+
 
 saml_bp = Blueprint('saml', __name__)
 
 logger = get_logger()
+
+"""
+Endpoints and functions for user authentication, i.e. login and logout, using SAML
+"""
 
 
 @saml_bp.route('/saml/metadata/')
@@ -76,7 +84,7 @@ def sls():
     Process return from IDP after signing out.
     """
     auth, req = do_auth()
-    request_id = get_from_session('LogoutRequestID')
+    request_id = _get_from_session('LogoutRequestID')
     timed_out = session.get('timed_out', None)
     url = auth.process_slo(request_id=request_id, delete_session_cb=lambda: session.clear())
     errors = auth.get_errors()
@@ -105,7 +113,7 @@ def acs():
     Process return from IDP after we sign-in.
     """
     auth, req = do_auth()
-    request_id = get_from_session('AuthNRequestID')
+    request_id = _get_from_session('AuthNRequestID')
     auth.process_response(request_id=request_id)
     errors = auth.get_errors()
     if not auth.is_authenticated():
@@ -115,9 +123,12 @@ def acs():
     if len(errors) == 0:
         store_in_session(auth)
         logger.info('Successful login for user ' + get_logged_in_user())
-        log_session_info(auth)
+        _log_session_info(auth)
+        load_permissions()
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
+        if name:
+            _store_name_in_backend(name)
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
@@ -129,16 +140,20 @@ def acs():
         flash('Failed to login', 'error')
         logger.warning('Login error occurred: ' + error_reason)
 
-    return render_template('home.html')
+    return redirect('/')
 
 
-def log_session_info(auth):
+def _log_session_info(auth):
     expiry_secs = auth.get_session_expiration()
     if expiry_secs:
         expiry_formatted = datetime.utcfromtimestamp(expiry_secs).strftime('%Y-%m-%d %H:%M:%S')
         logger.info('SAML session valid until: ' + expiry_formatted)
     else:
         logger.info('SAML session unknown expiry time')
+
+
+def _store_name_in_backend(name):
+    CCSvc().put_update_user_name(name)
 
 
 def init_saml_auth(req):
@@ -178,7 +193,7 @@ def login_required(func):
     """
     @wraps(func)
     async def decorated_view(*args, **kwargs):
-        if 'samlNameId' in session and len(session['samlNameId']) > 0:
+        if is_logged_in():
             return await func(*args, **kwargs)
         else:
             return redirect('/saml/sso')
@@ -190,7 +205,7 @@ def session_timeout():
     If we are in a logged in state, then make sure we logout with the IDP.
     To be called when we are managing our own session timeout
     """
-    if 'samlNameId' in session and len(session['samlNameId']) > 0:
+    if is_logged_in():
         logger.info("Session timed out so we must log out user")
         session['timed_out'] = True
         return redirect('/saml/slo')
@@ -217,62 +232,8 @@ def store_in_session(auth):
     session['samlSessionIndex'] = auth.get_session_index()
 
 
-def get_from_session(key):
+def _get_from_session(key):
     value = None
     if key in session:
         value = session[key]
     return value
-
-
-def get_logged_in_user():
-    return session.get('samlNameId', 'nobody')
-
-
-def get_attributes():
-    """
-    get the attributes dictionary from the session that was stored when we logged in.
-    """
-    attributes = None
-    if 'samlUserdata' in session:
-        if len(session['samlUserdata']) > 0:
-            attributes = session['samlUserdata']
-            logger.info('attributes: ' + str(attributes))
-    return attributes
-
-
-def get_name():
-    """
-    Create a "forename surname" name from the attributes
-    """
-    name = ''
-    attributes = get_attributes()
-    if attributes:
-        forename_key = 'givenname'
-        surname_key = 'surname'
-        if current_app.config['ADFS'] == 'True':
-            claim_prefix = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/'
-            forename_key = claim_prefix + forename_key
-            surname_key = claim_prefix + surname_key
-
-        forename = session['samlUserdata'].get(forename_key, [None])[0]
-        surname = session['samlUserdata'].get(surname_key, [None])[0]
-        if forename:
-            name = forename
-        if surname:
-            name = name + ' ' + surname
-    return name
-
-
-def setup_auth_utilities(application):
-    """
-    Set up utility methods that can be called from the jinja2 HTML templates.
-    """
-    @application.context_processor
-    def utility_processor():
-        def get_id():
-            return get_logged_in_user()
-
-        def is_logged_in():
-            return 'samlNameId' in session and len(session['samlNameId']) > 0
-
-        return dict(get_id=get_id, is_logged_in=is_logged_in)

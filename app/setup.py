@@ -24,7 +24,9 @@ from app.routes.structural import structural_bp
 from app.routes.to import to_bp
 from app.user_auth import saml_bp
 
-from app.user_auth import setup_auth_utilities, session_timeout
+from app.access import setup_access_utilities
+from app.user_auth import session_timeout
+from app.user_context import setup_user_context_utilities
 from app.utilities.json import json_dumps
 
 CACHE_HEADERS = {
@@ -106,7 +108,8 @@ def create_app(  # noqa: C901  pylint: disable=too-complex, too-many-statements
 
     add_info(application)
 
-    setup_auth_utilities(application)
+    setup_user_context_utilities(application)
+    setup_access_utilities(application)
 
     setup_jinja_env(application)
 
