@@ -22,6 +22,10 @@ def load_permissions():
     session['permissions'] = perms
 
 
+def has_any_role():
+    return 'permissions' in session and session['permissions']
+
+
 def _has_any_permission(perms=None):
     if perms is None:
         return False
@@ -62,4 +66,5 @@ def setup_access_utilities(application):
     @application.context_processor
     def utility_processor():
         return dict(view_admin=view_admin, view_sel=view_sel, view_tops=view_tops,
-                    has_permission=has_single_permission, permit_class=permit_class)
+                    has_permission=has_single_permission, permit_class=permit_class,
+                    has_any_role=has_any_role)
