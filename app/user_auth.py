@@ -9,7 +9,7 @@ from datetime import datetime
 from structlog import get_logger
 from app.user_context import get_name, get_surname, get_forename, is_logged_in, get_logged_in_user
 from app.access import load_permissions
-from backend.ccsvc import CCSvc
+from app.backend.ccsvc import CCSvc
 
 
 saml_bp = Blueprint('saml', __name__)
