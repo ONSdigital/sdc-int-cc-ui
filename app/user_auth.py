@@ -7,8 +7,8 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from functools import wraps
 from datetime import datetime
 from structlog import get_logger
-from user_context import get_name, is_logged_in, get_logged_in_user
-from access import load_permissions
+from app.user_context import get_name, is_logged_in, get_logged_in_user
+from app.access import load_permissions
 from backend.ccsvc import CCSvc
 
 
