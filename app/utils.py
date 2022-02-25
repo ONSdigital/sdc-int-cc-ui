@@ -54,7 +54,6 @@ class ProcessJsonForOptions:
     def options_from_json_object(json_obj):
         data = json.loads(json.dumps(json_obj))
         return ProcessJsonForOptions._options_from_data(data)
-        return options
 
 
 class ProcessMobileNumber:
