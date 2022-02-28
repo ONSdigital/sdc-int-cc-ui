@@ -7,6 +7,7 @@
 
     <h1>Users and Roles</h1>
 
+    {%- if has_permission('CREATE_USER') -%}
     {{
         onsButton({
             'type': 'button',
@@ -15,8 +16,7 @@
             'classes': 'ons-u-mb-l'
         })
     }}
-
-    <h2>Existing users</h2>
+    {%- endif -%}
 
     {{
         onsTable({
@@ -108,5 +108,16 @@
             ]
         })
     }}
+
+    {%- if has_permission('CREATE_ROLE') -%}
+    {{
+        onsButton({
+            'type': 'button',
+            'text': 'Add new role',
+            'url': '#',
+            'classes': 'ons-u-mb-l'
+        })
+    }}
+    {%- endif -%}
 
 {%- endblock -%}
