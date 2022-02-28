@@ -86,6 +86,7 @@ def sls():
     auth, req = do_auth()
     request_id = _get_from_session('LogoutRequestID')
     timed_out = session.get('timed_out', None)
+    user_logging_out = get_logged_in_user()
     url = auth.process_slo(request_id=request_id, delete_session_cb=lambda: session.clear())
     errors = auth.get_errors()
     if len(errors) == 0:
@@ -98,7 +99,8 @@ def sls():
                 flash('Your session expired so you have been logged out. Please login again.', 'info')
             else:
                 flash('Logged out', 'info')
-            CCSvc().logout()
+            if user_logging_out:
+                CCSvc().logout(user_logging_out)
             logger.info('Successful logout')
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()

@@ -54,11 +54,13 @@ class CCSvc:
 
         return cc_return.json()
 
-    def __put(self, url, payload, description, json_response=True):
+    def __put(self, url, payload, description, json_response=True, ignore_401=False):
         try:
             cc_return = requests.put(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            if ignore_401 and err.response.status_code == 401:
+                return
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
             raise abort(500)
         except requests.exceptions.ConnectionError:
@@ -80,11 +82,14 @@ class CCSvc:
             'forename': forename,
             'surname': surname
         }
-        return self.__put(url, login_json, 'login', False)
+        # if the user hasn't been setup yet, we allow 401 so we can display tailored message
+        return self.__put(url, login_json, 'login', json_response=False, ignore_401=True)
 
-    def logout(self):
+    def logout(self, user_logging_out):
+        self.__headers["x-user-id"] = user_logging_out
         url = f'{self.__svc_url}/users/logout'
-        return self.__put(url, None, 'logout', False)
+        # if the user hasn't been setup yet, we allow 401 so we can display tailored message
+        return self.__put(url, None, 'logout', json_response=False, ignore_401=True)
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
