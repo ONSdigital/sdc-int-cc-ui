@@ -74,7 +74,9 @@ async def request_refusal(org, case_id):
             note = request.form['form-case-request-refusal-note']
             erase_data = 'form-case-request-refusal-erase-data' in request.form
             await CCSvc().post_case_refusal(case_id, reason, note, erase_data)
-            return redirect(url_for('case.refused', case_id=case_id, org=org))
+            erase_suffix = " with data removal" if erase_data else ""
+            flash('Case has been refused' + erase_suffix, 'info')
+            return redirect(url_for('case.case', case_id=case_id, org=org))
         else:
             flash('Select a reason', 'error_reason')
             return redirect(url_for('case.request_refusal', case_id=case_id, org=org))
@@ -93,15 +95,6 @@ async def request_refusal(org, case_id):
                                error_reason=error_reason,
                                refusal_options=refusal_options,
                                org=org)
-
-
-@case_bp.route('/<org>/case/<case_id>/refused/', methods=['GET'])
-@login_required
-async def refused(org, case_id):
-    if case_id:
-        return render_template('case/refused.html', case_id=case_id, org=org)
-    else:
-        return render_template('errors/500.html')
 
 
 @case_bp.route('/<org>/case/<case_id>/request-code-by-text/', methods=['GET', 'POST'])
@@ -473,42 +466,6 @@ async def call_outcome(org, case_id):
 async def call_outcome_recorded(org, case_id):
     if case_id:
         return render_template('case/call-outcome-recorded.html', case_id=case_id, org=org)
-    else:
-        return render_template('errors/500.html')
-
-
-@case_bp.route('/<org>/case/<case_id>/data-removal-request/', methods=['GET', 'POST'])
-@login_required
-async def data_removal_request(org, case_id):
-    if request.method == 'POST':
-        if 'form-case-data-removal-request' in request.form:
-            if request.form['form-case-data-removal-request'] == 'yes':
-                # TODO  add call outcome endpoint call
-                return redirect(url_for('case.data_removed', case_id=case_id, org=org))
-            else:
-                return redirect(url_for('case.case', case_id=case_id, org=org))
-        else:
-            flash('Confirm data removal request', 'error_confirmation')
-            return redirect(url_for('case.data_removal_request', case_id=case_id, org=org))
-    else:
-        page_title = 'Data removal request'
-        error_confirmation = {}
-        if flask.get_flashed_messages():
-            page_title = Common.page_title_error_prefix + page_title
-            error_confirmation = {'id': 'error_confirmation', 'text': 'Select an option'}
-
-        return render_template('case/data-removal-request.html',
-                               case_id=case_id,
-                               page_title=page_title,
-                               error_confirmation=error_confirmation,
-                               org=org)
-
-
-@case_bp.route('/<org>/case/<case_id>/data-removed/', methods=['GET'])
-@login_required
-async def data_removed(org, case_id):
-    if case_id:
-        return render_template('case/data-removed.html', case_id=case_id, org=org)
     else:
         return render_template('errors/500.html')
 
