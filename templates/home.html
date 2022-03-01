@@ -12,7 +12,9 @@
     {%- endif -%}
 
     {%- if is_logged_in() -%}
-    <h1 class="ons-u-mt-xl">Role Operations</h1>
+        {%- if has_any_role() -%}
+            <h1 class="ons-u-mt-xl">Role Operations</h1>
+        {%- endif -%}
     {%- else -%}
     <br/><br/>
         {{ onsCallToAction({

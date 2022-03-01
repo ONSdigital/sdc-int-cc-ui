@@ -7,7 +7,7 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from functools import wraps
 from datetime import datetime
 from structlog import get_logger
-from app.user_context import get_name, is_logged_in, get_logged_in_user
+from app.user_context import get_name, get_surname, get_forename, is_logged_in, get_logged_in_user
 from app.access import load_permissions
 from app.backend.ccsvc import CCSvc
 
@@ -86,6 +86,7 @@ def sls():
     auth, req = do_auth()
     request_id = _get_from_session('LogoutRequestID')
     timed_out = session.get('timed_out', None)
+    user_logging_out = get_logged_in_user()
     url = auth.process_slo(request_id=request_id, delete_session_cb=lambda: session.clear())
     errors = auth.get_errors()
     if len(errors) == 0:
@@ -98,6 +99,8 @@ def sls():
                 flash('Your session expired so you have been logged out. Please login again.', 'info')
             else:
                 flash('Logged out', 'info')
+            if user_logging_out:
+                CCSvc().logout(user_logging_out)
             logger.info('Successful logout')
     elif auth.get_settings().is_debug_active():
         error_reason = auth.get_last_error_reason()
@@ -127,8 +130,7 @@ def acs():
         load_permissions()
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
-        if name:
-            _store_name_in_backend(name)
+        CCSvc().login(get_forename(), get_surname())
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
@@ -150,10 +152,6 @@ def _log_session_info(auth):
         logger.info('SAML session valid until: ' + expiry_formatted)
     else:
         logger.info('SAML session unknown expiry time')
-
-
-def _store_name_in_backend(name):
-    CCSvc().put_update_user_name(name)
 
 
 def init_saml_auth(req):

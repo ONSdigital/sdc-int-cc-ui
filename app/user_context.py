@@ -1,16 +1,15 @@
+"""
+Functions for getting or setting the user details in the session.
+"""
+
 from flask import session, current_app
 from structlog import get_logger
 
 logger = get_logger()
 
 
-"""
-Functions for getting or setting the user details in the session.
-"""
-
-
 def get_logged_in_user():
-    return session.get('samlNameId', 'nobody')
+    return session.get('samlNameId', None)
 
 
 def is_logged_in():

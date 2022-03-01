@@ -16,17 +16,13 @@ class CCSvc:
     """
 
     def __init__(self):
-        self.__username = current_app.config['CCSVC_USERNAME']
-        self.__password = current_app.config['CCSVC_PASSWORD']
-        self.__creds = (self.__username, self.__password)
         self.__svc_url = current_app.config['CCSVC_URL']
         self.__user_logged_in = get_logged_in_user()
+        self.__headers = {"x-user-id": self.__user_logged_in}
         pass
 
     def __get_response(self, url, params=None):
-        return requests.get(url, auth=self.__creds,
-                            params=params,
-                            headers={"x-user-id": self.__user_logged_in})
+        return requests.get(url, params=params, headers=self.__headers)
 
     def __get(self, url, check404, description, params=None):
         try:
@@ -47,9 +43,7 @@ class CCSvc:
 
     def __post(self, url, payload, description):
         try:
-            cc_return = requests.post(url, auth=self.__creds,
-                                      headers={"x-user-id": self.__user_logged_in},
-                                      json=payload)
+            cc_return = requests.post(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
@@ -60,6 +54,21 @@ class CCSvc:
 
         return cc_return.json()
 
+    def __put(self, url, payload, description, json_response=True, ignore_401=False):
+        try:
+            cc_return = requests.put(url, headers=self.__headers, json=payload)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            if ignore_401 and err.response.status_code == 401:
+                return
+            logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+        if json_response:
+            return cc_return.json()
+
     def get_permissions(self):
         url = f'{self.__svc_url}/users/permissions'
         resp = self.__get_response(url)
@@ -67,9 +76,20 @@ class CCSvc:
         logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
         return perms
 
-    def put_update_user_name(self, name):
-        """ Update the user with their name """
-        pass
+    def login(self, forename, surname):
+        url = f'{self.__svc_url}/users/login'
+        login_json = {
+            'forename': forename,
+            'surname': surname
+        }
+        # if the user hasn't been setup yet, we allow 401 so we can display tailored message
+        return self.__put(url, login_json, 'login', json_response=False, ignore_401=True)
+
+    def logout(self, user_logging_out):
+        self.__headers["x-user-id"] = user_logging_out
+        url = f'{self.__svc_url}/users/logout'
+        # if the user hasn't been setup yet, we allow 401 so we can display tailored message
+        return self.__put(url, None, 'logout', json_response=False, ignore_401=True)
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
