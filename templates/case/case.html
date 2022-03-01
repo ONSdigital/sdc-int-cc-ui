@@ -16,6 +16,10 @@
 
     <h1>Case: {{ case.caseRef or 'Not available' }}</h1>
 
+    {%- if get_flashed_messages(category_filter=["info"]) -%}
+        {%- include 'partials/messages_info.html' with context -%}
+    {%- endif -%}
+
     <div class="ons-grid">
         <div class="ons-grid__col ons-col-6@m">
             <h2 class="ons-u-mt-xl">Case details</h2>
@@ -183,19 +187,12 @@
             }}
 
             <div class="ons-grid">
-
                 <div class="ons-grid__col ons-col-6@m">
                     {%- if has_permission('MODIFY_CASE') -%}
                     <a href="{{ url_for('case.update_contact_details', case_id=case_id, org=org) }}">Edit contact details</a>
                     {%- endif -%}
                 </div>
-                <div class="ons-grid__col ons-col-6@m ons-u-rtl">
-                    {%- if has_permission('REMOVE_CASE') -%}
-                    <a href="{{ url_for('case.data_removal_request', case_id=case_id, org=org) }}">Request to remove data</a>
-                    {%- endif -%}
-                </div>
             </div>
-
         </div>
     </div>
 
