@@ -55,10 +55,11 @@ async def user_removed():
 
 
 def _build_user_rows(users):
-    results = []
+    rows = []
     for user in users:
         identity = user['name']
-        status = 'Active' if user['active'] else 'InActive'
+        status = 'success' if user['active'] else 'pending'
+        status_text = 'Active' if user['active'] else 'Inactive'
         name = '(pending login)'
         roles = ''
         for role in user['userRoles']:
@@ -67,13 +68,14 @@ def _build_user_rows(users):
         for survey in user['surveyUsages']:
             surveys = surveys + survey['surveyType'] + '<br/>'
 
-        actions = '<a href="' + url_for('admin.update_user', username='adamaa') + '">Change</a> | <a href="' \
-                  + url_for('admin.remove_user', username='adamaa') + '">Remove</a>'
+        actions = '<a href="' + url_for('admin.update_user', username=identity) + '">Change</a> | <a href="' \
+                  + url_for('admin.remove_user', username=identity) + '">Remove</a>'
 
-        results.append({
+        rows.append({
             'tds': [
                 {
-                    'value': identity
+                    'value': '<b>' + identity + '</b>',
+                    'tdClasses': 'ons-u-fs-r-b'
                 },
                 {
                     'value': name
@@ -82,7 +84,7 @@ def _build_user_rows(users):
                     'value': roles
                 },
                 {
-                    'value': status
+                    'value': '<span class="ons-status ons-status--' + status + '">' + status_text + '</span>'
                 },
                 {
                     'value': surveys
@@ -92,4 +94,4 @@ def _build_user_rows(users):
                 }
             ]
         })
-    return results
+    return rows

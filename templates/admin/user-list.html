@@ -2,6 +2,7 @@
 
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
+{% from "components/status/_macro.njk" import onsStatus %}
 
 {%- block main -%}
 
@@ -12,18 +13,13 @@
         onsButton({
             'type': 'button',
             'text': 'Add new user',
-            'url': '#',
-            'classes': 'ons-u-mb-l'
+            'url': '#'
         })
     }}
     {%- endif -%}
 
-   {%- if user_rows -%}
-       <div class="ons-grid">
-            <div class="ons-grid__col ons-col-8@m">
-                <h2 class="ons-u-mt-xl">There are {{ user_rows | length }} users</h2>
-            </div>
-        </div>
+    {%- if user_rows -%}
+        <h3 class="ons-u-mt-xl">There are {{ user_rows | length }} users</h3>
 
         {{
             onsTable({
@@ -31,7 +27,7 @@
                 "sortBy": "Sort by",
                 "ariaAsc": "ascending",
                 "ariaDesc": "descending",
-                'id': 'addresses-found-table',
+                'id': 'users-table',
                 'thClasses': ' ons-u-fs-m',
                 'ths': [
                     {
@@ -72,8 +68,7 @@
         onsButton({
             'type': 'button',
             'text': 'Add new role',
-            'url': '#',
-            'classes': 'ons-u-mb-l'
+            'url': '#'
         })
     }}
     {%- endif -%}
