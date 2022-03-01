@@ -1,5 +1,14 @@
 from datetime import datetime
 
+from app.utils import ProcessJsonForOptions
+
+refusals = [
+    {"value": "SOFT_REFUSAL", "text": "Soft"},
+    {"value": "HARD_REFUSAL", "text": "Hard"},
+    {"value": "EXTRAORDINARY_REFUSAL", "text": "Extraordinary"},
+    {"value": "WITHDRAWAL_REFUSAL", "text": "Withdrawal"}
+]
+
 case_interactions = {
     "MANUAL_CASE_VIEW": "View case",
     "SCHEDULED_CASE_VIEW": "Scheduled case view",
@@ -30,6 +39,9 @@ case_sub_interactions = {
 
 
 class Case:
+    @staticmethod
+    def build_refusal_options():
+        return ProcessJsonForOptions.options_from_json_object(refusals)
 
     @staticmethod
     def build_case_history_content(interactions):

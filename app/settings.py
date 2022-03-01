@@ -42,16 +42,12 @@ if FLASK_ENV == "production":
     ENABLE_SECURE_SESSION_COOKIE = get_env_or_fail('ENABLE_SECURE_SESSION_COOKIE')
     SECRET_KEY = get_env_or_fail('SECRET_KEY')
     CCSVC_URL = get_env_or_fail('CCSVC_URL')
-    CCSVC_USERNAME = get_env_or_fail('CCSVC_USERNAME')
-    CCSVC_PASSWORD = get_env_or_fail('CCSVC_PASSWORD')
 else:
     REDIS_SERVER = os.getenv("REDIS_SERVER", "localhost")
     REDIS_PORT = os.getenv("REDIS_PORT", "6379")
     ENABLE_SECURE_SESSION_COOKIE = os.getenv('ENABLE_SECURE_SESSION_COOKIE', 'False')
     SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
     CCSVC_URL = os.getenv('CCSVC_URL', 'http://localhost:8171/ccsvc')
-    CCSVC_USERNAME = os.getenv('CCSVC_USERNAME', 'user')
-    CCSVC_PASSWORD = os.getenv('CCSVC_PASSWORD', 'password')
 
 SESSION_TYPE = 'redis'
 SESSION_PERMANENT = True

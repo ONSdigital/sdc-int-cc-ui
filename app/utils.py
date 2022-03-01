@@ -30,20 +30,30 @@ class Common:
 
 class ProcessJsonForOptions:
     @staticmethod
-    def options_from_json(filename):
+    def _options_from_data(data):
         options = []
+        for option in data:
+            options.append({
+                'value': option['value'],
+                'label': {
+                    'text': option['text']
+                },
+                'id': option['value']
+            })
+        return options
+
+    @staticmethod
+    def options_from_json(filename):
         filename = os.path.join(current_app.static_folder, 'data', filename)
         with open(filename) as file:
             data = json.load(file)
-            for option in data:
-                options.append({
-                    'value': option['value'],
-                    'label': {
-                        'text': option['text']
-                    },
-                    'id': option['value']
-                })
+            options = ProcessJsonForOptions._options_from_data(data)
         return options
+
+    @staticmethod
+    def options_from_json_object(json_obj):
+        data = json.loads(json.dumps(json_obj))
+        return ProcessJsonForOptions._options_from_data(data)
 
 
 class ProcessMobileNumber:

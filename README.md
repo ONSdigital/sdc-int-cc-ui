@@ -56,7 +56,8 @@ Once this is done you can run up a virtual environment (venv), and then use the 
 $ make run
 </pre>
 
-When not run in production mode, CCUI has defaults for connecting to CCSvc, however you may need to set/modify environment variables for ‘CCSVC_URL’, ‘CCSVC_USERNAME’ and ‘CCSVC_PASSWORD’ to talk to you local CCSvc.
+When not run in production mode, CCUI has defaults for connecting to CCSvc, however you may need to set/modify the 
+environment variable for ‘CCSVC_URL’ to talk to your local CCSvc.
 
 ## SAML IDP configuration when running CCUI in GCP
 
