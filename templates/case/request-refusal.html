@@ -1,8 +1,9 @@
 {%- extends 'base.html' -%}
 
-{%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from 'components/radios/_macro.njk' import onsRadios -%}
+{%- from "components/textarea/_macro.njk" import onsTextarea -%}
+{%- from "components/checkboxes/_macro.njk" import onsCheckboxes -%}
 
 {%- set form =  {
     'method': 'POST',
@@ -17,24 +18,58 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1 class="ons-u-mt-l">Submit a refusal for this case?</h1>
-
-    <p>The following information is required from the caller to process a refusal</p>
+    <h1 class="ons-u-mt-l">Submit Refusal</h1>
 
     {{
         onsRadios({
             'name': 'form-case-request-refusal-reason',
             'radios': refusal_options,
-            'legend': "What is the caller's reason for refusal?",
+            'legend': "Select refusal type",
             'legendClasses': 'ons-u-mt-xl',
             'error': error_reason
         })
     }}
 
+    {{
+        onsTextarea({
+            "id": "textarea",
+            'name': 'form-case-request-refusal-note',
+            "label": {
+                "text": "Notes",
+            },
+            "charCheckLimit": {
+                "limit": 250,
+                "charCountSingular": "You have {x} character remaining",
+                "charCountPlural": "You have {x} characters remaining"
+            }
+        })
+    }}
+
+    {{
+        onsCheckboxes({
+            "dontWrap": true,
+            "name": "form-case-request-refusal-erase-data",
+            "borderless": true,
+            "checkboxes": [
+                {
+                    "name": "form-case-request-refusal-erase-data",
+                    "id": "eraseData",
+                    "label": {
+                        "classes": "ons-u-fs-m",
+                        "text": "Erase Data",
+                        "description": "Inform the caller that this will remove their data, and prevent them being called further for this survey; however they may still be contacted for future studies"
+                    },
+                    "value": "erase-data"
+                }
+            ]
+        })
+    }}
+
+
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
-                'text': 'Submit refusal',
+                'text': 'Save',
                 'submitType': 'loader'
             })
         }}

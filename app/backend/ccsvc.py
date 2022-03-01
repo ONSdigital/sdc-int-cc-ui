@@ -104,12 +104,13 @@ class CCSvc:
         }
         return self.__post(url, interaction_json, 'post_add_note')
 
-    async def post_case_refusal(self, case_id, reason):
+    async def post_case_refusal(self, case_id, reason, note=None, erase_data=False):
         url = f'{self.__svc_url}/cases/{case_id}/refusal'
         refusal_json = {
             'caseId': case_id,
-            'dateTime': datetime.now(utc).isoformat(),
-            'reason': reason
+            'reason': reason,
+            'note': note,
+            'eraseData': erase_data
         }
         return self.__post(url, refusal_json, 'case refusal')
 
