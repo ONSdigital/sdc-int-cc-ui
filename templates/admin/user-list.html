@@ -18,96 +18,54 @@
     }}
     {%- endif -%}
 
-    {{
-        onsTable({
-            'caption': 'Users and permissions',
-            'hideCaption': 'true',
-            'id': 'basic-table',
-            'ths': [
-                {
-                    'value': 'User'
-                },
-                {
-                    'value': 'Role'
-                },
-                {
-                    'value': 'Actions'
-                }
-            ],
-            'trs': [
-                {
-                    'tds': [
-                        {
-                            'value': 'Adam Adamant (adamaa)',
-                            'name': 'adamaa'
-                        },
-                        {
-                            'value': 'Administrator'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='adamaa') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='adamaa') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Teresa Jolli-Goodfellow (jollit)',
-                            'name': 'jollit'
-                        },
-                        {
-                            'value': 'TO User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='jollit') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='jollit') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Sophie Selby (selbys)',
-                            'name': 'selbys'
-                        },
-                        {
-                            'value': 'SEL User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='selbys') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='selbys') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Simon Sarsaparilla (sarsas)',
-                            'name': 'sarsas'
-                        },
-                        {
-                            'value': 'SEL User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='sarsas') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='sarsas') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Toby Telephone (telept)',
-                            'name': 'telept'
-                        },
-                        {
-                            'value': 'TO User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='telept') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='telept') + '">Remove</a>'
-                        }
-                    ]
-                }
-            ]
-        })
-    }}
+   {%- if user_rows -%}
+       <div class="ons-grid">
+            <div class="ons-grid__col ons-col-8@m">
+                <h2 class="ons-u-mt-xl">There are {{ user_rows | length }} users</h2>
+            </div>
+        </div>
+
+        {{
+            onsTable({
+                "variants": ['compact', 'row-hover', 'sortable'],
+                "sortBy": "Sort by",
+                "ariaAsc": "ascending",
+                "ariaDesc": "descending",
+                'id': 'addresses-found-table',
+                'thClasses': ' ons-u-fs-m',
+                'ths': [
+                    {
+                        'value': 'User',
+                        'ariaSort': 'descending'
+                    },
+                    {
+                        'value': 'Name',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Role',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Status',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Survey',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Actions',
+                        'ariaSort': 'none'
+                    }
+                ],
+                'trs': user_rows
+            })
+        }}
+    {%- else -%}
+        <br/>
+        <p>No users were found</p>
+    {%- endif -%}
 
     {%- if has_permission('CREATE_ROLE') -%}
     {{

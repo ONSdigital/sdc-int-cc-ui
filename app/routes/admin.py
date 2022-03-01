@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for
 from app.user_auth import login_required
+from app.backend import CCSvc
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -14,7 +15,9 @@ async def admin_home():
 @admin_bp.route('/admin/user-list/')
 @login_required
 async def admin_user_list():
-    return render_template('admin/user-list.html')
+    users = await CCSvc().get_users()
+    user_rows = _build_user_rows(users)
+    return render_template('admin/user-list.html', user_rows=user_rows)
 
 
 @admin_bp.route('/admin/update-user/<username>/', methods=['GET', 'POST'])
@@ -49,3 +52,44 @@ async def remove_user(username):
 @login_required
 async def user_removed():
     return render_template('admin/user-removed.html')
+
+
+def _build_user_rows(users):
+    results = []
+    for user in users:
+        identity = user['name']
+        status = 'Active' if user['active'] else 'InActive'
+        name = '(pending login)'
+        roles = ''
+        for role in user['userRoles']:
+            roles = roles + role + '<br/>'
+        surveys = ''
+        for survey in user['surveyUsages']:
+            surveys = surveys + survey['surveyType'] + '<br/>'
+
+        actions = '<a href="' + url_for('admin.update_user', username='adamaa') + '">Change</a> | <a href="' \
+                  + url_for('admin.remove_user', username='adamaa') + '">Remove</a>'
+
+        results.append({
+            'tds': [
+                {
+                    'value': identity
+                },
+                {
+                    'value': name
+                },
+                {
+                    'value': roles
+                },
+                {
+                    'value': status
+                },
+                {
+                    'value': surveys
+                },
+                {
+                    'value': actions
+                }
+            ]
+        })
+    return results
