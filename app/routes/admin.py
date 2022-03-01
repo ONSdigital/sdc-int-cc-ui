@@ -57,10 +57,14 @@ async def user_removed():
 def _build_user_rows(users):
     rows = []
     for user in users:
-        identity = user['name']
+        identity = user['identity']
         status = 'success' if user['active'] else 'pending'
         status_text = 'Active' if user['active'] else 'Inactive'
-        name = '<i>(pending login)</i>'
+        surname = user['surname']
+        if surname:
+            name = user['forename'] + ' ' + surname
+        else:
+            name = '<i>(pending login)</i>'
         roles = ''
         for role in user['userRoles']:
             roles = roles + role + '<br/>'
