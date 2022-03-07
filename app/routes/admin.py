@@ -61,7 +61,7 @@ def _build_actions(identity, user):
     if has_single_permission('MODIFY_USER'):
         actions += '<a href="' + url_for('admin.update_user', username=identity) + '">Change</a>'
 
-    if has_single_permission('DELETE_USER') and user['isDeletable']:
+    if has_single_permission('DELETE_USER') and user['deletable']:
         if actions:
             actions += ' | '
         actions += '<a href="' + url_for('admin.remove_user', username=identity) + '">Remove</a>'
