@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for
 from app.user_auth import login_required
+from app.access import has_single_permission
 from app.backend import CCSvc
 
 admin_bp = Blueprint("admin", __name__)
@@ -54,26 +55,41 @@ async def user_removed():
     return render_template('admin/user-removed.html')
 
 
+def _build_actions(identity, user):
+    actions = ''
+
+    if has_single_permission('MODIFY_USER'):
+        actions += '<a href="' + url_for('admin.update_user', username=identity) + '">Change</a>'
+
+    if has_single_permission('DELETE_USER') and user['isDeletable']:
+        if actions:
+            actions += ' | '
+        actions += '<a href="' + url_for('admin.remove_user', username=identity) + '">Remove</a>'
+
+    return actions
+
+
+def _build_name(user):
+    surname = user['surname']
+    if surname:
+        name = user['forename'] + ' ' + surname
+    else:
+        name = '<i>(pending login)</i>'
+    return name
+
+
 def _build_user_rows(users):
     rows = []
     for user in users:
         identity = user['identity']
         status = 'success' if user['active'] else 'pending'
         status_text = 'Active' if user['active'] else 'Inactive'
-        surname = user['surname']
-        if surname:
-            name = user['forename'] + ' ' + surname
-        else:
-            name = '<i>(pending login)</i>'
         roles = ''
         for role in user['userRoles']:
             roles = roles + role + '<br/>'
         surveys = ''
         for survey in user['surveyUsages']:
             surveys = surveys + survey['surveyType'] + '<br/>'
-
-        actions = '<a href="' + url_for('admin.update_user', username=identity) + '">Change</a> | <a href="' \
-                  + url_for('admin.remove_user', username=identity) + '">Remove</a>'
 
         rows.append({
             'tds': [
@@ -82,7 +98,7 @@ def _build_user_rows(users):
                     'tdClasses': 'ons-u-fs-r-b'
                 },
                 {
-                    'value': name
+                    'value': _build_name(user)
                 },
                 {
                     'value': roles
@@ -94,7 +110,7 @@ def _build_user_rows(users):
                     'value': surveys
                 },
                 {
-                    'value': actions
+                    'value': _build_actions(identity, user)
                 }
             ]
         })
