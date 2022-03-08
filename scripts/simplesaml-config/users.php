@@ -64,7 +64,7 @@ $config = array(
         ),
         'kieran:pw' => array(
             'uid' => array('10'),
-            'emailaddress' => 'kieran.wardle@ext.ons.gov.uk',
+            'emailaddress' => 'kieran.wardle@ons.gov.uk',
             'givenname' => 'Kieran',
             'surname' => 'Wardle',
         ),
