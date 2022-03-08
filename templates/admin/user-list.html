@@ -2,111 +2,75 @@
 
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
+{% from "components/status/_macro.njk" import onsStatus %}
 
 {%- block main -%}
 
-    <h1>Users and permissions</h1>
+    <h1>Users and Roles</h1>
 
+    {%- if has_permission('CREATE_USER') -%}
     {{
         onsButton({
             'type': 'button',
             'text': 'Add new user',
-            'url': '#',
-            'classes': 'ons-u-mb-l'
+            'url': '#'
         })
     }}
+    {%- endif -%}
 
-    <h2>Existing users</h2>
+    {%- if user_rows -%}
+        <h3 class="ons-u-mt-xl">There are {{ user_rows | length }} users</h3>
 
+        {{
+            onsTable({
+                "variants": ['compact', 'row-hover', 'sortable'],
+                "sortBy": "Sort by",
+                "ariaAsc": "ascending",
+                "ariaDesc": "descending",
+                'id': 'users-table',
+                'thClasses': ' ons-u-fs-m',
+                'ths': [
+                    {
+                        'value': 'User',
+                        'ariaSort': 'descending'
+                    },
+                    {
+                        'value': 'Name',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Role',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Status',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Survey',
+                        'ariaSort': 'none'
+                    },
+                    {
+                        'value': 'Action',
+                        'ariaSort': 'none'
+                    }
+                ],
+                'trs': user_rows
+            })
+        }}
+    {%- else -%}
+        <br/>
+        <p>No users were found</p>
+    {%- endif -%}
+
+    {%- if has_permission('CREATE_ROLE') -%}
     {{
-        onsTable({
-            'caption': 'Users and permissions',
-            'hideCaption': 'true',
-            'id': 'basic-table',
-            'ths': [
-                {
-                    'value': 'User'
-                },
-                {
-                    'value': 'Role'
-                },
-                {
-                    'value': 'Actions'
-                }
-            ],
-            'trs': [
-                {
-                    'tds': [
-                        {
-                            'value': 'Adam Adamant (adamaa)',
-                            'name': 'adamaa'
-                        },
-                        {
-                            'value': 'Administrator'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='adamaa') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='adamaa') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Teresa Jolli-Goodfellow (jollit)',
-                            'name': 'jollit'
-                        },
-                        {
-                            'value': 'TO User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='jollit') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='jollit') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Sophie Selby (selbys)',
-                            'name': 'selbys'
-                        },
-                        {
-                            'value': 'SEL User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='selbys') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='selbys') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Simon Sarsaparilla (sarsas)',
-                            'name': 'sarsas'
-                        },
-                        {
-                            'value': 'SEL User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='sarsas') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='sarsas') + '">Remove</a>'
-                        }
-                    ]
-                },
-                {
-                    'tds': [
-                        {
-                            'value': 'Toby Telephone (telept)',
-                            'name': 'telept'
-                        },
-                        {
-                            'value': 'TO User'
-                        },
-                        {
-                            'value': '<a href="' + url_for('admin.update_user', username='telept') + '">Change</a> | <a href="' + url_for('admin.remove_user', username='telept') + '">Remove</a>'
-                        }
-                    ]
-                }
-            ]
+        onsButton({
+            'type': 'button',
+            'text': 'Add new role',
+            'url': '#'
         })
     }}
+    {%- endif -%}
 
 {%- endblock -%}

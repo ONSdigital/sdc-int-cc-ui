@@ -125,6 +125,10 @@ class CCSvc:
         logger.info('Trying ' + input_text)
         return self.__get(url, False, 'addresses by input', params)
 
+    async def get_users(self):
+        url = f'{self.__svc_url}/users'
+        return self.__get(url, False, 'all users')
+
     async def get_fulfilments(self, product_group, delivery_channel, region):
         url = f'{self.__svc_url}/fulfilments'
         params = {
