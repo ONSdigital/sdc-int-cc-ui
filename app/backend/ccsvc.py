@@ -174,6 +174,27 @@ class CCSvc:
         url = f'{self.__svc_url}/users'
         return self._get(url, False, 'all users')
 
+    async def get_survey_types(self):
+        url = f'{self.__svc_url}/surveys/usages'
+        usages = self._get(url, False, 'survey types')
+        return [i['surveyType'] for i in usages]
+
+    async def get_roles(self):
+        url = f'{self.__svc_url}/roles'
+        return self._get(url, False, 'roles')
+
+    async def add_user_survey(self, user_identity, survey_type):
+        url = f'{self.__svc_url}/users/{user_identity}/addSurvey/{survey_type}'
+        requests.patch(url, headers=self.__headers)
+
+    async def add_user_role(self, user_identity, role):
+        url = f'{self.__svc_url}/users/{user_identity}/addUserRole/{role}'
+        requests.patch(url, headers=self.__headers)
+
+    async def add_admin_role(self, user_identity, role):
+        url = f'{self.__svc_url}/users/{user_identity}/addAdminRole/{role}'
+        requests.patch(url, headers=self.__headers)
+
     async def get_fulfilments(self, product_group, delivery_channel, region):
         url = f'{self.__svc_url}/fulfilments'
         params = {

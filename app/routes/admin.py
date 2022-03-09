@@ -40,6 +40,11 @@ async def update_user(user_identity):
 @admin_bp.route('/admin/create-user/', methods=['GET', 'POST'])
 @login_required
 async def create_user():
+    survey_types = await _build_survey_types()
+    roles = await CCSvc().get_roles()
+    user_roles = _build_roles('user_roles', roles)
+    admin_roles = _build_roles('admin_roles', roles)
+
     if request.method == 'POST':
         user_identity = request.form['user-email']
         email_error_msg = ''
@@ -48,6 +53,7 @@ async def create_user():
             try:
                 await CCSvc().create_user(user_identity)
                 flash('User <b>' + user_identity + '</b> has been created', 'info')
+                await _populate_created_user(user_identity)
             except UserExistsAlready:
                 email_error_msg = 'User exists already'
         else:
@@ -55,11 +61,35 @@ async def create_user():
 
         if email_error_msg:
             flash(email_error_msg, 'error_email')
-            return render_template('admin/create-user.html', page_title='Create user')
+            return render_template('admin/create-user.html', page_title='Create user',
+                                   survey_types=survey_types, user_roles=user_roles, admin_roles=admin_roles,
+                                   error_email=email_error_msg)
         else:
             return redirect(url_for('admin.admin_user_list'))
     else:
-        return render_template('admin/create-user.html', page_title='Create user')
+        return render_template('admin/create-user.html', page_title='Create user',
+                               survey_types=survey_types, user_roles=user_roles, admin_roles=admin_roles)
+
+
+async def _populate_created_user(user_identity):
+    if 'surveys' in request.form:
+        for survey_type in request.form.getlist('surveys'):
+            logger.info('adding survey:' + survey_type + ' for user: ' + user_identity)
+            await CCSvc().add_user_survey(user_identity, survey_type)
+    else:
+        logger.info('no surveys')
+    if 'user_roles' in request.form:
+        for role in request.form.getlist('user_roles'):
+            logger.info('adding user role:' + role + ' for user: ' + user_identity)
+            await CCSvc().add_user_role(user_identity, role)
+    else:
+        logger.info('no user roles')
+    if 'admin_roles' in request.form:
+        for role in request.form.getlist('admin_roles'):
+            logger.info('adding admin role:' + role + ' for user: ' + user_identity)
+            await CCSvc().add_admin_role(user_identity, role)
+    else:
+        logger.info('no admin roles')
 
 
 @admin_bp.route('/admin/delete-user/<user_identity>/', methods=['GET', 'POST'])
@@ -132,5 +162,35 @@ def _build_user_rows(users):
                     'value': _build_actions(identity, user)
                 }
             ]
+        })
+    return rows
+
+
+async def _build_survey_types():
+    rows = []
+    survey_types = await CCSvc().get_survey_types()
+    for survey_type in survey_types:
+        rows.append({
+                "id": survey_type,
+                "name": 'surveys',
+                "label": {
+                    "text": survey_type
+                },
+                "value": survey_type
+        })
+    return rows
+
+
+def _build_roles(checkbox_name, roles):
+    rows = []
+    for role in roles:
+        name = role['name']
+        rows.append({
+                "id": name,
+                "name": checkbox_name,
+                "label": {
+                    "text": name
+                },
+                "value": name
         })
     return rows

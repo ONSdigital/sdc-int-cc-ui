@@ -3,6 +3,7 @@
 {%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from 'components/input/_macro.njk' import onsInput -%}
+{%- from "components/checkboxes/_macro.njk" import onsCheckboxes -%}
 
 {%- set form =  {
     'method': 'POST',
@@ -17,26 +18,58 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    {%- call onsQuestion({
-        'title': "User"
-    }) -%}
+    <h1>Add User</h1>
 
-        {{
-            onsInput({
-                'id': 'email',
-                'name': 'user-email',
-                'width': '30',
-                'type': 'email',
-                'autocomplete': 'email',
-                'label': {
-                    'text': 'Email address'
-                },
-                'value': value_email,
-                'error': error_email
-            })
-        }}
+    {{
+        onsInput({
+            'id': 'email',
+            'name': 'user-email',
+            'width': '30',
+            'type': 'email',
+            'autocomplete': 'email',
+            'label': {
+                'text': 'Email address'
+            },
+            'value': value_email,
+            'error': error_email
+        })
+    }}
 
-    {%- endcall -%}
+    <br/>
+    <h2>Surveys</h2>
+
+    {{
+        onsCheckboxes({
+            "checkboxesLabel": "Select all that apply",
+            "dontWrap": true,
+            "name": "surveys",
+            "checkboxes": survey_types
+        })
+    }}
+
+    <br/>
+    <h2>User Roles</h2>
+
+    {{
+        onsCheckboxes({
+            "checkboxesLabel": "Select all that apply",
+            "dontWrap": true,
+            "name": "user_roles",
+            "checkboxes": user_roles
+        })
+    }}
+
+    <br/>
+    <h2>Admin Roles</h2>
+
+    {{
+        onsCheckboxes({
+            "checkboxesLabel": "Select all that apply",
+            "dontWrap": true,
+            "name": "admin_roles",
+            "checkboxes": admin_roles
+        })
+    }}
 
     <div class="ons-btn-group ons-u-mt-l">
         {{
