@@ -1,0 +1,60 @@
+{%- extends 'base.html' -%}
+
+{%- from 'components/question/_macro.njk' import onsQuestion -%}
+{%- from 'components/button/_macro.njk' import onsButton -%}
+{%- from 'components/input/_macro.njk' import onsInput -%}
+
+{%- set form =  {
+    'method': 'POST',
+    'attributes': {
+        'action': ''
+    }
+} -%}
+
+{%- block main -%}
+
+    {%- if get_flashed_messages() -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+
+    {%- call onsQuestion({
+        'title': "User"
+    }) -%}
+
+        {{
+            onsInput({
+                'id': 'email',
+                'name': 'user-email',
+                'width': '30',
+                'type': 'email',
+                'autocomplete': 'email',
+                'label': {
+                    'text': 'Email address'
+                },
+                'value': value_email,
+                'error': error_email
+            })
+        }}
+
+    {%- endcall -%}
+
+    <div class="ons-btn-group ons-u-mt-l">
+        {{
+            onsButton({
+                'text': 'Create',
+                'submitType': 'loader'
+            })
+        }}
+
+        {{
+            onsButton({
+                'type': 'button',
+                'text': 'Cancel',
+                'variants': 'secondary',
+                'url': url_for('admin.admin_user_list'),
+                'iconType': 'false'
+            })
+        }}
+    </div>
+
+{%- endblock -%}

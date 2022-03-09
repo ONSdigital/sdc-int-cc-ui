@@ -2,7 +2,7 @@ import requests
 
 from flask import current_app, abort, json
 from app.user_context import get_logged_in_user
-from app.routes.errors import Case404
+from app.routes.errors import Case404, UserExistsAlready
 from datetime import datetime
 from pytz import utc
 from structlog import get_logger
@@ -101,6 +101,36 @@ class CCSvc:
         url = f'{self.__svc_url}/users/logout'
         # if the user hasn't been setup yet, we allow 401 so we can display tailored message
         return self._put(url, None, 'logout', json_response=False, ignore_401=True)
+
+    @staticmethod
+    def err_match(err, response, code, message):
+        match = False
+        if err.response.status_code == code:
+            err_json = response.json()
+            if 'error' in err_json:
+                err_msg = err_json['error']['message']
+                return err_msg == message
+        return match
+
+    async def create_user(self, user_identity):
+        url = f'{self.__svc_url}/users'
+        create_json = {
+            'identity': user_identity
+        }
+        try:
+            cc_return = requests.post(url, headers=self.__headers, json=create_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.warn('Error returned by CCSvc when creating user: ' + str(err))
+            if CCSvc.err_match(err, cc_return, 400, 'User with that name already exists'):
+                raise UserExistsAlready
+            else:
+                raise abort(500)
+        except requests.exceptions.ConnectionError:
+            logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+
+        return cc_return.json()
 
     async def delete_user(self, user_identity):
         url = f'{self.__svc_url}/users/{user_identity}'

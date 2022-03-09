@@ -3,6 +3,7 @@ from app.user_auth import login_required
 from app.access import has_single_permission
 from app.backend import CCSvc
 from structlog import get_logger
+from app.routes.errors import UserExistsAlready
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -36,6 +37,31 @@ async def update_user(user_identity):
         return render_template('admin/update-user.html', page_title=page_title, user_identity=user_identity)
 
 
+@admin_bp.route('/admin/create-user/', methods=['GET', 'POST'])
+@login_required
+async def create_user():
+    if request.method == 'POST':
+        user_identity = request.form['user-email']
+        email_error_msg = ''
+        if user_identity:
+            logger.info("Creating user: " + user_identity)
+            try:
+                await CCSvc().create_user(user_identity)
+                flash('User <b>' + user_identity + '</b> has been created', 'info')
+            except UserExistsAlready:
+                email_error_msg = 'User exists already'
+        else:
+            email_error_msg = 'Enter an email'
+
+        if email_error_msg:
+            flash(email_error_msg, 'error_email')
+            return render_template('admin/create-user.html', page_title='Create user')
+        else:
+            return redirect(url_for('admin.admin_user_list'))
+    else:
+        return render_template('admin/create-user.html', page_title='Create user')
+
+
 @admin_bp.route('/admin/delete-user/<user_identity>/', methods=['GET', 'POST'])
 @login_required
 async def delete_user(user_identity):
@@ -45,8 +71,7 @@ async def delete_user(user_identity):
         flash('User <b>' + user_identity + '</b> has been deleted', 'info')
         return redirect(url_for('admin.admin_user_list'))
     else:
-        page_title = 'Remove user'
-        return render_template('admin/delete-user.html', page_title=page_title, user_identity=user_identity)
+        return render_template('admin/delete-user.html', page_title='Delete user', user_identity=user_identity)
 
 
 def _build_actions(user_identity, user):

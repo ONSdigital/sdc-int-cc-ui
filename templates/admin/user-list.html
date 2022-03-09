@@ -21,7 +21,8 @@
         onsButton({
             'type': 'button',
             'text': 'Add new user',
-            'url': '#'
+            'url': url_for('admin.create_user'),
+            'iconType': 'False'
         })
     }}
     {%- endif -%}
@@ -76,7 +77,8 @@
         onsButton({
             'type': 'button',
             'text': 'Add new role',
-            'url': '#'
+            'url': '#',
+            'iconType': 'False'
         })
     }}
     {%- endif -%}
