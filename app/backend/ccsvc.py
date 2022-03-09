@@ -94,7 +94,7 @@ class CCSvc:
             'surname': surname
         }
         # if the user hasn't been setup yet, we allow 401 so we can display tailored message
-        return self._put(url, login_json, 'login', json_response=False, ignore_401=True)
+        return self._put(url, login_json, 'login', json_response=True, ignore_401=True)
 
     def logout(self, user_logging_out):
         self.__headers["x-user-id"] = user_logging_out

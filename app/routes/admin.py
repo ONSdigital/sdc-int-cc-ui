@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from app.user_auth import login_required
-from app.access import has_single_permission
+from app.access import has_single_permission, is_admin_of_role
 from app.backend import CCSvc
 from structlog import get_logger
 from app.routes.errors import UserExistsAlready
@@ -42,8 +42,8 @@ async def update_user(user_identity):
 async def create_user():
     survey_types = await _build_survey_types()
     roles = await CCSvc().get_roles()
-    user_roles = _build_roles('user_roles', roles)
-    admin_roles = _build_roles('admin_roles', roles)
+    user_roles = _build_roles('user_roles', roles, True)
+    admin_roles = _build_roles('admin_roles', roles) if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE') else []
 
     if request.method == 'POST':
         user_identity = request.form['user-email']
@@ -181,10 +181,12 @@ async def _build_survey_types():
     return rows
 
 
-def _build_roles(checkbox_name, roles):
+def _build_roles(checkbox_name, all_roles, check_auth=False):
     rows = []
-    for role in roles:
+    for role in all_roles:
         name = role['name']
+        if check_auth and (not is_admin_of_role(name)):
+            continue
         rows.append({
                 "id": name,
                 "name": checkbox_name,

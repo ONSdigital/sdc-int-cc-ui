@@ -26,6 +26,14 @@ def has_any_role():
     return 'permissions' in session and session['permissions']
 
 
+def has_any_admin_role():
+    return 'adminRoles' in session and session['adminRoles']
+
+
+def can_admin_roles():
+    return has_single_permission('USER_ROLE_MAINTENANCE') and has_any_admin_role()
+
+
 def _has_any_permission(perms=None):
     if perms is None:
         return False
@@ -44,6 +52,13 @@ def has_single_permission(perm):
     perms = set()
     perms.add(perm)
     return _has_any_permission(perms)
+
+
+def is_admin_of_role(role):
+    if has_single_permission('RESERVED_USER_ROLE_ADMIN'):
+        return True
+    elif has_single_permission('USER_ROLE_MAINTENANCE'):
+        return ('adminRoles' in session) and (role in session['adminRoles'])
 
 
 def view_admin():
@@ -67,4 +82,4 @@ def setup_access_utilities(application):
     def utility_processor():
         return dict(view_admin=view_admin, view_sel=view_sel, view_tops=view_tops,
                     has_permission=has_single_permission, permit_class=permit_class,
-                    has_any_role=has_any_role)
+                    has_any_role=has_any_role, can_admin_roles=can_admin_roles)

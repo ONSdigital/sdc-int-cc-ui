@@ -20,56 +20,64 @@
 
     <h1>Add User</h1>
 
-    {{
-        onsInput({
-            'id': 'email',
-            'name': 'user-email',
-            'width': '30',
-            'type': 'email',
-            'autocomplete': 'email',
-            'label': {
-                'text': 'Email address'
-            },
-            'value': value_email,
-            'error': error_email
-        })
-    }}
+    {%- if has_permission('CREATE_USER') -%}
+        {{
+            onsInput({
+                'id': 'email',
+                'name': 'user-email',
+                'width': '30',
+                'type': 'email',
+                'autocomplete': 'email',
+                'label': {
+                    'text': 'Email address'
+                },
+                'value': value_email,
+                'error': error_email
+            })
+        }}
+    {%- endif -%}
 
-    <br/>
-    <h2>Surveys</h2>
+    {%- if has_permission('USER_SURVEY_MAINTENANCE') -%}
+        <br/>
+        <h2>Surveys</h2>
 
-    {{
-        onsCheckboxes({
-            "checkboxesLabel": "Select all that apply",
-            "dontWrap": true,
-            "name": "surveys",
-            "checkboxes": survey_types
-        })
-    }}
+        {{
+            onsCheckboxes({
+                "checkboxesLabel": "Select all that apply",
+                "dontWrap": true,
+                "name": "surveys",
+                "checkboxes": survey_types
+            })
+        }}
+    {%- endif -%}
 
-    <br/>
-    <h2>User Roles</h2>
+    {%- if has_permission('RESERVED_USER_ROLE_ADMIN') or can_admin_roles() -%}
+        <br/>
+        <h2>User Roles</h2>
 
-    {{
-        onsCheckboxes({
-            "checkboxesLabel": "Select all that apply",
-            "dontWrap": true,
-            "name": "user_roles",
-            "checkboxes": user_roles
-        })
-    }}
+        {{
+            onsCheckboxes({
+                "checkboxesLabel": "Select all that apply",
+                "dontWrap": true,
+                "name": "user_roles",
+                "checkboxes": user_roles
+            })
+        }}
+    {%- endif -%}
 
-    <br/>
-    <h2>Admin Roles</h2>
+    {%- if has_permission('RESERVED_ADMIN_ROLE_MAINTENANCE') -%}
+        <br/>
+        <h2>Admin Roles</h2>
 
-    {{
-        onsCheckboxes({
-            "checkboxesLabel": "Select all that apply",
-            "dontWrap": true,
-            "name": "admin_roles",
-            "checkboxes": admin_roles
-        })
-    }}
+        {{
+            onsCheckboxes({
+                "checkboxesLabel": "Select all that apply",
+                "dontWrap": true,
+                "name": "admin_roles",
+                "checkboxes": admin_roles
+            })
+        }}
+    {%- endif -%}
 
     <div class="ons-btn-group ons-u-mt-l">
         {{

@@ -130,7 +130,7 @@ def acs():
         load_permissions()
         name = get_name()
         welcome_name = name if name else get_logged_in_user()
-        CCSvc().login(get_forename(), get_surname())
+        _login_backend()
         flash('Welcome <b>' + welcome_name + '</b>', 'info')
         self_url = OneLogin_Saml2_Utils.get_self_url(req)
         if 'RelayState' in request.form and self_url != request.form['RelayState']:
@@ -143,6 +143,12 @@ def acs():
         logger.warning('Login error occurred: ' + error_reason)
 
     return redirect('/')
+
+
+def _login_backend():
+    user = CCSvc().login(get_forename(), get_surname())
+    if 'error' not in user:
+        session['adminRoles'] = user['adminRoles']
 
 
 def _log_session_info(auth):
