@@ -145,9 +145,11 @@ def _build_user_rows(users):
         status = 'success' if user['active'] else 'pending'
         status_text = 'Active' if user['active'] else 'Inactive'
         roles = ''
+        user['userRoles'].sort()
         for role in user['userRoles']:
             roles = roles + role + '<br/>'
         surveys = ''
+        user['surveyUsages'].sort()
         for survey in user['surveyUsages']:
             surveys = surveys + survey['surveyType'] + '<br/>'
 
