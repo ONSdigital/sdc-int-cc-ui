@@ -37,38 +37,49 @@ async def update_user(user_identity):
         return render_template('admin/update-user.html', page_title=page_title, user_identity=user_identity)
 
 
-@admin_bp.route('/admin/create-user/', methods=['GET', 'POST'])
+@admin_bp.route('/admin/add-user/', methods=['GET', 'POST'])
 @login_required
-async def create_user():
-    survey_types = await _build_survey_types()
-    roles = await CCSvc().get_roles()
-    user_roles = _build_roles('user_roles', roles, True)
-    admin_roles = _build_roles('admin_roles', roles) if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE') else []
-
+async def add_user():
     if request.method == 'POST':
         user_identity = request.form['user-email']
         email_error_msg = ''
         if user_identity:
             logger.info("Creating user: " + user_identity)
             try:
-                await CCSvc().create_user(user_identity)
+                await CCSvc().add_user(user_identity)
                 flash('User <b>' + user_identity + '</b> has been created', 'info')
                 await _populate_created_user(user_identity)
             except UserExistsAlready:
-                email_error_msg = 'User exists already'
+                email_error_msg = 'The user exists already'
         else:
-            email_error_msg = 'Enter an email'
+            email_error_msg = 'Please enter an email'
 
         if email_error_msg:
             flash(email_error_msg, 'error_email')
-            return render_template('admin/create-user.html', page_title='Create user',
-                                   survey_types=survey_types, user_roles=user_roles, admin_roles=admin_roles,
-                                   error_email=email_error_msg)
+            return await _render_add_user(user_identity, email_error_msg)
         else:
             return redirect(url_for('admin.admin_user_list'))
     else:
-        return render_template('admin/create-user.html', page_title='Create user',
-                               survey_types=survey_types, user_roles=user_roles, admin_roles=admin_roles)
+        return await _render_add_user()
+
+
+async def _render_add_user(user_identity='', email_error_msg=''):
+    survey_types_checkboxes = await _build_survey_types()
+    roles = await CCSvc().get_roles()
+    user_roles_checkboxes = _build_user_role_checkboxes(roles)
+    admin_roles_checkboxes = _build_admin_role_checkboxes(roles)
+
+    return render_template('admin/add-user.html',
+                           page_title='Add user',
+                           survey_types_checkboxes=survey_types_checkboxes,
+                           user_roles_checkboxes=user_roles_checkboxes,
+                           admin_roles_checkboxes=admin_roles_checkboxes,
+                           value_email=user_identity,
+                           error_email=email_error_msg)
+
+
+def _checked_boxes(checkbox_name):
+    return request.form.getlist(checkbox_name) if checkbox_name in request.form else []
 
 
 async def _populate_created_user(user_identity):
@@ -167,6 +178,7 @@ def _build_user_rows(users):
 
 
 async def _build_survey_types():
+    checked_surveys = _checked_boxes('surveys')
     rows = []
     survey_types = await CCSvc().get_survey_types()
     for survey_type in survey_types:
@@ -176,12 +188,26 @@ async def _build_survey_types():
                 "label": {
                     "text": survey_type
                 },
+                "checked": survey_type in checked_surveys,
                 "value": survey_type
         })
     return rows
 
 
-def _build_roles(checkbox_name, all_roles, check_auth=False):
+def _build_user_role_checkboxes(roles):
+    checked_user_roles = _checked_boxes('user_roles')
+    return _build_role_checkboxes('user_roles', roles, checked_user_roles, True)
+
+
+def _build_admin_role_checkboxes(roles):
+    checked_admin_roles = _checked_boxes('admin_roles')
+    admin_roles_checkboxes = []
+    if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE'):
+        admin_roles_checkboxes = _build_role_checkboxes('admin_roles', roles, checked_admin_roles)
+    return admin_roles_checkboxes
+
+
+def _build_role_checkboxes(checkbox_name, all_roles, checked_roles, check_auth=False):
     rows = []
     for role in all_roles:
         name = role['name']
@@ -193,6 +219,7 @@ def _build_roles(checkbox_name, all_roles, check_auth=False):
                 "label": {
                     "text": name
                 },
+                "checked": name in checked_roles,
                 "value": name
         })
     return rows

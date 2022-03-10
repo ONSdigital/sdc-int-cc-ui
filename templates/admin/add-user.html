@@ -43,10 +43,10 @@
 
         {{
             onsCheckboxes({
-                "checkboxesLabel": "Select all that apply",
+                "checkboxesLabel": "Select all surveys that the user can access",
                 "dontWrap": true,
                 "name": "surveys",
-                "checkboxes": survey_types
+                "checkboxes": survey_types_checkboxes
             })
         }}
     {%- endif -%}
@@ -57,10 +57,10 @@
 
         {{
             onsCheckboxes({
-                "checkboxesLabel": "Select all that apply",
+                "checkboxesLabel": "Select all roles that the user can perform",
                 "dontWrap": true,
                 "name": "user_roles",
-                "checkboxes": user_roles
+                "checkboxes": user_roles_checkboxes
             })
         }}
     {%- endif -%}
@@ -71,10 +71,10 @@
 
         {{
             onsCheckboxes({
-                "checkboxesLabel": "Select all that apply",
+                "checkboxesLabel": "Select all roles that the user can add to another user",
                 "dontWrap": true,
                 "name": "admin_roles",
-                "checkboxes": admin_roles
+                "checkboxes": admin_roles_checkboxes
             })
         }}
     {%- endif -%}

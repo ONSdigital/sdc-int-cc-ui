@@ -112,7 +112,7 @@ class CCSvc:
                 return err_msg == message
         return match
 
-    async def create_user(self, user_identity):
+    async def add_user(self, user_identity):
         url = f'{self.__svc_url}/users'
         create_json = {
             'identity': user_identity
