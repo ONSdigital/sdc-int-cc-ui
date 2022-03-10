@@ -1,10 +1,12 @@
-from flask import Blueprint
-from flask import render_template, request, redirect, url_for
+from flask import Blueprint, flash, render_template, request, redirect, url_for
 from app.user_auth import login_required
 from app.access import has_single_permission
 from app.backend import CCSvc
+from structlog import get_logger
 
 admin_bp = Blueprint("admin", __name__)
+
+logger = get_logger()
 
 
 @admin_bp.route('/admin/')
@@ -21,50 +23,42 @@ async def admin_user_list():
     return render_template('admin/user-list.html', user_rows=user_rows)
 
 
-@admin_bp.route('/admin/update-user/<username>/', methods=['GET', 'POST'])
+@admin_bp.route('/admin/update-user/<user_identity>/', methods=['GET', 'POST'])
 @login_required
-async def update_user(username):
+async def update_user(user_identity):
     if request.method == 'POST':
-        return redirect(url_for('admin.user_updated'))
-
+        logger.info("Updating user: " + user_identity)
+        # call CCSvc to update user
+        flash('User <b>' + user_identity + '</b> has been updated', 'info')
+        return redirect(url_for('admin.admin_user_list'))
     else:
         page_title = 'Update user'
-        return render_template('admin/update-user.html', page_title=page_title, username=username)
+        return render_template('admin/update-user.html', page_title=page_title, user_identity=user_identity)
 
 
-@admin_bp.route('/admin/user-updated/', methods=['GET'])
+@admin_bp.route('/admin/delete-user/<user_identity>/', methods=['GET', 'POST'])
 @login_required
-async def user_updated():
-    return render_template('admin/user-updated.html')
-
-
-@admin_bp.route('/admin/remove-user/<username>/', methods=['GET', 'POST'])
-@login_required
-async def remove_user(username):
+async def delete_user(user_identity):
     if request.method == 'POST':
-        return redirect(url_for('admin.user_removed'))
-
+        logger.info("Deleting user: " + user_identity)
+        await CCSvc().delete_user(user_identity)
+        flash('User <b>' + user_identity + '</b> has been deleted', 'info')
+        return redirect(url_for('admin.admin_user_list'))
     else:
         page_title = 'Remove user'
-        return render_template('admin/remove-user.html', page_title=page_title, username=username)
+        return render_template('admin/delete-user.html', page_title=page_title, user_identity=user_identity)
 
 
-@admin_bp.route('/admin/user-removed/', methods=['GET'])
-@login_required
-async def user_removed():
-    return render_template('admin/user-removed.html')
-
-
-def _build_actions(identity, user):
+def _build_actions(user_identity, user):
     actions = ''
 
     if has_single_permission('MODIFY_USER'):
-        actions += '<a href="' + url_for('admin.update_user', username=identity) + '">Change</a>'
+        actions += '<a href="' + url_for('admin.update_user', user_identity=user_identity) + '">Change</a>'
 
     if has_single_permission('DELETE_USER') and user['deletable']:
         if actions:
             actions += ' | '
-        actions += '<a href="' + url_for('admin.remove_user', username=identity) + '">Remove</a>'
+        actions += '<a href="' + url_for('admin.delete_user', user_identity=user_identity) + '">Delete</a>'
 
     return actions
 

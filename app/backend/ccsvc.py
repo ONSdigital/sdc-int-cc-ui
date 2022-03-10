@@ -21,12 +21,12 @@ class CCSvc:
         self.__headers = {"x-user-id": self.__user_logged_in}
         pass
 
-    def __get_response(self, url, params=None):
+    def _get_response(self, url, params=None):
         return requests.get(url, params=params, headers=self.__headers)
 
-    def __get(self, url, check404, description, params=None):
+    def _get(self, url, check404, description, params=None):
         try:
-            cc_return = self.__get_response(url, params)
+            cc_return = self._get_response(url, params)
             cc_return.raise_for_status()
         except requests.exceptions.HTTPError as err:
             logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err.response))
@@ -41,7 +41,7 @@ class CCSvc:
 
         return cc_return.json()
 
-    def __post(self, url, payload, description):
+    def _post(self, url, payload, description):
         try:
             cc_return = requests.post(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
@@ -54,7 +54,7 @@ class CCSvc:
 
         return cc_return.json()
 
-    def __put(self, url, payload, description, json_response=True, ignore_401=False):
+    def _put(self, url, payload, description, json_response=True, ignore_401=False):
         try:
             cc_return = requests.put(url, headers=self.__headers, json=payload)
             cc_return.raise_for_status()
@@ -69,9 +69,20 @@ class CCSvc:
         if json_response:
             return cc_return.json()
 
+    def _delete(self, url, description):
+        try:
+            cc_return = requests.delete(url, headers=self.__headers)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.warn('Error returned by CCSvc for ' + description + ': ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+
     def get_permissions(self):
         url = f'{self.__svc_url}/users/permissions'
-        resp = self.__get_response(url)
+        resp = self._get_response(url)
         perms = resp.json() if resp.ok else json.loads('[]')
         logger.info('User: ' + self.__user_logged_in + ' has these permissions: ' + str(perms))
         return perms
@@ -83,17 +94,21 @@ class CCSvc:
             'surname': surname
         }
         # if the user hasn't been setup yet, we allow 401 so we can display tailored message
-        return self.__put(url, login_json, 'login', json_response=False, ignore_401=True)
+        return self._put(url, login_json, 'login', json_response=False, ignore_401=True)
 
     def logout(self, user_logging_out):
         self.__headers["x-user-id"] = user_logging_out
         url = f'{self.__svc_url}/users/logout'
         # if the user hasn't been setup yet, we allow 401 so we can display tailored message
-        return self.__put(url, None, 'logout', json_response=False, ignore_401=True)
+        return self._put(url, None, 'logout', json_response=False, ignore_401=True)
+
+    async def delete_user(self, user_identity):
+        url = f'{self.__svc_url}/users/{user_identity}'
+        self._delete(url, 'delete user')
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
-        return self.__get(url, True, 'get_case_by_id')
+        return self._get(url, True, 'get_case_by_id')
 
     async def post_add_note(self, case_id, note):
         url = f'{self.__svc_url}/cases/{case_id}/interaction'
@@ -102,7 +117,7 @@ class CCSvc:
             'type': 'CASE_NOTE_ADDED',
             'note': note
         }
-        return self.__post(url, interaction_json, 'post_add_note')
+        return self._post(url, interaction_json, 'post_add_note')
 
     async def post_case_refusal(self, case_id, reason, note=None, erase_data=False):
         url = f'{self.__svc_url}/cases/{case_id}/refusal'
@@ -112,22 +127,22 @@ class CCSvc:
             'note': note,
             'eraseData': erase_data
         }
-        return self.__post(url, refusal_json, 'case refusal')
+        return self._post(url, refusal_json, 'case refusal')
 
     async def get_addresses_by_postcode(self, postcode):
         url = f'{self.__svc_url}/addresses/postcode'
         params = {'postcode': postcode, 'limit': 5000}
-        return self.__get(url, False, 'addresses by postcode', params)
+        return self._get(url, False, 'addresses by postcode', params)
 
     async def get_addresses_by_input(self, input_text):
         url = f'{self.__svc_url}/addresses'
         params = {'input': input_text}
         logger.info('Trying ' + input_text)
-        return self.__get(url, False, 'addresses by input', params)
+        return self._get(url, False, 'addresses by input', params)
 
     async def get_users(self):
         url = f'{self.__svc_url}/users'
-        return self.__get(url, False, 'all users')
+        return self._get(url, False, 'all users')
 
     async def get_fulfilments(self, product_group, delivery_channel, region):
         url = f'{self.__svc_url}/fulfilments'
@@ -138,7 +153,7 @@ class CCSvc:
             'region': region,
             'individual': 'false'
         }
-        return self.__get(url, False, 'get fulfilments', params)
+        return self._get(url, False, 'get fulfilments', params)
 
     async def post_sms_fulfilment(self, case_id, fulfilment_code, tel_no):
         url = f'{self.__svc_url}/cases/{case_id}/fulfilment/sms'
@@ -148,7 +163,7 @@ class CCSvc:
             'fulfilmentCode': fulfilment_code,
             'telNo': tel_no
         }
-        return self.__post(url, fulfilment_json, 'SMS fulfilment')
+        return self._post(url, fulfilment_json, 'SMS fulfilment')
 
     async def post_postal_fulfilment(self, case_id, fulfilment_code, first_name, last_name):
         url = f'{self.__svc_url}/cases/{case_id}/fulfilment/post'
@@ -159,4 +174,4 @@ class CCSvc:
             'forename': first_name,
             'surname': last_name
         }
-        return self.__post(url, fulfilment_json, 'postal fulfilment')
+        return self._post(url, fulfilment_json, 'postal fulfilment')

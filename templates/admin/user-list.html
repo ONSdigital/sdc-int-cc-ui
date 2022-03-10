@@ -8,6 +8,14 @@
 
     <h1>Users and Roles</h1>
 
+    {%- if get_flashed_messages(category_filter=["info"]) -%}
+        {%- include 'partials/messages_info.html' with context -%}
+    {%- endif -%}
+    {%- if get_flashed_messages(category_filter=["error"]) -%}
+        {%- include 'partials/messages.html' with context -%}
+    {%- endif -%}
+    <br/>
+
     {%- if has_permission('CREATE_USER') -%}
     {{
         onsButton({

@@ -13,22 +13,21 @@
 
 {%- block main -%}
 
-    <h1 class="ons-u-mt-l">Remove all permissions for {{ username }}</h1>
+    <h1 class="ons-u-mt-l">Delete {{ user_identity }}</h1>
 
     {%- call onsPanel({
             "type": 'warn',
             "classes": "ons-u-mt-xl"
         })
     -%}
-        <p>Removing all permissions from a user will prevent them accessing the Contact Centre system.</p>
+        <p>Deleting a user will permanently prevent them from accessing the Contact Centre,
+            cannot be undone, and the user cannot be recreated.</p>
     {%- endcall -%}
-
-
 
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
-                'text': 'Confirm removal',
+                'text': 'Confirm deletion',
                 'submitType': 'loader'
             })
         }}
