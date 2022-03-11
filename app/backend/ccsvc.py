@@ -132,9 +132,20 @@ class CCSvc:
 
         return cc_return.json()
 
+    async def modify_user(self, user_identity, active):
+        url = f'{self.__svc_url}/users/{user_identity}'
+        modify_json = {
+            'active': active
+        }
+        self._put(url, modify_json, 'modify user', json_response=False)
+
     async def delete_user(self, user_identity):
         url = f'{self.__svc_url}/users/{user_identity}'
         self._delete(url, 'delete user')
+
+    async def get_user(self, user_identity):
+        url = f'{self.__svc_url}/users/{user_identity}'
+        return self._get(url, False, 'get user')
 
     async def get_case_by_id(self, case, case_events=False):
         url = f'{self.__svc_url}/cases/{case}?caseEvents={case_events}'
@@ -187,12 +198,24 @@ class CCSvc:
         url = f'{self.__svc_url}/users/{user_identity}/addSurvey/{survey_type}'
         requests.patch(url, headers=self.__headers)
 
+    async def remove_user_survey(self, user_identity, survey_type):
+        url = f'{self.__svc_url}/users/{user_identity}/removeSurvey/{survey_type}'
+        requests.patch(url, headers=self.__headers)
+
     async def add_user_role(self, user_identity, role):
         url = f'{self.__svc_url}/users/{user_identity}/addUserRole/{role}'
         requests.patch(url, headers=self.__headers)
 
+    async def remove_user_role(self, user_identity, role):
+        url = f'{self.__svc_url}/users/{user_identity}/removeUserRole/{role}'
+        requests.patch(url, headers=self.__headers)
+
     async def add_admin_role(self, user_identity, role):
         url = f'{self.__svc_url}/users/{user_identity}/addAdminRole/{role}'
+        requests.patch(url, headers=self.__headers)
+
+    async def remove_admin_role(self, user_identity, role):
+        url = f'{self.__svc_url}/users/{user_identity}/removeAdminRole/{role}'
         requests.patch(url, headers=self.__headers)
 
     async def get_fulfilments(self, product_group, delivery_channel, region):

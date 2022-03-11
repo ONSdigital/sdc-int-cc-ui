@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from app.user_auth import login_required
-from app.access import has_single_permission, is_admin_of_role
+from app.access import has_single_permission, is_admin_of_role, can_admin_roles
 from app.backend import CCSvc
 from structlog import get_logger
 from app.routes.errors import UserExistsAlready
@@ -27,14 +27,77 @@ async def admin_user_list():
 @admin_bp.route('/admin/update-user/<user_identity>/', methods=['GET', 'POST'])
 @login_required
 async def update_user(user_identity):
+    user = await CCSvc().get_user(user_identity)
     if request.method == 'POST':
         logger.info("Updating user: " + user_identity)
-        # call CCSvc to update user
-        flash('User <b>' + user_identity + '</b> has been updated', 'info')
+        roles = await CCSvc().get_roles()
+        modified = await _update_active(user)
+        modified = await _update_surveys(user) or modified
+        modified = await _update_user_roles(user, roles) or modified
+        modified = await _update_admin_roles(user, roles) or modified
+        if modified:
+            flash('User <b>' + user_identity + '</b> has been updated', 'info')
+        else:
+            flash('User <b>' + user_identity + '</b> has not been changed', 'info')
         return redirect(url_for('admin.admin_user_list'))
     else:
-        page_title = 'Update user'
-        return render_template('admin/update-user.html', page_title=page_title, user_identity=user_identity)
+        return await _render_update_user(user_identity, user)
+
+
+async def _update_active(user):
+    if has_single_permission('MODIFY_USER'):
+        active_checked = 'active' in request.form
+        if user['active'] != active_checked:
+            await CCSvc().modify_user(user['identity'], active_checked)
+            return True
+    return False
+
+
+async def _update_surveys(user):
+    if has_single_permission('USER_SURVEY_MAINTENANCE'):
+        checked_surveys = _checked_boxes('surveys')
+        existing_surveys = [i['surveyType'] for i in user['surveyUsages']]
+        if existing_surveys != checked_surveys:
+            survey_types = await CCSvc().get_survey_types()
+            for survey_type in survey_types:
+                if (survey_type in checked_surveys) and (survey_type not in existing_surveys):
+                    await CCSvc().add_user_survey(user['identity'], survey_type)
+                elif (survey_type not in checked_surveys) and (survey_type in existing_surveys):
+                    await CCSvc().remove_user_survey(user['identity'], survey_type)
+            return True
+    return False
+
+
+async def _update_user_roles(user, roles):
+    if has_single_permission('RESERVED_USER_ROLE_ADMIN') or can_admin_roles():
+        checked_user_roles = _checked_boxes('user_roles')
+        existing_roles = user['userRoles']
+        if existing_roles != checked_user_roles:
+            for role_obj in roles:
+                role = role_obj['name']
+                if not is_admin_of_role(role):
+                    continue
+                if (role in checked_user_roles) and (role not in existing_roles):
+                    await CCSvc().add_user_role(user['identity'], role)
+                elif (role not in checked_user_roles) and (role in existing_roles):
+                    await CCSvc().remove_user_role(user['identity'], role)
+            return True
+    return False
+
+
+async def _update_admin_roles(user, roles):
+    if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE'):
+        checked_user_roles = _checked_boxes('admin_roles')
+        existing_roles = user['adminRoles']
+        if existing_roles != checked_user_roles:
+            for role_obj in roles:
+                role = role_obj['name']
+                if (role in checked_user_roles) and (role not in existing_roles):
+                    await CCSvc().add_admin_role(user['identity'], role)
+                elif (role not in checked_user_roles) and (role in existing_roles):
+                    await CCSvc().remove_admin_role(user['identity'], role)
+            return True
+    return False
 
 
 @admin_bp.route('/admin/add-user/', methods=['GET', 'POST'])
@@ -63,19 +126,31 @@ async def add_user():
         return await _render_add_user()
 
 
-async def _render_add_user(user_identity='', email_error_msg=''):
-    survey_types_checkboxes = await _build_survey_types()
+async def _render_user_input_page(operation, path, user_identity, user=None, active=True, email_error_msg=''):
+    survey_types_checkboxes = await _build_survey_types(user)
     roles = await CCSvc().get_roles()
-    user_roles_checkboxes = _build_user_role_checkboxes(roles)
-    admin_roles_checkboxes = _build_admin_role_checkboxes(roles)
+    user_roles_checkboxes = _build_user_role_checkboxes(roles, user)
+    admin_roles_checkboxes = _build_admin_role_checkboxes(roles, user)
 
-    return render_template('admin/add-user.html',
-                           page_title='Add user',
+    return render_template(path,
+                           page_title=(operation + ' user'),
+                           operation=operation,
                            survey_types_checkboxes=survey_types_checkboxes,
                            user_roles_checkboxes=user_roles_checkboxes,
                            admin_roles_checkboxes=admin_roles_checkboxes,
                            value_email=user_identity,
+                           is_active=active,
                            error_email=email_error_msg)
+
+
+async def _render_add_user(user_identity='', email_error_msg=''):
+    return await _render_user_input_page('Add', 'admin/add-or-update-user.html', user_identity,
+                                         user=None, active=True, email_error_msg=email_error_msg)
+
+
+async def _render_update_user(user_identity, user):
+    active = user['active'] if user else 'active' in request.form
+    return await _render_user_input_page('Update', 'admin/add-or-update-user.html', user_identity, user, active)
 
 
 def _checked_boxes(checkbox_name):
@@ -179,8 +254,11 @@ def _build_user_rows(users):
     return rows
 
 
-async def _build_survey_types():
-    checked_surveys = _checked_boxes('surveys')
+async def _build_survey_types(user):
+    if user:
+        checked_surveys = [i['surveyType'] for i in user['surveyUsages']]
+    else:
+        checked_surveys = _checked_boxes('surveys')
     rows = []
     survey_types = await CCSvc().get_survey_types()
     for survey_type in survey_types:
@@ -196,13 +274,19 @@ async def _build_survey_types():
     return rows
 
 
-def _build_user_role_checkboxes(roles):
-    checked_user_roles = _checked_boxes('user_roles')
+def _build_user_role_checkboxes(roles, user):
+    if user:
+        checked_user_roles = user['userRoles']
+    else:
+        checked_user_roles = _checked_boxes('user_roles')
     return _build_role_checkboxes('user_roles', roles, checked_user_roles, True)
 
 
-def _build_admin_role_checkboxes(roles):
-    checked_admin_roles = _checked_boxes('admin_roles')
+def _build_admin_role_checkboxes(roles, user):
+    if user:
+        checked_admin_roles = user['adminRoles']
+    else:
+        checked_admin_roles = _checked_boxes('admin_roles')
     admin_roles_checkboxes = []
     if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE'):
         admin_roles_checkboxes = _build_role_checkboxes('admin_roles', roles, checked_admin_roles)

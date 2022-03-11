@@ -18,9 +18,9 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1>Add User</h1>
+    <h1>{{ operation + ' user' }}</h1>
 
-    {%- if has_permission('CREATE_USER') -%}
+    {%- if operation == 'Add' and has_permission('CREATE_USER') -%}
         {{
             onsInput({
                 'id': 'email',
@@ -33,6 +33,29 @@
                 },
                 'value': value_email,
                 'error': error_email
+            })
+        }}
+    {%- endif -%}
+
+    {%- if operation == 'Update' and has_permission('MODIFY_USER') -%}
+        {{
+            onsCheckboxes({
+                "dontWrap": true,
+                "name": "active",
+                "borderless": true,
+                "checkboxes": [
+                    {
+                        "name": "active",
+                        "id": "active",
+                        "label": {
+                            "classes": "ons-u-fs-m",
+                            "text": "Active",
+                            "description": "Activate the user"
+                        },
+                        "checked": is_active,
+                        "value": "active"
+                    }
+                ]
             })
         }}
     {%- endif -%}
@@ -82,7 +105,7 @@
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
-                'text': 'Create',
+                'text': 'Save',
                 'submitType': 'loader'
             })
         }}
