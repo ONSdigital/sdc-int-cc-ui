@@ -32,10 +32,12 @@ async def update_user(user_identity):
     if request.method == 'POST':
         logger.info("Updating user: " + user_identity)
         roles = await CCSvc().get_roles()
-        modified = await _update_active(user)
-        modified = await _update_surveys(user) or modified
-        modified = await _update_user_roles(user, roles) or modified
-        modified = await _update_admin_roles(user, roles) or modified
+        modified = False
+        if user['active']:
+            modified = await _update_surveys(user) or modified
+            modified = await _update_user_roles(user, roles) or modified
+            modified = await _update_admin_roles(user, roles) or modified
+        modified = await _update_active(user) or modified
         if modified:
             flash('User <b>' + user_identity + '</b> has been updated', 'info')
         else:
@@ -128,10 +130,15 @@ async def add_user():
 
 
 async def _render_user_input_page(operation, path, user_identity, user=None, active=True, email_error_msg=''):
-    survey_types_checkboxes = await _build_survey_types(user)
-    roles = await CCSvc().get_roles()
-    user_roles_checkboxes = _build_user_role_checkboxes(roles, user)
-    admin_roles_checkboxes = _build_admin_role_checkboxes(roles, user)
+    if active:
+        survey_types_checkboxes = await _build_survey_types(user)
+        roles = await CCSvc().get_roles()
+        user_roles_checkboxes = _build_user_role_checkboxes(roles, user)
+        admin_roles_checkboxes = _build_admin_role_checkboxes(roles, user)
+    else:
+        survey_types_checkboxes = []
+        user_roles_checkboxes = []
+        admin_roles_checkboxes = []
 
     return render_template(path,
                            page_title=(operation + ' user'),

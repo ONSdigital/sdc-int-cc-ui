@@ -60,46 +60,48 @@
         }}
     {%- endif -%}
 
-    {%- if has_permission('USER_SURVEY_MAINTENANCE') -%}
-        <br/>
-        <h2>Surveys</h2>
+    {%- if is_active -%}
+        {%- if has_permission('USER_SURVEY_MAINTENANCE') -%}
+            <br/>
+            <h2>Surveys</h2>
 
-        {{
-            onsCheckboxes({
-                "checkboxesLabel": "Select all surveys that the user can access",
-                "dontWrap": true,
-                "name": "surveys",
-                "checkboxes": survey_types_checkboxes
-            })
-        }}
-    {%- endif -%}
+            {{
+                onsCheckboxes({
+                    "checkboxesLabel": "Select all surveys that the user can access",
+                    "dontWrap": true,
+                    "name": "surveys",
+                    "checkboxes": survey_types_checkboxes
+                })
+            }}
+        {%- endif -%}
 
-    {%- if has_permission('RESERVED_USER_ROLE_ADMIN') or can_admin_roles() -%}
-        <br/>
-        <h2>User Roles</h2>
+        {%- if has_permission('RESERVED_USER_ROLE_ADMIN') or can_admin_roles() -%}
+            <br/>
+            <h2>User Roles</h2>
 
-        {{
-            onsCheckboxes({
-                "checkboxesLabel": "Select all roles that the user can perform",
-                "dontWrap": true,
-                "name": "user_roles",
-                "checkboxes": user_roles_checkboxes
-            })
-        }}
-    {%- endif -%}
+            {{
+                onsCheckboxes({
+                    "checkboxesLabel": "Select all roles that the user can perform",
+                    "dontWrap": true,
+                    "name": "user_roles",
+                    "checkboxes": user_roles_checkboxes
+                })
+            }}
+        {%- endif -%}
 
-    {%- if has_permission('RESERVED_ADMIN_ROLE_MAINTENANCE') -%}
-        <br/>
-        <h2>Admin Roles</h2>
+        {%- if has_permission('RESERVED_ADMIN_ROLE_MAINTENANCE') -%}
+            <br/>
+            <h2>Admin Roles</h2>
 
-        {{
-            onsCheckboxes({
-                "checkboxesLabel": "Select all roles that the user can assign to another user",
-                "dontWrap": true,
-                "name": "admin_roles",
-                "checkboxes": admin_roles_checkboxes
-            })
-        }}
+            {{
+                onsCheckboxes({
+                    "checkboxesLabel": "Select all roles that the user can assign to another user",
+                    "dontWrap": true,
+                    "name": "admin_roles",
+                    "checkboxes": admin_roles_checkboxes
+                })
+            }}
+        {%- endif -%}
     {%- endif -%}
 
     <div class="ons-btn-group ons-u-mt-l">
