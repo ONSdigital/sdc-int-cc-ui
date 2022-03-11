@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from app.user_auth import login_required
+from app.user_context import get_logged_in_user
 from app.access import has_single_permission, is_admin_of_role, can_admin_roles
 from app.backend import CCSvc
 from structlog import get_logger
@@ -192,15 +193,14 @@ async def delete_user(user_identity):
 
 def _build_actions(user_identity, user):
     actions = ''
+    if user_identity != get_logged_in_user():
+        if has_single_permission('MODIFY_USER'):
+            actions += '<a href="' + url_for('admin.update_user', user_identity=user_identity) + '">Change</a>'
 
-    if has_single_permission('MODIFY_USER'):
-        actions += '<a href="' + url_for('admin.update_user', user_identity=user_identity) + '">Change</a>'
-
-    if has_single_permission('DELETE_USER') and user['deletable']:
-        if actions:
-            actions += ' | '
-        actions += '<a href="' + url_for('admin.delete_user', user_identity=user_identity) + '">Delete</a>'
-
+        if has_single_permission('DELETE_USER') and user['deletable']:
+            if actions:
+                actions += ' | '
+            actions += '<a href="' + url_for('admin.delete_user', user_identity=user_identity) + '">Delete</a>'
     return actions
 
 
