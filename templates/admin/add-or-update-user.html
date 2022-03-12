@@ -18,7 +18,11 @@
         {%- include 'partials/messages.html' with context -%}
     {%- endif -%}
 
-    <h1>{{ operation + ' user' }}</h1>
+    {%- if operation == 'Add' -%}
+        <h1>Add user</h1>
+    {%- else -%}
+        <h1>Update user <i>{{ value_email }}</i></h1>
+    {%- endif -%}
 
     {%- if operation == 'Add' and has_permission('CREATE_USER') -%}
         {{
