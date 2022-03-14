@@ -3,7 +3,7 @@ import re
 
 from flask import current_app, abort, json
 from app.user_context import get_logged_in_user
-from app.routes.errors import Case404, UserExistsAlready, UserInactive
+from app.routes.errors import Case404, UserExistsAlready, UserInactive, UserUnknown
 from datetime import datetime
 from pytz import utc
 from structlog import get_logger
@@ -103,6 +103,8 @@ class CCSvc:
             # handle inactive user
             if CCSvc.err_match(err, cc_return, 401, 'no longer active'):
                 raise UserInactive
+            if CCSvc.err_match(err, cc_return, 401, 'User unknown'):
+                raise UserUnknown
             # if the user hasn't been setup yet, we allow 401 so we can display tailored message
             if err.response.status_code == 401:
                 return

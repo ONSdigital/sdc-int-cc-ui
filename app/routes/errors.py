@@ -24,6 +24,11 @@ class UserInactive(Exception):
     pass
 
 
+class UserUnknown(Exception):
+    """ User is defined in IDP but not in CCSvc """
+    pass
+
+
 @errors_bp.app_errorhandler(404)
 def not_found_error(error):
     return render_template('errors/404.html'), 404
