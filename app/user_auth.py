@@ -10,6 +10,7 @@ from structlog import get_logger
 from app.user_context import get_name, get_surname, get_forename, is_logged_in, get_logged_in_user
 from app.access import load_permissions
 from app.backend.ccsvc import CCSvc
+from app.routes.errors import UserInactive
 
 
 saml_bp = Blueprint('saml', __name__)
@@ -146,9 +147,13 @@ def acs():
 
 
 def _login_backend():
-    user = CCSvc().login(get_forename(), get_surname())
-    if 'error' not in user:
-        session['adminRoles'] = user['adminRoles']
+    try:
+        user = CCSvc().login(get_forename(), get_surname())
+        if 'error' not in user:
+            session['adminRoles'] = user['adminRoles']
+    except UserInactive:
+        session['permissions'] = []
+        return
 
 
 def _log_session_info(auth):

@@ -1,8 +1,9 @@
 import requests
+import re
 
 from flask import current_app, abort, json
 from app.user_context import get_logged_in_user
-from app.routes.errors import Case404, UserExistsAlready
+from app.routes.errors import Case404, UserExistsAlready, UserInactive
 from datetime import datetime
 from pytz import utc
 from structlog import get_logger
@@ -93,8 +94,24 @@ class CCSvc:
             'forename': forename,
             'surname': surname
         }
-        # if the user hasn't been setup yet, we allow 401 so we can display tailored message
-        return self._put(url, login_json, 'login', json_response=True, ignore_401=True)
+
+        cc_return = None
+        try:
+            cc_return = requests.put(url, headers=self.__headers, json=login_json)
+            cc_return.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            # handle inactive user
+            if CCSvc.err_match(err, cc_return, 401, 'no longer active'):
+                raise UserInactive
+            # if the user hasn't been setup yet, we allow 401 so we can display tailored message
+            if err.response.status_code == 401:
+                return
+            logger.warn('Error returned by CCSvc for login: ' + str(err))
+            raise abort(500)
+        except requests.exceptions.ConnectionError:
+            logger.warn('Error: Unable to connect to CCSvc')
+            raise abort(500)
+        return cc_return.json()
 
     def logout(self, user_logging_out):
         self.__headers["x-user-id"] = user_logging_out
@@ -103,13 +120,13 @@ class CCSvc:
         return self._put(url, None, 'logout', json_response=False, ignore_401=True)
 
     @staticmethod
-    def err_match(err, response, code, message):
+    def err_match(err, response, code, pattern):
         match = False
         if err.response.status_code == code:
             err_json = response.json()
             if 'error' in err_json:
                 err_msg = err_json['error']['message']
-                return err_msg == message
+                return re.search(pattern, err_msg)
         return match
 
     async def add_user(self, user_identity):
@@ -117,6 +134,7 @@ class CCSvc:
         create_json = {
             'identity': user_identity
         }
+        cc_return = None
         try:
             cc_return = requests.post(url, headers=self.__headers, json=create_json)
             cc_return.raise_for_status()
