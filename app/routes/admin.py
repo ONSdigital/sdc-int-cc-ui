@@ -116,7 +116,7 @@ async def add_user():
                 flash('User <b>' + user_identity + '</b> has been created', 'info')
                 await _populate_created_user(user_identity)
             except UserExistsAlready:
-                email_error_msg = 'The user exists already'
+                email_error_msg = 'The user exists already, or has been created and then deleted'
         else:
             email_error_msg = 'Please enter an email'
 
