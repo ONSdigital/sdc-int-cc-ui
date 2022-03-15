@@ -1,8 +1,9 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from app.user_auth import login_required
-from app.access import has_single_permission
+from app.access import has_single_permission, is_admin_of_role
 from app.backend import CCSvc
 from structlog import get_logger
+from app.routes.errors import UserExistsAlready
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -36,6 +37,72 @@ async def update_user(user_identity):
         return render_template('admin/update-user.html', page_title=page_title, user_identity=user_identity)
 
 
+@admin_bp.route('/admin/add-user/', methods=['GET', 'POST'])
+@login_required
+async def add_user():
+    if request.method == 'POST':
+        user_identity = request.form['user-email']
+        email_error_msg = ''
+        if user_identity:
+            logger.info("Creating user: " + user_identity)
+            try:
+                await CCSvc().add_user(user_identity)
+                flash('User <b>' + user_identity + '</b> has been created', 'info')
+                await _populate_created_user(user_identity)
+            except UserExistsAlready:
+                email_error_msg = 'The user exists already'
+        else:
+            email_error_msg = 'Please enter an email'
+
+        if email_error_msg:
+            flash(email_error_msg, 'error_email')
+            return await _render_add_user(user_identity, email_error_msg)
+        else:
+            return redirect(url_for('admin.admin_user_list'))
+    else:
+        return await _render_add_user()
+
+
+async def _render_add_user(user_identity='', email_error_msg=''):
+    survey_types_checkboxes = await _build_survey_types()
+    roles = await CCSvc().get_roles()
+    user_roles_checkboxes = _build_user_role_checkboxes(roles)
+    admin_roles_checkboxes = _build_admin_role_checkboxes(roles)
+
+    return render_template('admin/add-user.html',
+                           page_title='Add user',
+                           survey_types_checkboxes=survey_types_checkboxes,
+                           user_roles_checkboxes=user_roles_checkboxes,
+                           admin_roles_checkboxes=admin_roles_checkboxes,
+                           value_email=user_identity,
+                           error_email=email_error_msg)
+
+
+def _checked_boxes(checkbox_name):
+    return request.form.getlist(checkbox_name) if checkbox_name in request.form else []
+
+
+async def _populate_created_user(user_identity):
+    if 'surveys' in request.form:
+        for survey_type in request.form.getlist('surveys'):
+            logger.info('adding survey:' + survey_type + ' for user: ' + user_identity)
+            await CCSvc().add_user_survey(user_identity, survey_type)
+    else:
+        logger.info('no surveys')
+    if 'user_roles' in request.form:
+        for role in request.form.getlist('user_roles'):
+            logger.info('adding user role:' + role + ' for user: ' + user_identity)
+            await CCSvc().add_user_role(user_identity, role)
+    else:
+        logger.info('no user roles')
+    if 'admin_roles' in request.form:
+        for role in request.form.getlist('admin_roles'):
+            logger.info('adding admin role:' + role + ' for user: ' + user_identity)
+            await CCSvc().add_admin_role(user_identity, role)
+    else:
+        logger.info('no admin roles')
+
+
 @admin_bp.route('/admin/delete-user/<user_identity>/', methods=['GET', 'POST'])
 @login_required
 async def delete_user(user_identity):
@@ -45,8 +112,7 @@ async def delete_user(user_identity):
         flash('User <b>' + user_identity + '</b> has been deleted', 'info')
         return redirect(url_for('admin.admin_user_list'))
     else:
-        page_title = 'Remove user'
-        return render_template('admin/delete-user.html', page_title=page_title, user_identity=user_identity)
+        return render_template('admin/delete-user.html', page_title='Delete user', user_identity=user_identity)
 
 
 def _build_actions(user_identity, user):
@@ -79,9 +145,11 @@ def _build_user_rows(users):
         status = 'success' if user['active'] else 'pending'
         status_text = 'Active' if user['active'] else 'Inactive'
         roles = ''
+        user['userRoles'].sort()
         for role in user['userRoles']:
             roles = roles + role + '<br/>'
         surveys = ''
+        user['surveyUsages'].sort()
         for survey in user['surveyUsages']:
             surveys = surveys + survey['surveyType'] + '<br/>'
 
@@ -107,5 +175,53 @@ def _build_user_rows(users):
                     'value': _build_actions(identity, user)
                 }
             ]
+        })
+    return rows
+
+
+async def _build_survey_types():
+    checked_surveys = _checked_boxes('surveys')
+    rows = []
+    survey_types = await CCSvc().get_survey_types()
+    for survey_type in survey_types:
+        rows.append({
+                "id": survey_type,
+                "name": 'surveys',
+                "label": {
+                    "text": survey_type
+                },
+                "checked": survey_type in checked_surveys,
+                "value": survey_type
+        })
+    return rows
+
+
+def _build_user_role_checkboxes(roles):
+    checked_user_roles = _checked_boxes('user_roles')
+    return _build_role_checkboxes('user_roles', roles, checked_user_roles, True)
+
+
+def _build_admin_role_checkboxes(roles):
+    checked_admin_roles = _checked_boxes('admin_roles')
+    admin_roles_checkboxes = []
+    if has_single_permission('RESERVED_ADMIN_ROLE_MAINTENANCE'):
+        admin_roles_checkboxes = _build_role_checkboxes('admin_roles', roles, checked_admin_roles)
+    return admin_roles_checkboxes
+
+
+def _build_role_checkboxes(checkbox_name, all_roles, checked_roles, check_auth=False):
+    rows = []
+    for role in all_roles:
+        name = role['name']
+        if check_auth and (not is_admin_of_role(name)):
+            continue
+        rows.append({
+                "id": name,
+                "name": checkbox_name,
+                "label": {
+                    "text": name
+                },
+                "checked": name in checked_roles,
+                "value": name
         })
     return rows
