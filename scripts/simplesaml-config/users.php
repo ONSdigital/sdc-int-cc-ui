@@ -74,5 +74,53 @@ $config = array(
             'givenname' => 'Ameet',
             'surname' => 'Manjrekar',
         ),
+            'jim:pw' => array(
+                'uid' => array('12'),
+                'emailaddress' => 'jim.jones@ons.gov.uk',
+                'givenname' => 'Jim',
+                'surname' => 'Jones',
+            ),
+            'bill:pw' => array(
+                'uid' => array('13'),
+                'emailaddress' => 'bill.bobbins@ons.gov.uk',
+                'givenname' => 'Bill',
+                'surname' => 'Bobbins',
+            ),
+            'marge:pw' => array(
+                'uid' => array('14'),
+                'emailaddress' => 'marge.smith@ons.gov.uk',
+                'givenname' => 'Marge',
+                'surname' => 'Smith',
+            ),
+            'bob:pw' => array(
+                'uid' => array('15'),
+                'emailaddress' => 'bob.hope@ons.gov.uk',
+                'givenname' => 'Bob',
+                'surname' => 'Hope',
+            ),
+            'grace:pw' => array(
+                'uid' => array('16'),
+                'emailaddress' => 'grace.white@ons.gov.uk',
+                'givenname' => 'Grace',
+                'surname' => 'White',
+            ),
+            'mary:pw' => array(
+                'uid' => array('17'),
+                'emailaddress' => 'mary.moore@ons.gov.uk',
+                'givenname' => 'Mary',
+                'surname' => 'Moore',
+            ),
+            'linda:pw' => array(
+                'uid' => array('18'),
+                'emailaddress' => 'linda.lopez@ons.gov.uk',
+                'givenname' => 'Linda',
+                'surname' => 'Lopez',
+            ),
+            'clark:pw' => array(
+                'uid' => array('19'),
+                'emailaddress' => 'clark.kent@ons.gov.uk',
+                'givenname' => 'Clark Joseph',
+                'surname' => 'Kent',
+            ),
     ),
 );
