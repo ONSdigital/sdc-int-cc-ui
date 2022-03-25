@@ -14,9 +14,9 @@ case_bp = Blueprint('case', __name__)
 logger = get_logger()
 
 
-@case_bp.route(r'/<org>/case/<case_id>/', methods=['GET'])
+@case_bp.route(r'/<org>/case/<mode>/<case_id>/', methods=['GET'])
 @login_required
-async def case(org, case_id):
+async def case(org, case_id, mode):
     if case_id:
         page_title = 'Case ' + case_id
         cc_return = await CCSvc().get_case_by_id(case_id, True)
@@ -26,7 +26,8 @@ async def case(org, case_id):
         else:
             interactions = ''
         return render_template('case/case.html', case=cc_return, sample=sample, interactions=interactions,
-                               case_id=case_id, page_title=page_title, org=org)
+                               case_id=case_id, page_title=page_title, org=org,
+                               mode=mode, back_url=request.args.get('back_url', '/'))
     else:
         return render_template('errors/500.html')
 
@@ -39,7 +40,8 @@ async def add_case_note(org, case_id):
             note = request.form['form-case-add-note']
             if note:
                 await CCSvc().post_add_note(case_id, note)
-                return redirect(url_for('case.case_note_added', case_id=case_id, org=org))
+                flash('Case note has been added', 'info')
+                return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
             else:
                 flash('Please add some note text', 'error_note')
                 return redirect(url_for('case.add_case_note', case_id=case_id, org=org))
@@ -56,15 +58,6 @@ async def add_case_note(org, case_id):
                                page_title=page_title, error_note=error_note, org=org)
 
 
-@case_bp.route('/<org>/case/<case_id>/case-note-added/', methods=['GET'])
-@login_required
-async def case_note_added(org, case_id):
-    if case_id:
-        return render_template('case/case-note-added.html', case_id=case_id, org=org)
-    else:
-        return render_template('errors/500.html')
-
-
 @case_bp.route('/<org>/case/<case_id>/request-refusal/', methods=['GET', 'POST'])
 @login_required
 async def request_refusal(org, case_id):
@@ -76,7 +69,7 @@ async def request_refusal(org, case_id):
             await CCSvc().post_case_refusal(case_id, reason, note, erase_data)
             erase_suffix = " with data removal" if erase_data else ""
             flash('Case has been refused' + erase_suffix, 'info')
-            return redirect(url_for('case.case', case_id=case_id, org=org))
+            return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
         else:
             flash('Select a reason', 'error_reason')
             return redirect(url_for('case.request_refusal', case_id=case_id, org=org))
@@ -134,7 +127,7 @@ async def request_code_by_text(org, case_id):
                 session.modified = True
             return redirect(url_for('case.code_sent_by_text', case_id=case_id, org=org))
         else:
-            return redirect(url_for('case.request_code_by_text', case_id=case_id))
+            return redirect(url_for('case.request_code_by_text', case_id=case_id, org=org))
 
     else:
         page_title = 'Request code by text'
@@ -350,7 +343,8 @@ async def update_contact_details(org, case_id):
             if 'values' in session:
                 session.pop('values')
                 session.modified = True
-            return redirect(url_for('case.contact_details_updated', case_id=case_id, org=org))
+            flash('Contact details have been updated', 'info')
+            return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
         else:
             return redirect(url_for('case.update_contact_details', case_id=case_id, org=org))
 
@@ -395,15 +389,6 @@ async def update_contact_details(org, case_id):
                                value_last_name=value_last_name,
                                value_email=value_email,
                                org=org)
-
-
-@case_bp.route('/<org>/case/<case_id>/contact-details-updated/', methods=['GET'])
-@login_required
-async def contact_details_updated(org, case_id):
-    if case_id:
-        return render_template('case/contact-details-updated.html', case_id=case_id, org=org)
-    else:
-        return render_template('errors/500.html')
 
 
 @case_bp.route('/<org>/case/<case_id>/call-outcome/', methods=['GET', 'POST'])
@@ -476,7 +461,8 @@ async def invalidate_address(org, case_id):
     if request.method == 'POST':
         if 'form-case-reason' in request.form:
             # TODO  add invalid address endpoint call
-            return redirect(url_for('case.address_invalidated', case_id=case_id, org=org))
+            flash('Address has been invalidated', 'info')
+            return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
         else:
             flash('Select an invalidation reason', 'error_reason')
             return redirect(url_for('case.invalidate_address', case_id=case_id, org=org))
@@ -496,12 +482,3 @@ async def invalidate_address(org, case_id):
                                invalidate_address_options=invalidate_address_options,
                                error_reason=error_reason,
                                org=org)
-
-
-@case_bp.route('/<org>/case/<case_id>/address-invalidated/', methods=['GET'])
-@login_required
-async def address_invalidated(org, case_id):
-    if case_id:
-        return render_template('case/address-invalidated.html', case_id=case_id, org=org)
-    else:
-        return render_template('errors/500.html')

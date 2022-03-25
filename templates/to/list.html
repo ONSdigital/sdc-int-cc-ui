@@ -3,6 +3,8 @@
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 
+{%- set back_url = url_for(request.endpoint) -%}
+
 {%- block main -%}
 
     <h1>Telephone Operations</h1>
@@ -36,7 +38,8 @@
                             'value': 'First call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -50,7 +53,8 @@
                             'value': 'Scheduled interview'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -64,7 +68,8 @@
                             'value': 'Second call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -78,7 +83,8 @@
                             'value': 'First call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -92,7 +98,8 @@
                             'value': 'Interview'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -106,7 +113,8 @@
                             'value': 'Reminder call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -120,7 +128,8 @@
                             'value': 'Second call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -134,7 +143,8 @@
                             'value': 'First call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='03f58cb5-9af4-4d40-9d60-c124c5bddf09', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -148,7 +158,8 @@
                             'value': 'Interview'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='e37b0d05-3643-445e-8e71-73f7df3ff95e', org='to') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 },
@@ -162,7 +173,8 @@
                             'value': 'Reminder call'
                         },
                         {
-                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel') + '">View case</a>'
+                            'value': '<a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='view', back_url=back_url) + '">View</a>'
+                                    +'| <a href="'+ url_for('case.case', case_id='77346443-64ae-422e-9b93-d5250f48a27a', org='sel', mode='edit', back_url=back_url) + '">Edit</a>'
                         }
                     ]
                 }

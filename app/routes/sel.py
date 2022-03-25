@@ -52,9 +52,11 @@ def build_address_results(addr_input, cc_return):
     for address in cc_return['addresses']:
         surveys = ''
         case_refs = ''
+        back_url = url_for('sel.sel_home')
         for caze in address['cases']:
             surveys = surveys + caze['surveyName'] + '<br/>'
-            case_link = '<a href="' + url_for('case.case', case_id=caze['id'], org='sel') \
+            case_link = '<a href="' + url_for('case.case', case_id=caze['id'],
+                                              org='sel', back_url=back_url, mode='edit') \
                         + '">' + caze['caseRef'] + '</a>'
             case_refs = case_refs + case_link + '<br/>'
 
