@@ -14,6 +14,10 @@ case_bp = Blueprint('case', __name__)
 logger = get_logger()
 
 
+def get_back_url():
+    return session['back_url'] if 'back_url' in session else '/'
+
+
 @case_bp.route(r'/<org>/case/<mode>/<case_id>/', methods=['GET'])
 @login_required
 async def case(org, case_id, mode):
@@ -27,7 +31,7 @@ async def case(org, case_id, mode):
             interactions = ''
         return render_template('case/case.html', case=cc_return, sample=sample, interactions=interactions,
                                case_id=case_id, page_title=page_title, org=org,
-                               mode=mode, back_url=request.args.get('back_url', '/'))
+                               mode=mode, back_url=get_back_url())
     else:
         return render_template('errors/500.html')
 
