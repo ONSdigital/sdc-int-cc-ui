@@ -3,6 +3,7 @@
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
 {%- from "components/collapsible/_macro.njk" import onsCollapsible -%}
+{%- from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs -%}
 
 {%- set address -%}
         {{ sample.addressLine1 }}<br>
@@ -46,11 +47,11 @@
                                             'text': 'Launch survey',
                                             'url': '#',
                                             "variants": 'secondary',
-                                            "classes": permit_class('LAUNCH_EQ', ''),
+                                            "classes": permit_class('LAUNCH_EQ', '', mode),
                                             "newWindow": true
                                         })
-            + '<div class="' + permit_class('REQUEST_POSTAL_FULFILMENT', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by post</a></div>'
-            + '<div class="' + permit_class('REQUEST_SMS_FULFILMENT', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by text</a></div>'
+            + '<div class="' + permit_class('REQUEST_POSTAL_FULFILMENT', 'ons-u-mt-s', mode) + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by post</a></div>'
+            + '<div class="' + permit_class('REQUEST_SMS_FULFILMENT', 'ons-u-mt-s', mode) + '"><a href="' + url_for('case.request_code_by_text', case_id=case_id, org=org) + '">Send new access code by text</a></div>'
                                     }
                                 ]
                             },
@@ -66,7 +67,7 @@
                                     },
                                     {
                                         "numeric": true,
-                                        'value': '<a href="' + url_for('case.invalidate_address', case_id=case_id, org=org) + '">Report issue with address</a>'
+                                        'value': '<div class="' + permit_class('INVALIDATE_CASE', 'ons-u-mt-s', mode) + '"><a href="' + url_for('case.invalidate_address', case_id=case_id, org=org) + '">Report issue with address</a></div>'
                                     }
                                 ]
                             },
@@ -82,7 +83,7 @@
                                     },
                                     {
                                         "numeric": true,
-                                        'value': '<div class="' + permit_class('REFUSE_CASE', 'ons-u-mt-s') + '"><a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a></div>'
+                                        'value': '<div class="' + permit_class('REFUSE_CASE', 'ons-u-mt-s', mode) + '"><a href="' + url_for('case.request_refusal', case_id=case_id, org=org) + '">Submit refusal</a></div>'
                                     }
                                 ]
                             }
@@ -140,7 +141,7 @@
                                         'type': 'button',
                                         'text': 'Call',
                                         'url': url_for('case.call_outcome', case_id=case_id, org=org),
-                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', ''),
+                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', '', mode),
                                         "variants": 'secondary',
                                         'iconType': 'False'
                                     })
@@ -162,7 +163,7 @@
                                         'type': 'button',
                                         'text': 'Call',
                                         'url': url_for('case.call_outcome', case_id=case_id, org=org),
-                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', ''),
+                                        "classes": permit_class('CAN_MAKE_OUTBOUND_CALLS', '', mode),
                                         "variants": 'secondary',
                                         'iconType': 'False'
                                     })
@@ -188,7 +189,7 @@
 
             <div class="ons-grid">
                 <div class="ons-grid__col ons-col-6@m">
-                    {%- if has_permission('MODIFY_CASE') -%}
+                    {%- if has_permission('MODIFY_CASE') and mode == 'edit' -%}
                     <a href="{{ url_for('case.update_contact_details', case_id=case_id, org=org) }}">Edit contact details</a>
                     {%- endif -%}
                 </div>
@@ -204,17 +205,19 @@
             {%- endif -%}
         </div>
 
+        {%- if mode == 'edit' -%}
         <div class="ons-grid__col ons-col-4@m ons-u-rtl ons-u-mt-xl ons-u-mb-m">
             {{
                 onsButton({
                     'type': 'button',
                     'text': 'Add call notes',
                     'url': url_for('case.add_case_note', case_id=case_id, org=org),
-                    "classes": permit_class('ADD_CASE_INTERACTION', ''),
+                    "classes": permit_class('ADD_CASE_INTERACTION', '', mode),
                     'iconType': 'False'
                 })
             }}
         </div>
+        {%- endif -%}
     </div>
 
     {%- if interactions -%}
@@ -252,5 +255,19 @@
             })
         }}
     {%- endif -%}
+
+
+{{
+    onsBreadcrumbs({
+        "ariaLabel": 'Back',
+        "itemsList": [
+            {
+                "url": back_url,
+                "id": "back",
+                "text": 'Back'
+            }
+        ]
+    })
+}}
 
 {%- endblock -%}

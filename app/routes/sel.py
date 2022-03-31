@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, flash
+from flask import render_template, request, url_for, flash, session
 from app.backend import CCSvc
 from flask import Blueprint
 from structlog import get_logger
@@ -54,7 +54,8 @@ def build_address_results(addr_input, cc_return):
         case_refs = ''
         for caze in address['cases']:
             surveys = surveys + caze['surveyName'] + '<br/>'
-            case_link = '<a href="' + url_for('case.case', case_id=caze['id'], org='sel') \
+            case_link = '<a href="' + url_for('case.case', case_id=caze['id'],
+                                              org='sel', mode='edit') \
                         + '">' + caze['caseRef'] + '</a>'
             case_refs = case_refs + case_link + '<br/>'
 
@@ -85,6 +86,7 @@ async def sel_home():
         if addr_input:
             if is_address_input_valid(addr_input):
                 cc_return = await CCSvc().get_addresses_by_input(addr_input)
+                session['back_url'] = url_for('sel.sel_home')
                 results = build_address_results(addr_input, cc_return)
             else:
                 logger.info('Address input error: Please supply a longer search term')

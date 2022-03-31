@@ -44,8 +44,8 @@ def _has_any_permission(perms=None):
         return False
 
 
-def permit_class(perm, permitted_class):
-    return permitted_class if has_single_permission(perm) else 'ons-u-hidden'
+def permit_class(perm, permitted_class, mode):
+    return permitted_class if mode == 'edit' and has_single_permission(perm) else 'ons-u-hidden'
 
 
 def has_single_permission(perm):
