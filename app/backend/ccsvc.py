@@ -180,6 +180,13 @@ class CCSvc:
         }
         return self._post(url, interaction_json, 'post_add_note')
 
+    async def post_invalidate(self, case_id, reason):
+        url = f'{self.__svc_url}/cases/{case_id}/invalidate'
+        reason_json = {
+            'note': reason
+        }
+        return self._post(url, reason_json, 'post_invalidate')
+
     async def post_case_refusal(self, case_id, reason, note=None, erase_data=False):
         url = f'{self.__svc_url}/cases/{case_id}/refusal'
         refusal_json = {
