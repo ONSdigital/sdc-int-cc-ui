@@ -42,7 +42,7 @@ async def add_case_note(org, case_id):
     if request.method == 'POST':
         if 'form-case-add-note' in request.form:
             note = request.form['form-case-add-note']
-            if note:
+            if note and not note.isspace():
                 await CCSvc().post_add_note(case_id, note)
                 flash('Case note has been added', 'info')
                 return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
@@ -463,26 +463,26 @@ async def call_outcome_recorded(org, case_id):
 @login_required
 async def invalidate_address(org, case_id):
     if request.method == 'POST':
-        if 'form-case-reason' in request.form:
-            # TODO  add invalid address endpoint call
-            flash('Address has been invalidated', 'info')
-            return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
+        if 'reason' in request.form:
+            reason = request.form['reason']
+            if reason and not reason.isspace():
+                await CCSvc().post_invalidate(case_id, reason)
+                flash('Address has been invalidated', 'info')
+                return redirect(url_for('case.case', case_id=case_id, org=org, mode='edit'))
+            else:
+                flash('Please add a reason', 'error_reason')
+                return redirect(url_for('case.invalidate_address', case_id=case_id, org=org))
         else:
-            flash('Select an invalidation reason', 'error_reason')
+            flash('Please add a reason', 'error_reason')
             return redirect(url_for('case.invalidate_address', case_id=case_id, org=org))
-
     else:
         page_title = 'Invalidate address'
         error_reason = {}
         if flask.get_flashed_messages():
             page_title = Common.page_title_error_prefix + page_title
-            error_reason = {'id': 'error_reason', 'text': Common.message_select_option}
-
-        invalidate_address_options = ProcessJsonForOptions.options_from_json('invalid-address-reasons.json')
-
+            error_reason = {'id': 'error_reason', 'text': 'Add reason'}
         return render_template('case/invalidate-address.html',
                                page_title=page_title,
                                case_id=case_id,
-                               invalidate_address_options=invalidate_address_options,
                                error_reason=error_reason,
                                org=org)

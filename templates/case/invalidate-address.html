@@ -2,8 +2,7 @@
 
 {%- from 'components/question/_macro.njk' import onsQuestion -%}
 {%- from 'components/button/_macro.njk' import onsButton -%}
-{%- from 'components/radios/_macro.njk' import onsRadios -%}
-{%- from 'components/input/_macro.njk' import onsInput -%}
+{%- from "components/textarea/_macro.njk" import onsTextarea -%}
 
 {%- set form =  {
     'method': 'POST',
@@ -19,23 +18,32 @@
     {%- endif -%}
 
     {%- call onsQuestion({
-        'title': "Why should the address be invalidated?",
+        'title': "Invalidate Address",
+        'description': '<p>Invalidating an address will remove any response data from the case</p>'
     }) -%}
+
         {{
-            onsRadios({
-                'name': 'form-case-reason',
-                'radios': invalidate_address_options,
-                'legend': "Select invalidation reason",
-                'legendClasses': 'ons-u-mt-xl',
-                'error': error_reason
+            onsTextarea({
+                "id": "textarea",
+                "name": "reason",
+                "label": {
+                    "text": "Enter reason for invalid address",
+                },
+                "charCheckLimit": {
+                    "limit": 250,
+                    "charCountSingular": "You have {x} character remaining",
+                    "charCountPlural": "You have {x} characters remaining"
+                },
+                "error": error_reason
             })
         }}
+
     {%- endcall -%}
 
     <div class="ons-btn-group ons-u-mt-l">
         {{
             onsButton({
-                'text': 'Submit invalidation',
+                'text': 'Submit',
                 'submitType': 'loader'
             })
         }}

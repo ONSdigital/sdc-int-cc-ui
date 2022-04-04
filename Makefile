@@ -13,7 +13,7 @@ link-development-env:
 run: build link-development-env
 	pipenv run flask run --port 5001
 
-test:
+test: link-development-env
 	pipenv run pytest tests
 
 flake8:
